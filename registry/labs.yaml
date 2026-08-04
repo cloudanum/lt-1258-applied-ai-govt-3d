@@ -1,0 +1,363 @@
+course: '1258'
+# a3 -> a4: 12 notebooks authored for the a4 roster (canonical facts in registry/activities.yaml)
+revision: a4
+labs:
+- id: DONOW 0.1
+  title: Environment Healthcheck
+  chapter: Ch00
+  artifact: lab_0.1_healthcheck.ipynb
+  environment: VM
+  duration_min: 15
+  fallback_tier: 1
+  ho_questions: 0
+  status: authored
+  slide_ref:
+  - Ch00-Course-Launch:2
+  - Ch00-Course-Launch:10
+  - Ch00-Course-Launch:15
+- id: Lab 0.1
+  title: Course Environment and Data Tour
+  chapter: Ch00
+  artifact: lab_0.1_environment_tour.ipynb
+  environment: VM
+  duration_min: 25
+  fallback_tier: 3
+  ho_questions: 2
+  status: authored
+  slide_ref:
+  - Ch00-Course-Launch:3
+  - Ch00-Course-Launch:26
+- id: Lab 1.1
+  title: Exploring the Federal AI Use Case Inventory
+  chapter: Ch01
+  artifact: lab_1.1_ai_inventory.ipynb
+  environment: VM
+  duration_min: 40
+  fallback_tier: 1
+  ho_questions: 2
+  status: authored
+  slide_ref:
+  - AppD-Classic-ML-DeepDive:8
+  - Ch01-AI-ML-Foundations:3
+  - Ch01-AI-ML-Foundations:24
+- id: Lab 1.2
+  title: Clustering Counties by Air Quality (K-Means)
+  chapter: Ch01
+  artifact: lab_1.2_clustering.ipynb
+  environment: VM
+  duration_min: 40
+  fallback_tier: 1
+  ho_questions: 2
+  flex: true
+  status: authored
+  slide_ref:
+  - AppD-Classic-ML-DeepDive:4
+  - Ch00-Course-Launch:19
+  - Ch01-AI-ML-Foundations:3
+  - Ch01-AI-ML-Foundations:54
+- id: Lab 1.3
+  title: Decision Tree Classifier
+  chapter: Ch01
+  artifact: lab_1.3_decisiontree.ipynb
+  environment: VM
+  duration_min: 30
+  fallback_tier: 1
+  ho_questions: 2
+  flex: true
+  status: rename_pending
+  slide_ref:
+  - AppD-Classic-ML-DeepDive:4
+- id: Lab 1.4
+  title: 'Named Entity Recognition: Press Releases'
+  chapter: Ch01
+  artifact: lab_1.4_nlp_ner.ipynb
+  environment: VM
+  duration_min: 30
+  fallback_tier: 1
+  ho_questions: 2
+  flex: true
+  status: rename_pending
+  slide_ref:
+  - AppD-Classic-ML-DeepDive:8
+- id: Do Now 1.A
+  title: Google Natural Language API
+  chapter: Ch01
+  artifact: browser
+  environment: browser
+  duration_min: 10
+  fallback_tier: 0
+  ho_questions: 0
+  status: formalize_pending
+  slide_ref: []
+- id: Do Now 1.B
+  title: TensorFlow Playground
+  chapter: Ch01
+  artifact: browser
+  environment: browser
+  duration_min: 10
+  fallback_tier: 0
+  ho_questions: 0
+  status: formalize_pending
+  slide_ref: []
+- id: Lab 2.1
+  title: Public Data Expedition — Profile an Agency Dataset
+  chapter: Ch02
+  artifact: lab_2.1_data_expedition.ipynb
+  environment: VM
+  duration_min: 40
+  fallback_tier: 1
+  ho_questions: 2
+  status: authored
+  slide_ref:
+  - Ch02-Applications-Public-Data:3
+  - Ch02-Applications-Public-Data:45
+  - Ch02-Applications-Public-Data:47
+- id: Lab 3.1
+  title: Desktop GenAI Task Relay
+  chapter: Ch03
+  artifact: browser
+  environment: browser
+  duration_min: 35
+  fallback_tier: 0
+  ho_questions: 2
+  status: authored_workbook
+  slide_ref:
+  - Ch03-Desktop-GenAI:27
+  - Ch03-Desktop-GenAI:47
+  - Ch03-Desktop-GenAI:50
+  - Ch03-Desktop-GenAI:51
+  - Ch03-Desktop-GenAI:52
+  - Ch03-Desktop-GenAI:54
+- id: Lab 4.1
+  title: Prompt Engineering Studio
+  chapter: Ch04
+  artifact: lab_4.1_prompt_studio.ipynb
+  environment: VM
+  duration_min: 45
+  fallback_tier: 3
+  ho_questions: 2
+  status: authored
+  slide_ref:
+  - Ch00-Course-Launch:11
+  - Ch04-ModernGenAI-PromptEng:3
+  - Ch04-ModernGenAI-PromptEng:52
+  - Ch04-ModernGenAI-PromptEng:55
+  - Ch04-ModernGenAI-PromptEng:56
+  - Ch04-ModernGenAI-PromptEng:57
+- id: Lab 4.2
+  title: Build a Reusable Prompt Template Library
+  chapter: Ch04
+  artifact: lab_4.2_prompt_templates.ipynb
+  environment: VM
+  duration_min: 30
+  fallback_tier: 3
+  ho_questions: 2
+  flex: true
+  status: authored
+  slide_ref:
+  - Ch04-ModernGenAI-PromptEng:3
+  - Ch04-ModernGenAI-PromptEng:56
+- id: Lab 5.1
+  title: Adversarial Examples and Model Robustness
+  chapter: Ch05
+  artifact: lab_5.1_adversarial.ipynb
+  environment: VM
+  duration_min: 40
+  fallback_tier: 1
+  ho_questions: 2
+  flex: true
+  status: authored
+  slide_ref:
+  - Ch05-Security-Risks-Responsible-AI:3
+  - Ch05-Security-Risks-Responsible-AI:22
+- id: Lab 5.2
+  title: Detect and Mask PII in Citizen Records
+  chapter: Ch05
+  artifact: lab_5.2_pii.ipynb
+  environment: VM
+  duration_min: 40
+  fallback_tier: 1
+  ho_questions: 2
+  status: authored
+  slide_ref:
+  - Ch05-Security-Risks-Responsible-AI:3
+  - Ch05-Security-Risks-Responsible-AI:33
+- id: Lab 5.3
+  title: Detect and Mask PII Using NLP
+  chapter: Ch05
+  artifact: lab_5.3_pii.ipynb
+  environment: VM
+  duration_min: 30
+  fallback_tier: 1
+  ho_questions: 2
+  status: rename_pending
+  slide_ref: []
+- id: Lab 5.4
+  title: Insider Threat Scenarios
+  chapter: Ch05
+  artifact: paper
+  environment: none
+  duration_min: 20
+  fallback_tier: 0
+  ho_questions: 2
+  flex: true
+  status: carried_from_a2
+  slide_ref:
+  - Ch05-Security-Risks-Responsible-AI:47
+- id: Ex 6.1
+  title: Shared-Spreadsheet Data Collection
+  chapter: Ch06
+  artifact: browser
+  environment: browser
+  duration_min: 20
+  fallback_tier: 0
+  ho_questions: 2
+  status: authored_workbook
+  slide_ref:
+  - Ch06-Data-for-AI:7
+  - Ch06-Data-for-AI:14
+  - Ch06-Data-for-AI:15
+- id: Lab 6.1
+  title: Data Quality Assessment of Chicago 311
+  chapter: Ch06
+  artifact: lab_6.1_data_quality.ipynb
+  environment: VM
+  duration_min: 45
+  fallback_tier: 1
+  ho_questions: 2
+  status: authored
+  slide_ref:
+  - Ch06-Data-for-AI:3
+  - Ch06-Data-for-AI:16
+- id: Lab 6.2
+  title: GenAI-Assisted Cleaning with Structured Outputs
+  chapter: Ch06
+  artifact: lab_6.2_genai_cleaning.ipynb
+  environment: VM
+  duration_min: 35
+  fallback_tier: 3
+  ho_questions: 2
+  status: authored
+  slide_ref:
+  - Ch06-Data-for-AI:3
+  - Ch06-Data-for-AI:39
+- id: Lab 7.1
+  title: First Calls with the OpenAI API
+  chapter: Ch07
+  artifact: lab_7.1_openai_api.ipynb
+  environment: VM
+  duration_min: 30
+  fallback_tier: 3
+  ho_questions: 2
+  status: authored
+  slide_ref:
+  - Ch04-ModernGenAI-PromptEng:31
+  - Ch04-ModernGenAI-PromptEng:41
+  - Ch04-ModernGenAI-PromptEng:42
+  - Ch07-Building-with-LLMs:5
+  - Ch07-Building-with-LLMs:7
+  - Ch07-Building-with-LLMs:8
+  - Ch07-Building-with-LLMs:13
+- id: Lab 7.2
+  title: RAG over Government Documents
+  chapter: Ch07
+  artifact: lab_7.2_rag_gov_docs.ipynb
+  environment: VM
+  duration_min: 40
+  fallback_tier: 3
+  ho_questions: 2
+  status: authored
+  slide_ref:
+  - Ch07-Building-with-LLMs:23
+  - Ch07-Building-with-LLMs:26
+  - Ch07-Building-with-LLMs:27
+  - Ch07-Building-with-LLMs:29
+  - Ch07-Building-with-LLMs:32
+- id: Lab 7.3
+  title: Build an AI Agent
+  chapter: Ch07
+  artifact: lab_7.3_agent.ipynb
+  environment: VM
+  duration_min: 90
+  fallback_tier: 3
+  ho_questions: 2
+  status: authored
+  slide_ref:
+  - Ch02-Applications-Public-Data:44
+  - Ch07-Building-with-LLMs:33
+  - Ch07-Building-with-LLMs:35
+  - Ch07-Building-with-LLMs:36
+  - Ch07-Building-with-LLMs:40
+  - Ch07-Building-with-LLMs:41
+  - Ch07-Building-with-LLMs:43
+  - Ch07-Building-with-LLMs:45
+  - Ch07-Building-with-LLMs:47
+  - Ch07-Building-with-LLMs:49
+- id: Do Now 7.A
+  title: Exploring the Hugging Face Platform
+  chapter: Ch07
+  artifact: browser
+  environment: browser
+  duration_min: 10
+  fallback_tier: 0
+  ho_questions: 0
+  status: carried_from_a2
+  slide_ref:
+  - Ch07-Building-with-LLMs:55
+- id: Lab 8.1
+  title: Visualization and Reporting from EPA Data
+  chapter: Ch08
+  artifact: lab_8.1_visualization.ipynb
+  environment: VM
+  duration_min: 40
+  fallback_tier: 1
+  ho_questions: 2
+  status: authored
+  slide_ref:
+  - Ch08-Operations-Reporting:3
+  - Ch08-Operations-Reporting:40
+- id: Lab 8.2
+  title: GenAI-Assisted Analysis and Briefing
+  chapter: Ch08
+  artifact: lab_8.2_genai_reporting.ipynb
+  environment: VM
+  duration_min: 35
+  fallback_tier: 3
+  ho_questions: 2
+  flex: true
+  status: authored
+  slide_ref:
+  - Ch08-Operations-Reporting:3
+  - Ch08-Operations-Reporting:45
+- id: Lab 8.3
+  title: Random Forest Predictions with LIME
+  chapter: Ch08
+  artifact: lab_8.3_lime.ipynb
+  environment: VM
+  duration_min: 30
+  fallback_tier: 1
+  ho_questions: 2
+  flex: true
+  status: rename_pending
+  slide_ref: []
+- id: Optional Lab A.1
+  title: Ideating AI Use Cases
+  chapter: AppA
+  artifact: paper
+  environment: none
+  duration_min: 30
+  fallback_tier: 0
+  ho_questions: 2
+  status: carried_from_a2
+  slide_ref:
+  - AppA-ML-LifeCycle:23
+- id: Optional Lab B.1
+  title: 'Chronicle SIEM: Real-Time Cyber Threat Analysis'
+  chapter: AppB
+  artifact: browser
+  environment: browser
+  duration_min: 30
+  fallback_tier: 0
+  ho_questions: 2
+  status: carried_from_a2
+  slide_ref: []

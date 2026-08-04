@@ -1,0 +1,37 @@
+EXPECTED OUTPUT — Lab 7.1 First Calls with the OpenAI API (SOLUTION)
+Captured on the VM with a valid key. Wording varies run to run.
+
+Using model: gpt-5-mini
+
+Ex 1: The Freedom of Information Act (FOIA) gives any person the right to request
+access to federal agency records. Agencies must generally respond within 20
+business days.
+
+Ex 2: (formal persona) — cites the 20-business-day rule in formal tone.
+       (friendly persona) — same fact, plain language for a new employee.
+
+Ex 3: temperature=0.0: "Using AI Responsibly in Government: A One-Page Guide"
+      temperature=1.0: "Smart, Safe, and Accountable: Your Quick Guide to AI at Work"
+
+Ex 4 (structured JSON):
+{
+  "subject": "Interim Guidance on Generative AI for Constituent Services",
+  "effective_date": "March 14, 2026",
+  "key_rules": [
+    "Human review before release",
+    "Only public information in public AI tools",
+    "Use the approved enterprise assistant for internal information",
+    "AI-assisted correspondence is a federal record"
+  ]
+}
+
+Ex 5 (usage):
+prompt tokens:     ~420
+completion tokens: ~90
+total tokens:      ~510
+this call ≈ $0.00011
+1,000 similar calls ≈ $0.11
+
+DEBRIEF TALKING POINTS: JSON is machine-usable (drives a workflow); prose is not.
+50,000 docs/month at this size ≈ a few dollars in tokens; on Azure OpenAI the
+same code runs inside the FedRAMP boundary — only the client setup changes.

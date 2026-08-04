@@ -1,0 +1,30 @@
+EXPECTED OUTPUT — lab_8.2_genai_reporting (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+EPA Annual AQI by county, 2024. 997 counties, 54 states/territories.
+Columns: State, County, Year, Days with AQI, Good/Moderate/USG/Unhealthy/Very Unhealthy/Hazardous Days,
+Max AQI, 90th Percentile AQI, Median AQI, pollutant day counts (CO, NO2, Ozone, PM2.5, PM10).
+Median of county Median AQI: 40.0.
+Single year only: 2024.
+1. 838 of 997 counties (84%) recorded zero days at Unhealthy or worse in 2024.
+2. California accounts for 317 unhealthy-or-worse county-days — more than the next four states combined.
+3. Hazardous-level air days were recorded in 15 states in 2024.
+4. Three Southern California counties (San Bernardino, Riverside, Los Angeles) each logged more than 45 Unhealthy days.
+5. Air quality improved in most counties relative to 2023.
+[1] counties with zero unhealthy-or-worse days: 838 of 997
+[2] California: 317 | next four states combined: 219
+[3] states with any Hazardous days: 8
+[4] SoCal Unhealthy days: {'Los Angeles': 46, 'Riverside': 60, 'San Bernardino': 61}
+[5] years present in file: [np.int64(2024)]
+finding 1: confirmed
+finding 2: confirmed
+finding 3: wrong
+finding 4: confirmed
+finding 5: unverifiable
+COUNTY AIR QUALITY, 2024 — BRIEFING FOR THE DEPUTY DIRECTOR
+
+Bad air in 2024 was a local, not national, condition: 84% of U.S. counties (838 of 997) recorded zero days at Unhealthy or worse. California is the outlier, accounting for 317 unhealthy-or-worse county-days — more than the next four states combined. The exposure is concentrated further still: San Bernardino, Riverside, and Los Angeles counties each logged more than 45 Unhealthy days.
+
+RECOMMENDATION: focus chronic-exposure outreach on the three Southern California counties; treat remaining hotspots as event-driven.

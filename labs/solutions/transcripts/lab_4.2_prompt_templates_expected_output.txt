@@ -1,0 +1,63 @@
+EXPECTED OUTPUT — lab_4.2_prompt_templates (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+                            agency_name                                use_case_name development_stage is_high_impact                                                                                                                                                                                                                                  problem_solved
+0  Commodity Futures Trading Commission  Stress Testing Scenarios with Deep Learning    Pre-deployment            NaN  Pilot project to explore neural-network based machine learning methods for creating stress testing scenarios and estimating PnL (profit and loss) on FO (Futures and Options) portfolios based on the current/recent market states/conditions.
+1  Commodity Futures Trading Commission           Anomaly Detection for Data Quality          Deployed            NaN                                                                    Anomaly detection model designed to identify potentially erroneous data loads in TCR data. Uses an isolation forest model with aggregated data and automatically runs daily.
+2  Commodity Futures Trading Commission                     MPD Entity Risk Modeling             Pilot            NaN                                                                              Entity-level risk modeling project. Use statistical and probabalistic models to predict firms experiencing changes in capital levels. Very early stage R&D effort.
+--- ServiceNow Cluster Analysis
+[offline example for: ServiceNow Cluster Analysis] Department of Energy is applying AI (Deployed) to Identify patterns of tickets created to determine workflow and automated solutio. The system, 'ServiceNow Cluster Analysis', is intended to turn that manual work into an automated pipeline. 
+
+--- Autonomous Surveillance Tower
+[offline example for: Autonomous Surveillance Tower] Department of Homeland Security is applying AI (Deployed) to CBP's limited manpower constrains its ability to manually monitor all areas of t. The system, 'Autonomous Surveillance Tower', is intended to turn that manual work into an automated pipeline. 
+
+--- Nanoparticle growth kinetics and mechanism
+[offline example for: Nanoparticle growth kinetics and mechanism] Department of Energy is applying AI (Pre-deployment) to AI is used to digitalize the nanoparticle from TEM images. Morphology and crysta. The system, 'Nanoparticle growth kinetics and mechanism', is intended to turn that manual work into an automated pipeline. 
+
+--- ServiceNow Now Assist
+[offline example for: ServiceNow Now Assist] Department of Energy is applying AI (Pre-deployment) to Provide Agentic AI capabilities for use in multiple use cases for the IT divisio. The system, 'ServiceNow Now Assist', is intended to turn that manual work into an automated pipeline. 
+
+--- Utilizing Machine Learning for Coral Identification at Flower Garden B
+[offline example for: Utilizing Machine Learning for Coral Identification at Flowe] Department of Commerce is applying AI (nan) to nan. The system, 'Utilizing Machine Learning for Coral Identification at Flower Garden Banks National Marine Sanctuary', is intended to turn that manual work into an automated pipeline.
+agency_name          Department of Homeland Security
+use_case_name              Automated Data Annotation
+development_stage                            Retired
+is_high_impact                       Not High-impact
+problem_solved                                   NaN 
+
+BROKEN OUTPUT:
+ [offline example for: Automated Data Annotation] Department of Homeland Security is applying AI (Retired) to nan. The system, 'Automated Data Annotation', is intended to turn that manual work into an automated pipeline.
+FIXED OUTPUT:
+ [offline example for: Automated Data Annotation] Department of Homeland Security reports an AI use case, 'Automated Data Annotation', currently retired. Details beyond that are not reported in the inventory.
+{'plain_english': 'ServiceNow Cluster Analysis — an AI use case reported by Department of Energy.', 'risk_flag': 'low', 'one_question_to_ask': "What human review exists before this system's output reaches a decision?"}
+{'plain_english': 'Autonomous Surveillance Tower — an AI use case reported by Department of Homeland Security.', 'risk_flag': 'low', 'one_question_to_ask': "What human review exists before this system's output reaches a decision?"}
+{'plain_english': 'Nanoparticle growth kinetics and mechanism — an AI use case reported by Department of Energy.', 'risk_flag': 'low', 'one_question_to_ask': "What human review exists before this system's output reaches a decision?"}
+# My Prompt Library
+
+Two tested templates from Course 1258 Labs 4.1–4.2. Each lists its slots, the
+prompt text, and the limitations the tests exposed. Offline runs return canned
+outputs; on the VM they call the enterprise assistant.
+
+## 1. use_case_brief(agency, name, stage, problem, audience="a non-technical executive")
+
+Two-sentence executive briefing of a federal AI use case.
+
+```
+Template v2 — missing data is a prompt case, not an accident.
+Prompt: "In two sentences for [AUDIENCE], summarize this federal AI use case.
+If a field says 'not reported', do not invent it — say the inventory does not
+report it. Agency: [AGENCY] / Use case: [NAME] / Stage: [STAGE] / Problem: [PROBLEM]"
+```
+
+**Known limitation:** inventory rows may lack stage or problem; v2 omits the
+clause and says "not reported" rather than inventing content.
+
+## 2. triage_use_case(agency, name, stage, is_high_impact)
+
+Structured JSON triage: `plain_english`, `risk_flag` (low|review),
+`one_question_to_ask`.
+
+**Known limitation:** risk_flag keys only off the reported high-impact label;
+it is triage, not assessment. Missing stage handled as "not reported".

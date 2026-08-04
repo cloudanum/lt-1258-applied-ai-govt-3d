@@ -1,0 +1,32 @@
+EXPECTED OUTPUT — lab_4.1_prompt_studio (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+memo: 2116 chars | policy: 1820 chars | 68 distinct 311 request types
+The memo gives divisions interim rules for using generative AI in constituent services: a human must review every AI-assisted product before release, only public information may go into public AI tools, internal work must use the approved enterprise assistant, and AI-drafted correspondence is a federal record that must be retained. It is effective immediately until a final policy is issued.
+Graffiti Removal Request -> Property & Streets
+Tree Emergency -> Urban Forestry
+Water On Street Complaint -> Water & Drainage
+The plan violates three clauses. Clause 3(b): case-file contents are nonpublic constituent information and may never enter an unapproved public tool. Clause 3(a): 'routine' is not an exception — every AI-assisted product bound for a constituent must be reviewed and approved by a responsible employee. Clause 3(c): internal information may only be handled by the enterprise assistant under the Department's data-protection agreement. The smallest compliant change: keep the drafting workflow but run it on the approved enterprise assistant and keep human review for every letter.
+--- round 1 prompt: Summarize this memorandum for a division director in one short paragraph; includ...
+The memo gives divisions interim rules for using generative AI in constituent services: a human must review every AI-assisted product before release, only public information may go into public AI tool 
+
+--- round 2 prompt: Summarize this memorandum for a division director; include the two recurring ris...
+The memo gives divisions interim rules for using generative AI in constituent services: a human must review every AI-assisted product before release, only public information may go into public AI tool 
+
+--- round 3 prompt: Summarize this memorandum in exactly four sentences: purpose, the two risks, the...
+The memo gives divisions interim rules for using generative AI in constituent services: a human must review every AI-assisted product before release, only public information may go into public AI tool
+From a FOIA officer's desk, three points in this policy matter most. First, AI-drafted correspondence about agency business is a federal record, so it enters the retention system and is potentially FOIA-releasable — drafts are not invisible. Second, the PII prohibition aligns with Exemption 6 practice: what we would redact before release must never leave the boundary in the first place. Third, the human-review clause assigns accountability the way FOIA assigns it — to a named official, not a tool.
+        type                             name                                                                           detail
+organization Office of the Chief Data Officer                                              issuing office and point of contact
+        date                   March 14, 2026                                                 memo date; effective immediately
+        rule                     Human review            responsible employee must approve AI-assisted products before release
+        rule                    Data handling only public information in public tools; report exposure within one business day
+        rule                   Approved tools                           enterprise assistant required for internal information
+        rule                    Recordkeeping                                   AI-assisted correspondence is a federal record
+It is a reportable data spill. The policy states: "Pasting a constituent's record into a public chatbot is a reportable data spill." Constituent records are PII — a sensitive/regulated data category — and may only be used with tools specifically authorized for that category, which a public chatbot is not.
+
+quote verified in policy: True
+
+scorecard totals: {'zero_shot': 16, 'few_shot': 18, 'reasoning': 18, 'role': 18, 'structured': 19, 'grounded': 20}

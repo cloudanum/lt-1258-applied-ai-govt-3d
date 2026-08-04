@@ -1,0 +1,1107 @@
+course: '1258'
+revision: a4
+contract: id == workbook heading == slide callout == handout section. This file is GENERATED from tools/content_activities.py
+  — edit there, then re-run tools/build_a4_activities.py.
+shape: 'each chapter: 1 demo + 4 activities/Do Nows + 1-2 labs (Ch07 has 3: the agent capstone is the
+  course deliverable)'
+openai_key: read from .env at the package root; see .env.example
+activities:
+- id: Demo 0.1
+  title: Your Lab Environment, End to End
+  kind: demo
+  chapter: Ch00
+  deck: Ch00-Course-Launch
+  artifact: lab_0.1_healthcheck.ipynb
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data: []
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch00-Course-Launch:3
+- id: DO NOW 0.1
+  title: Environment Healthcheck
+  kind: donow
+  chapter: Ch00
+  deck: Ch00-Course-Launch
+  artifact: lab_0.1_healthcheck.ipynb
+  environment: vm
+  duration_min: 15
+  needs_openai_key: true
+  data:
+  - MANIFEST.json
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch00-Course-Launch:2
+  - Ch00-Course-Launch:3
+  - Ch00-Course-Launch:4
+  - Ch00-Course-Launch:20
+  - Ch00-Course-Launch:25
+  - Ch00-Course-Launch:48
+- id: DO NOW 0.2
+  title: Your First Prompt (Baseline Card)
+  kind: donow
+  chapter: Ch00
+  deck: Ch00-Course-Launch
+  artifact: browser
+  environment: browser
+  duration_min: 5
+  needs_openai_key: false
+  data: []
+  spine_rung: P0
+  flex: false
+  slide_ref:
+  - Ch00-Course-Launch:3
+  - Ch00-Course-Launch:4
+- id: DO NOW 0.3
+  title: Which Account, Which Data?
+  kind: donow
+  chapter: Ch00
+  deck: Ch00-Course-Launch
+  artifact: paper
+  environment: paper
+  duration_min: 8
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch00-Course-Launch:3
+  - Ch00-Course-Launch:4
+- id: DO NOW 0.4
+  title: AI Already in Your Day
+  kind: donow
+  chapter: Ch00
+  deck: Ch00-Course-Launch
+  artifact: paper
+  environment: paper
+  duration_min: 7
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch00-Course-Launch:3
+  - Ch00-Course-Launch:4
+- id: Lab 0.1
+  title: Course Environment and Data Tour
+  kind: lab
+  chapter: Ch00
+  deck: Ch00-Course-Launch
+  artifact: lab_0.1_environment_tour.ipynb
+  environment: vm
+  duration_min: 20
+  needs_openai_key: true
+  data:
+  - MANIFEST.json
+  - federal_ai_use_cases.csv
+  - chicago_311.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch00-Course-Launch:3
+  - Ch00-Course-Launch:4
+  - Ch00-Course-Launch:52
+- id: Demo 1.1
+  title: Supervised, Unsupervised, Generative — One Dataset
+  kind: demo
+  chapter: Ch01
+  deck: Ch01-AI-ML-Foundations
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data:
+  - epa_aqi_by_county.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch01-AI-ML-Foundations:3
+- id: DO NOW 1.A
+  title: Explain It to a CIO, Then to a Citizen
+  kind: donow
+  chapter: Ch01
+  deck: Ch01-AI-ML-Foundations
+  artifact: browser
+  environment: browser
+  duration_min: 10
+  needs_openai_key: false
+  data: []
+  spine_rung: P1
+  flex: true
+  slide_ref:
+  - Ch01-AI-ML-Foundations:3
+  - Ch01-AI-ML-Foundations:4
+- id: DO NOW 1.B
+  title: Classic ML or GenAI?
+  kind: donow
+  chapter: Ch01
+  deck: Ch01-AI-ML-Foundations
+  artifact: paper
+  environment: paper
+  duration_min: 7
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch01-AI-ML-Foundations:3
+  - Ch01-AI-ML-Foundations:4
+- id: DO NOW 1.C
+  title: Prompt It or Train It?
+  kind: donow
+  chapter: Ch01
+  deck: Ch01-AI-ML-Foundations
+  artifact: browser
+  environment: browser
+  duration_min: 10
+  needs_openai_key: true
+  data:
+  - chicago_311.csv
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch01-AI-ML-Foundations:3
+  - Ch01-AI-ML-Foundations:4
+- id: DO NOW 1.D
+  title: Find Your Agency in the Inventory
+  kind: donow
+  chapter: Ch01
+  deck: Ch01-AI-ML-Foundations
+  artifact: notebook
+  environment: vm
+  duration_min: 8
+  needs_openai_key: false
+  data:
+  - federal_ai_use_cases.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch01-AI-ML-Foundations:3
+  - Ch01-AI-ML-Foundations:4
+- id: Lab 1.1
+  title: Exploring the Federal AI Use Case Inventory
+  kind: lab
+  chapter: Ch01
+  deck: Ch01-AI-ML-Foundations
+  artifact: lab_1.1_ai_inventory.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: false
+  data:
+  - federal_ai_use_cases.csv
+  - federal_ai_cots.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - AppD-Classic-ML-DeepDive:9
+  - Ch01-AI-ML-Foundations:3
+  - Ch01-AI-ML-Foundations:4
+  - Ch01-AI-ML-Foundations:24
+- id: Lab 1.2
+  title: Clustering Counties by Air Quality (K-Means)
+  kind: lab
+  chapter: Ch01
+  deck: Ch01-AI-ML-Foundations
+  artifact: lab_1.2_clustering.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: false
+  data:
+  - epa_aqi_by_county.csv
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - AppD-Classic-ML-DeepDive:5
+  - Ch00-Course-Launch:30
+  - Ch00-Course-Launch:31
+  - Ch01-AI-ML-Foundations:3
+  - Ch01-AI-ML-Foundations:4
+  - Ch01-AI-ML-Foundations:54
+- id: Demo 2.1
+  title: Finding Government Data in 2026
+  kind: demo
+  chapter: Ch02
+  deck: Ch02-Applications-Public-Data
+  artifact: browser
+  environment: browser
+  duration_min: 10
+  needs_openai_key: false
+  data:
+  - MANIFEST.json
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch02-Applications-Public-Data:3
+- id: DO NOW 2.A
+  title: Ask for Datasets, Then Verify
+  kind: donow
+  chapter: Ch02
+  deck: Ch02-Applications-Public-Data
+  artifact: browser
+  environment: browser
+  duration_min: 10
+  needs_openai_key: false
+  data: []
+  spine_rung: P2
+  flex: false
+  slide_ref:
+  - Ch02-Applications-Public-Data:3
+  - Ch02-Applications-Public-Data:4
+- id: DO NOW 2.B
+  title: Source That Claim
+  kind: donow
+  chapter: Ch02
+  deck: Ch02-Applications-Public-Data
+  artifact: browser
+  environment: browser
+  duration_min: 8
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch02-Applications-Public-Data:4
+- id: DO NOW 2.C
+  title: Which Pattern Is This?
+  kind: donow
+  chapter: Ch02
+  deck: Ch02-Applications-Public-Data
+  artifact: paper
+  environment: paper
+  duration_min: 7
+  needs_openai_key: false
+  data:
+  - federal_ai_use_cases.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch02-Applications-Public-Data:4
+- id: DO NOW 2.D
+  title: Bookmark a Dataset for Day 3
+  kind: donow
+  chapter: Ch02
+  deck: Ch02-Applications-Public-Data
+  artifact: notebook
+  environment: vm
+  duration_min: 5
+  needs_openai_key: false
+  data:
+  - MANIFEST.json
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch02-Applications-Public-Data:4
+- id: Lab 2.1
+  title: Public Data Expedition — Profile an Agency Dataset
+  kind: lab
+  chapter: Ch02
+  deck: Ch02-Applications-Public-Data
+  artifact: lab_2.1_data_expedition.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: false
+  data:
+  - cdc_flu_wastewater.csv
+  - nyc_air_quality.csv
+  - chicago_311.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch02-Applications-Public-Data:3
+  - Ch02-Applications-Public-Data:4
+  - Ch02-Applications-Public-Data:48
+  - Ch02-Applications-Public-Data:51
+- id: Demo 3.1
+  title: Four Assistants, One Task
+  kind: demo
+  chapter: Ch03
+  deck: Ch03-Desktop-GenAI
+  artifact: browser
+  environment: browser
+  duration_min: 10
+  needs_openai_key: false
+  data:
+  - gov_memo.txt
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch03-Desktop-GenAI:3
+- id: DO NOW 3.A
+  title: Summarize for a Named Reader
+  kind: donow
+  chapter: Ch03
+  deck: Ch03-Desktop-GenAI
+  artifact: browser
+  environment: browser
+  duration_min: 8
+  needs_openai_key: false
+  data:
+  - gov_memo.txt
+  spine_rung: P3
+  flex: false
+  slide_ref:
+  - Ch03-Desktop-GenAI:3
+  - Ch03-Desktop-GenAI:5
+- id: DO NOW 3.B
+  title: Text to Diagram
+  kind: donow
+  chapter: Ch03
+  deck: Ch03-Desktop-GenAI
+  artifact: browser
+  environment: browser
+  duration_min: 8
+  needs_openai_key: false
+  data:
+  - corpus/foia_processing_guidance.md
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch03-Desktop-GenAI:5
+- id: DO NOW 3.C
+  title: Can I Paste This?
+  kind: donow
+  chapter: Ch03
+  deck: Ch03-Desktop-GenAI
+  artifact: paper
+  environment: paper
+  duration_min: 10
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch03-Desktop-GenAI:5
+- id: DO NOW 3.D
+  title: Shadow AI Inventory
+  kind: donow
+  chapter: Ch03
+  deck: Ch03-Desktop-GenAI
+  artifact: paper
+  environment: paper
+  duration_min: 7
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch03-Desktop-GenAI:5
+- id: Lab 3.1
+  title: Desktop GenAI Task Relay
+  kind: lab
+  chapter: Ch03
+  deck: Ch03-Desktop-GenAI
+  artifact: browser
+  environment: browser
+  duration_min: 30
+  needs_openai_key: false
+  data:
+  - gov_memo.txt
+  - corpus/ai_acceptable_use_policy.md
+  - citizen_records.json
+  spine_rung: P3
+  flex: false
+  slide_ref:
+  - Ch03-Desktop-GenAI:3
+  - Ch03-Desktop-GenAI:5
+  - Ch03-Desktop-GenAI:30
+  - Ch03-Desktop-GenAI:50
+  - Ch03-Desktop-GenAI:53
+  - Ch03-Desktop-GenAI:54
+  - Ch03-Desktop-GenAI:55
+  - Ch03-Desktop-GenAI:57
+- id: Demo 4.1
+  title: Zero-Shot, Few-Shot, Reasoning — Same Task
+  kind: demo
+  chapter: Ch04
+  deck: Ch04-ModernGenAI-PromptEng
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data:
+  - chicago_311.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch04-ModernGenAI-PromptEng:3
+- id: DO NOW 4.A
+  title: Add Two Examples
+  kind: donow
+  chapter: Ch04
+  deck: Ch04-ModernGenAI-PromptEng
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data:
+  - chicago_311.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch04-ModernGenAI-PromptEng:3
+  - Ch04-ModernGenAI-PromptEng:4
+- id: DO NOW 4.B
+  title: Give the Model a Job
+  kind: donow
+  chapter: Ch04
+  deck: Ch04-ModernGenAI-PromptEng
+  artifact: browser
+  environment: browser
+  duration_min: 8
+  needs_openai_key: false
+  data:
+  - corpus/foia_processing_guidance.md
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch04-ModernGenAI-PromptEng:3
+  - Ch04-ModernGenAI-PromptEng:4
+- id: DO NOW 4.C
+  title: Ask for the Shape You Need
+  kind: donow
+  chapter: Ch04
+  deck: Ch04-ModernGenAI-PromptEng
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data:
+  - citizen_records.json
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch04-ModernGenAI-PromptEng:3
+  - Ch04-ModernGenAI-PromptEng:4
+- id: DO NOW 4.D
+  title: Answer Only From This Document
+  kind: donow
+  chapter: Ch04
+  deck: Ch04-ModernGenAI-PromptEng
+  artifact: browser
+  environment: browser
+  duration_min: 8
+  needs_openai_key: false
+  data:
+  - corpus/records_retention_policy.md
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch04-ModernGenAI-PromptEng:3
+  - Ch04-ModernGenAI-PromptEng:4
+- id: Lab 4.1
+  title: Prompt Engineering Studio
+  kind: lab
+  chapter: Ch04
+  deck: Ch04-ModernGenAI-PromptEng
+  artifact: lab_4.1_prompt_studio.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: true
+  data:
+  - gov_memo.txt
+  - chicago_311.csv
+  - corpus/ai_acceptable_use_policy.md
+  spine_rung: P4
+  flex: false
+  slide_ref:
+  - Ch00-Course-Launch:20
+  - Ch04-ModernGenAI-PromptEng:3
+  - Ch04-ModernGenAI-PromptEng:4
+  - Ch04-ModernGenAI-PromptEng:53
+  - Ch04-ModernGenAI-PromptEng:56
+  - Ch04-ModernGenAI-PromptEng:57
+  - Ch04-ModernGenAI-PromptEng:58
+- id: Lab 4.2
+  title: Build a Reusable Prompt Template Library
+  kind: lab
+  chapter: Ch04
+  deck: Ch04-ModernGenAI-PromptEng
+  artifact: lab_4.2_prompt_templates.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: true
+  data:
+  - federal_ai_use_cases.csv
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch04-ModernGenAI-PromptEng:3
+  - Ch04-ModernGenAI-PromptEng:4
+  - Ch04-ModernGenAI-PromptEng:57
+- id: Demo 5.1
+  title: Prompt Injection, Live
+  kind: demo
+  chapter: Ch05
+  deck: Ch05-Security-Risks-Responsible-AI
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data:
+  - corpus/data_governance_standard.md
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch05-Security-Risks-Responsible-AI:3
+- id: DO NOW 5.A
+  title: Rank These Risks
+  kind: donow
+  chapter: Ch05
+  deck: Ch05-Security-Risks-Responsible-AI
+  artifact: paper
+  environment: paper
+  duration_min: 8
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch05-Security-Risks-Responsible-AI:3
+  - Ch05-Security-Risks-Responsible-AI:4
+- id: DO NOW 5.B
+  title: Confidentiality, Integrity, or Availability?
+  kind: donow
+  chapter: Ch05
+  deck: Ch05-Security-Risks-Responsible-AI
+  artifact: paper
+  environment: paper
+  duration_min: 7
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch05-Security-Risks-Responsible-AI:4
+- id: DO NOW 5.C
+  title: Injection Red Team
+  kind: donow
+  chapter: Ch05
+  deck: Ch05-Security-Risks-Responsible-AI
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data: []
+  spine_rung: P5
+  flex: true
+  slide_ref:
+  - Ch05-Security-Risks-Responsible-AI:4
+  - Ch05-Security-Risks-Responsible-AI:48
+- id: DO NOW 5.D
+  title: Is This High-Impact AI?
+  kind: donow
+  chapter: Ch05
+  deck: Ch05-Security-Risks-Responsible-AI
+  artifact: notebook
+  environment: vm
+  duration_min: 8
+  needs_openai_key: false
+  data:
+  - federal_ai_use_cases.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch05-Security-Risks-Responsible-AI:4
+- id: Lab 5.1
+  title: Adversarial Examples and Model Robustness
+  kind: lab
+  chapter: Ch05
+  deck: Ch05-Security-Risks-Responsible-AI
+  artifact: lab_5.1_adversarial.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: false
+  data:
+  - epa_aqi_by_county.csv
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch05-Security-Risks-Responsible-AI:4
+  - Ch05-Security-Risks-Responsible-AI:21
+  - Ch05-Security-Risks-Responsible-AI:22
+- id: Lab 5.2
+  title: Detect and Mask PII in Citizen Records
+  kind: lab
+  chapter: Ch05
+  deck: Ch05-Security-Risks-Responsible-AI
+  artifact: lab_5.2_pii.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: false
+  data:
+  - citizen_records.json
+  - chicago_311.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch05-Security-Risks-Responsible-AI:4
+  - Ch05-Security-Risks-Responsible-AI:32
+  - Ch05-Security-Risks-Responsible-AI:33
+- id: Demo 6.1
+  title: Profiling Real Data, Warts and All
+  kind: demo
+  chapter: Ch06
+  deck: Ch06-Data-for-AI
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: false
+  data:
+  - chicago_311.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch06-Data-for-AI:3
+- id: DO NOW 6.A
+  title: Six Dimensions on Ten Rows
+  kind: donow
+  chapter: Ch06
+  deck: Ch06-Data-for-AI
+  artifact: paper
+  environment: paper
+  duration_min: 8
+  needs_openai_key: false
+  data:
+  - chicago_311.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch06-Data-for-AI:3
+  - Ch06-Data-for-AI:4
+- id: DO NOW 6.B
+  title: Propose the Schema
+  kind: donow
+  chapter: Ch06
+  deck: Ch06-Data-for-AI
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data: []
+  spine_rung: P6
+  flex: false
+  slide_ref:
+  - Ch06-Data-for-AI:3
+  - Ch06-Data-for-AI:4
+  - Ch06-Data-for-AI:9
+  - Ch06-Data-for-AI:15
+  - Ch06-Data-for-AI:20
+- id: DO NOW 6.C
+  title: Real, Synthetic, or Neither?
+  kind: donow
+  chapter: Ch06
+  deck: Ch06-Data-for-AI
+  artifact: paper
+  environment: paper
+  duration_min: 7
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch06-Data-for-AI:3
+  - Ch06-Data-for-AI:4
+- id: DO NOW 6.D
+  title: Write the Cleaning Prompt
+  kind: donow
+  chapter: Ch06
+  deck: Ch06-Data-for-AI
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data:
+  - chicago_311.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch06-Data-for-AI:3
+  - Ch06-Data-for-AI:4
+- id: Lab 6.1
+  title: Data Quality Assessment of Chicago 311
+  kind: lab
+  chapter: Ch06
+  deck: Ch06-Data-for-AI
+  artifact: lab_6.1_data_quality.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: false
+  data:
+  - chicago_311.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch06-Data-for-AI:3
+  - Ch06-Data-for-AI:4
+  - Ch06-Data-for-AI:16
+  - Ch06-Data-for-AI:21
+- id: Lab 6.2
+  title: GenAI-Assisted Cleaning with Structured Outputs
+  kind: lab
+  chapter: Ch06
+  deck: Ch06-Data-for-AI
+  artifact: lab_6.2_genai_cleaning.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: true
+  data:
+  - chicago_311.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch06-Data-for-AI:3
+  - Ch06-Data-for-AI:4
+  - Ch06-Data-for-AI:51
+- id: Demo 7.1
+  title: One API Call, Dissected
+  kind: demo
+  chapter: Ch07
+  deck: Ch07-Building-with-LLMs
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data: []
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch07-Building-with-LLMs:3
+- id: DO NOW 7.A
+  title: Hugging Face Tour
+  kind: donow
+  chapter: Ch07
+  deck: Ch07-Building-with-LLMs
+  artifact: browser
+  environment: browser
+  duration_min: 10
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch07-Building-with-LLMs:3
+  - Ch07-Building-with-LLMs:5
+  - Ch07-Building-with-LLMs:58
+- id: DO NOW 7.B
+  title: Cost at Agency Scale
+  kind: donow
+  chapter: Ch07
+  deck: Ch07-Building-with-LLMs
+  artifact: notebook
+  environment: vm
+  duration_min: 8
+  needs_openai_key: true
+  data: []
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch07-Building-with-LLMs:5
+- id: DO NOW 7.C
+  title: Prompt as Code
+  kind: donow
+  chapter: Ch07
+  deck: Ch07-Building-with-LLMs
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data: []
+  spine_rung: P7
+  flex: false
+  slide_ref:
+  - Ch07-Building-with-LLMs:5
+- id: DO NOW 7.D
+  title: Where Would RAG Fail?
+  kind: donow
+  chapter: Ch07
+  deck: Ch07-Building-with-LLMs
+  artifact: paper
+  environment: paper
+  duration_min: 8
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch07-Building-with-LLMs:5
+- id: Lab 7.1
+  title: First Calls with the OpenAI API
+  kind: lab
+  chapter: Ch07
+  deck: Ch07-Building-with-LLMs
+  artifact: lab_7.1_openai_api.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: true
+  data:
+  - gov_memo.txt
+  spine_rung: P7
+  flex: false
+  slide_ref:
+  - Ch04-ModernGenAI-PromptEng:33
+  - Ch04-ModernGenAI-PromptEng:43
+  - Ch04-ModernGenAI-PromptEng:44
+  - Ch07-Building-with-LLMs:3
+  - Ch07-Building-with-LLMs:5
+  - Ch07-Building-with-LLMs:8
+  - Ch07-Building-with-LLMs:10
+  - Ch07-Building-with-LLMs:11
+  - Ch07-Building-with-LLMs:16
+  - Ch07-Building-with-LLMs:52
+- id: Lab 7.2
+  title: RAG over Government Documents
+  kind: lab
+  chapter: Ch07
+  deck: Ch07-Building-with-LLMs
+  artifact: lab_7.2_rag_gov_docs.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: true
+  data:
+  - corpus/ai_acceptable_use_policy.md
+  - corpus/data_governance_standard.md
+  - corpus/foia_processing_guidance.md
+  - corpus/records_retention_policy.md
+  spine_rung: P8
+  flex: false
+  slide_ref:
+  - Ch07-Building-with-LLMs:3
+  - Ch07-Building-with-LLMs:5
+  - Ch07-Building-with-LLMs:26
+  - Ch07-Building-with-LLMs:29
+  - Ch07-Building-with-LLMs:30
+  - Ch07-Building-with-LLMs:32
+  - Ch07-Building-with-LLMs:35
+  - Ch07-Building-with-LLMs:52
+- id: Lab 7.3
+  title: Citizen Services Triage Agent (Capstone)
+  kind: lab
+  chapter: Ch07
+  deck: Ch07-Building-with-LLMs
+  artifact: lab_7.3_agent.ipynb
+  environment: vm
+  duration_min: 45
+  needs_openai_key: true
+  data:
+  - citizen_records.json
+  - chicago_311.csv
+  - MANIFEST.json
+  spine_rung: P9
+  flex: false
+  slide_ref:
+  - Ch02-Applications-Public-Data:48
+  - Ch07-Building-with-LLMs:3
+  - Ch07-Building-with-LLMs:5
+  - Ch07-Building-with-LLMs:36
+  - Ch07-Building-with-LLMs:38
+  - Ch07-Building-with-LLMs:39
+  - Ch07-Building-with-LLMs:43
+  - Ch07-Building-with-LLMs:44
+  - Ch07-Building-with-LLMs:46
+  - Ch07-Building-with-LLMs:48
+  - Ch07-Building-with-LLMs:50
+  - Ch07-Building-with-LLMs:52
+- id: Demo 8.1
+  title: Watching a Model Drift
+  kind: demo
+  chapter: Ch08
+  deck: Ch08-Operations-Reporting
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: false
+  data:
+  - cdc_flu_wastewater.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch08-Operations-Reporting:3
+- id: DO NOW 8.A
+  title: Which Metric Catches This?
+  kind: donow
+  chapter: Ch08
+  deck: Ch08-Operations-Reporting
+  artifact: paper
+  environment: paper
+  duration_min: 7
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch08-Operations-Reporting:3
+  - Ch08-Operations-Reporting:4
+- id: DO NOW 8.B
+  title: Pilot to Production Readiness
+  kind: donow
+  chapter: Ch08
+  deck: Ch08-Operations-Reporting
+  artifact: paper
+  environment: paper
+  duration_min: 8
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch08-Operations-Reporting:3
+  - Ch08-Operations-Reporting:4
+- id: DO NOW 8.C
+  title: Critique This Dashboard
+  kind: donow
+  chapter: Ch08
+  deck: Ch08-Operations-Reporting
+  artifact: paper
+  environment: paper
+  duration_min: 7
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch08-Operations-Reporting:3
+  - Ch08-Operations-Reporting:4
+- id: DO NOW 8.D
+  title: Ask, Then Verify
+  kind: donow
+  chapter: Ch08
+  deck: Ch08-Operations-Reporting
+  artifact: notebook
+  environment: vm
+  duration_min: 10
+  needs_openai_key: true
+  data:
+  - epa_aqi_by_county.csv
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch08-Operations-Reporting:3
+  - Ch08-Operations-Reporting:4
+- id: Lab 8.1
+  title: Visualization and Reporting from EPA Data
+  kind: lab
+  chapter: Ch08
+  deck: Ch08-Operations-Reporting
+  artifact: lab_8.1_visualization.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: false
+  data:
+  - epa_aqi_by_county.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch08-Operations-Reporting:3
+  - Ch08-Operations-Reporting:4
+  - Ch08-Operations-Reporting:40
+- id: Lab 8.2
+  title: GenAI-Assisted Analysis and Briefing
+  kind: lab
+  chapter: Ch08
+  deck: Ch08-Operations-Reporting
+  artifact: lab_8.2_genai_reporting.ipynb
+  environment: vm
+  duration_min: 30
+  needs_openai_key: true
+  data:
+  - epa_aqi_by_county.csv
+  - cdc_flu_wastewater.csv
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch08-Operations-Reporting:3
+  - Ch08-Operations-Reporting:4
+  - Ch08-Operations-Reporting:50
+- id: Demo 9.1
+  title: A Prompt, Three Days Apart
+  kind: demo
+  chapter: Ch09
+  deck: Ch09-Summary-Roadmap
+  artifact: browser
+  environment: browser
+  duration_min: 8
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch09-Summary-Roadmap:3
+- id: DO NOW 9.A
+  title: Rewrite Your Baseline Prompt
+  kind: donow
+  chapter: Ch09
+  deck: Ch09-Summary-Roadmap
+  artifact: browser
+  environment: browser
+  duration_min: 10
+  needs_openai_key: false
+  data: []
+  spine_rung: P10
+  flex: false
+  slide_ref:
+  - Ch09-Summary-Roadmap:3
+  - Ch09-Summary-Roadmap:4
+- id: DO NOW 9.B
+  title: Pick Your First Use Case
+  kind: donow
+  chapter: Ch09
+  deck: Ch09-Summary-Roadmap
+  artifact: paper
+  environment: paper
+  duration_min: 8
+  needs_openai_key: false
+  data:
+  - federal_ai_use_cases.csv
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch09-Summary-Roadmap:4
+  - Ch09-Summary-Roadmap:51
+- id: DO NOW 9.C
+  title: Name Your Guardrail
+  kind: donow
+  chapter: Ch09
+  deck: Ch09-Summary-Roadmap
+  artifact: paper
+  environment: paper
+  duration_min: 7
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: false
+  slide_ref:
+  - Ch09-Summary-Roadmap:4
+- id: DO NOW 9.D
+  title: Who Do You Need?
+  kind: donow
+  chapter: Ch09
+  deck: Ch09-Summary-Roadmap
+  artifact: paper
+  environment: paper
+  duration_min: 7
+  needs_openai_key: false
+  data: []
+  spine_rung: null
+  flex: true
+  slide_ref:
+  - Ch09-Summary-Roadmap:4
+- id: Lab 9.1
+  title: Your 90-Day Agency AI Roadmap
+  kind: lab
+  chapter: Ch09
+  deck: Ch09-Summary-Roadmap
+  artifact: browser
+  environment: browser
+  duration_min: 30
+  needs_openai_key: true
+  data:
+  - federal_ai_use_cases.csv
+  spine_rung: P10
+  flex: false
+  slide_ref:
+  - Ch09-Summary-Roadmap:3
+  - Ch09-Summary-Roadmap:4
+  - Ch09-Summary-Roadmap:51

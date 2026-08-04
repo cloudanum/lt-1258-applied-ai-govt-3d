@@ -1,0 +1,25 @@
+EXPECTED OUTPUT — lab_5.1_adversarial (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+997 counties | positive (poor air): 159 (16%)
+baseline accuracy: 86.8%
+coefficients: {'Good Days': np.float64(-0.73), 'Moderate Days': np.float64(-0.5), 'Unhealthy for Sensitive Groups Days': np.float64(1.8), 'Days with AQI': np.float64(1.18)}
+sample county: {'Good Days': np.int64(106), 'Moderate Days': np.int64(16), 'Unhealthy for Sensitive Groups Days': np.int64(0), 'Days with AQI': np.int64(122)} | true label: 0
+smallest flip found: Unhealthy for Sensitive Groups Days +19 days
+eps=  1 days -> flip rate 1%
+eps=  2 days -> flip rate 2%
+eps=  5 days -> flip rate 5%
+eps= 10 days -> flip rate 26%
+eps= 20 days -> flip rate 84%
+eps= 40 days -> flip rate 85%
+<Figure size 600x350 with 1 Axes>
+retrained accuracy: 86.8%
+eps   before -> after defence
+  1      1%  ->  0%
+  2      2%  ->  0%
+  5      5%  ->  0%
+ 10     26%  ->  0%
+ 20     84%  ->  0%
+ 40     85%  ->  0%

@@ -1,0 +1,30 @@
+EXPECTED OUTPUT — Lab 7.2 RAG over Government Documents (SOLUTION)
+Captured on the VM with a valid key. Retrieval ranking is deterministic; the
+generated answers vary in wording.
+
+4 documents -> ~13 chunks
+embedded ~13 chunks, dim=1536   (dim=256 in offline fallback)
+
+RETRIEVE for "How long are program case files kept before they are destroyed?"
+[0.62] records_retention_policy.md: Program case files are retained for 7 years after the case is closed...
+[0.41] records_retention_policy.md: Records that have met their retention period are destroyed...
+[0.33] data_governance_standard.md: Programs collect only the data needed...
+
+GROUNDED:
+Program case files are retained for 7 years after the case is closed
+[records_retention_policy.md], after which records that have met their retention
+period are destroyed using methods appropriate to their sensitivity
+[records_retention_policy.md].
+
+UNGROUNDED:
+Retention periods vary by agency and record type; case files are often kept for
+several years — commonly five to ten — depending on the applicable schedule.
+  ^ Plausible, but no source and no specific 7-year figure. This is the teaching
+    contrast: the grounded answer cites the agency's own policy; the ungrounded
+    one guesses.
+
+DEBRIEF: put the GROUNDED answer in front of a constituent (it is sourced).
+Too-large chunks dilute retrieval; too-small chunks lose context. RAG cannot
+help with questions whose answer is not in the corpus. Production: documents in
+a FedRAMP store, vector index in Azure AI Search / Vertex, model via Azure
+OpenAI / Bedrock.

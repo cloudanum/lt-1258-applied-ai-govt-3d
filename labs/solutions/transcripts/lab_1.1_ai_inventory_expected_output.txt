@@ -1,0 +1,57 @@
+EXPECTED OUTPUT — lab_1.1_ai_inventory (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+shape: (1200, 36) | agencies: 6
+columns: ['agency', 'agency_name', 'id', 'use_case_name', 'agency_bureau', 'contact_email', 'is_withheld', 'development_stage', 'is_high_impact', 'HI_justification', 'topic_area', 'classification', 'problem_solved', 'benefits', 'system_outputs', 'operational_date', 'contracting_usage', 'vendor_name', 'have_ato', 'system_name_ato', 'data_description', 'link_to_data', 'has_pii', 'pia_url', 'demographic_features', 'has_custom_code', 'code_url', 'hi_testing_conducted', 'hi_assessment_completed', 'hi_potential_impacts', 'hi_independent_review', 'hi_ongoing_monitoring', 'hi_training_established', 'hi_failsafe_presence', 'hi_appeal_process', 'hi_public_consultation']
+agency_name
+Department of Energy                    340
+Department of the Interior              247
+Department of Homeland Security         238
+Department of Commerce                  223
+Department of Justice                   149
+Commodity Futures Trading Commission      3
+development_stage
+Pre-deployment    397
+Deployed          347
+NaN               223
+Pilot             166
+Retired            67
+
+Deployed share (of non-blank): 35.5%
+Deployed share (of all rows):  28.9%
+agency_name
+Department of Justice              59
+Department of Homeland Security    55
+Department of Energy               29
+development_stage             Deployed  Pilot  Pre-deployment
+topic_area                                                   
+Admin Functions                     53     16              69
+Benefits Processing                  1      0               3
+Cybersecurity                        9      1               6
+Emergency Mgmt                       5      2               4
+Energy and Environment              15     11              40
+HR                                   4      1               5
+Health and Medical                   1      0               3
+IT                                  66     17              39
+International Affairs                1      0               1
+Law Enforcement                    112      9              52
+Other                               24     18              10
+Procurement and Finance Mgmt         6      0              10
+Science                             34     87             133
+Service Delivery                     6      3              11
+Transportation                       9      0              10
+Name of Commercial Product or Service Used
+Microsoft Copilot                       51
+Various                                 24
+Microsoft M365 Copilot AI               20
+Apple iPhone                            15
+M365 Copilot                            10
+Google Maps, Apple Maps                  9
+Microsoft 365 Copilot GCC                8
+Copilot for MS 365                       7
+ChatGPT, Claude, Copilot, Perplexity     7
+Gemini for Google Workspace              6
+
+rows mentioning a Copilot variant: 211 of 900
