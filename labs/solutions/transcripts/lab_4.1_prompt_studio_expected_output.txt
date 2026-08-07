@@ -3,7 +3,7 @@ Captured by an offline run (OPENAI_API_KEY=""), so model cells show
 the canned fallbacks; live runs will differ in wording, not in the
 verified numbers. Use as the read-along fallback if the API is down.
 
-memo: 2116 chars | policy: 1820 chars | 68 distinct 311 request types
+memo: 2347 chars | policy: 1820 chars | 68 distinct 311 request types
 The memo gives divisions interim rules for using generative AI in constituent services: a human must review every AI-assisted product before release, only public information may go into public AI tools, internal work must use the approved enterprise assistant, and AI-drafted correspondence is a federal record that must be retained. It is effective immediately until a final policy is issued.
 Graffiti Removal Request -> Property & Streets
 Tree Emergency -> Urban Forestry

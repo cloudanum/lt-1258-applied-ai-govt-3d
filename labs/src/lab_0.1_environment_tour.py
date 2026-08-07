@@ -179,22 +179,32 @@ CANNED_REPLY = (
     "stage, and whether it is high-impact."
 )
 
-client = lc.get_client()
-if client is not None:
-    resp = client.chat.completions.create(
-        model=lc.CHAT_MODEL,
-        messages=[{"role": "user", "content":
-                   "In one sentence, what does the OMB federal AI use case "
-                   "inventory track?"}],
-    )
-    print(resp.choices[0].message.content)
-    print(f"\ntokens — prompt: {resp.usage.prompt_tokens}, "
-          f"completion: {resp.usage.completion_tokens}, "
-          f"total: {resp.usage.total_tokens}")
-else:
+def print_canned_reply():
     print(lc.chat([{"role": "user", "content": "..."}], offline=CANNED_REPLY))
     print("\n(offline canned reply — token counts need a live call; "
           "a call this size is typically ~40 tokens total)")
+
+client = lc.get_client()
+if client is None:
+    print_canned_reply()
+else:
+    # A key can be configured and still fail here — an exhausted classroom
+    # account returns 429 at call time. Fall back to the same canned reply
+    # rather than ending the tour on a traceback.
+    try:
+        resp = client.chat.completions.create(
+            model=lc.CHAT_MODEL,
+            messages=[{"role": "user", "content":
+                       "In one sentence, what does the OMB federal AI use case "
+                       "inventory track?"}],
+        )
+        print(resp.choices[0].message.content)
+        print(f"\ntokens — prompt: {resp.usage.prompt_tokens}, "
+              f"completion: {resp.usage.completion_tokens}, "
+              f"total: {resp.usage.total_tokens}")
+    except Exception as e:
+        lc.note_api_failure(e)
+        print_canned_reply()
 
 # %% [markdown]
 # ### Step 8 — Break it on purpose

@@ -38,5 +38,88 @@
       "description": "NYC air quality surveillance (PM2.5 and related indicators) by neighbourhood and time period \u2014 a tidy long-format table for pivots and trend questions.",
       "bytes": 442565
     }
+  ],
+  "synthetic_note": "Written for this course, not downloaded. The labs' data rule is 'public or synthetic'; the datasets above are the public half and these are the synthetic half. Nothing here describes a real person, agency, or record. Every name, SSN, address, and case number is fabricated.",
+  "synthetic": [
+    {
+      "file": "gov_memo.txt",
+      "description": "Interim guidance memorandum on generative AI for constituent services, from a fictional Office of the Chief Data Officer. Five lettered rules in section 3. Source document for Labs 4.1 and 7.1.",
+      "used_by": ["Lab 3.1", "Lab 4.1", "Lab 7.1"]
+    },
+    {
+      "file": "citizen_records.json",
+      "description": "Five synthetic case records C-1001 to C-1005. C-1005 carries a deliberate prompt-injection payload used by the Lab 7.3 guardrail stage \u2014 that is intentional, not a defect.",
+      "used_by": ["Lab 5.2", "Lab 7.3"]
+    },
+    {
+      "file": "cached_datagov.json",
+      "description": "Cached CKAN package_search response shaped like catalog.data.gov, so dataset search works with no network. A poisoned-entry variant is built in the Lab 7.3 notebook.",
+      "used_by": ["Lab 2.1", "Lab 7.3"]
+    },
+    {
+      "file": "constituent_feedback.csv",
+      "description": "Fifteen synthetic constituent messages spanning routine requests, service failures, an accessibility complaint, a privacy incident and two safety emergencies. Deliberately mixed urgency so a standard and a reasoning model disagree. Lab 4.1 rung 4.",
+      "used_by": ["Lab 4.1"]
+    },
+    {
+      "file": "corpus/ai_acceptable_use_policy.md",
+      "description": "Synthetic acceptable-use policy. RAG corpus document 1 of 4.",
+      "used_by": ["Lab 4.1", "Lab 7.2"]
+    },
+    {
+      "file": "corpus/data_governance_standard.md",
+      "description": "Synthetic data governance standard, including data stewards and approval for new uses. RAG corpus document 2 of 4.",
+      "used_by": ["Lab 7.2"]
+    },
+    {
+      "file": "corpus/foia_processing_guidance.md",
+      "description": "Synthetic FOIA processing guidance: intake, fees, search, exemptions, response. RAG corpus document 3 of 4.",
+      "used_by": ["Lab 3.1", "Lab 7.2"]
+    },
+    {
+      "file": "corpus/records_retention_policy.md",
+      "description": "Synthetic records retention and destruction policy on a NARA-approved schedule. RAG corpus document 4 of 4.",
+      "used_by": ["Lab 7.2"]
+    },
+    {
+      "file": "lab3.1/gao_style_excerpt.md",
+      "description": "Report excerpt modelled on GAO structure and banner-labelled as synthetic. Summarize task. NOT a real GAO product and must not be cited as one.",
+      "used_by": ["Lab 3.1"]
+    },
+    {
+      "file": "lab3.1/foia_intake_ch03.md",
+      "description": "FOIA intake process in prose, condensed from the RAG corpus for the Chapter 3 Mermaid-diagram task.",
+      "used_by": ["Lab 3.1"]
+    },
+    {
+      "file": "lab3.1/broken_snippet.py",
+      "description": "Python that fails on purpose: dictionary keys are never initialised, and CSV values are summed as strings. Troubleshoot task.",
+      "used_by": ["Lab 3.1"]
+    },
+    {
+      "file": "lab3.1/constituent_complaints.md",
+      "description": "Four inbound constituent letters matching cases C-1001 to C-1004. Complaint #1 is the Draft task. C-1005 is deliberately absent \u2014 its injection payload is not safe to paste into a browser assistant.",
+      "used_by": ["Lab 3.1"]
+    },
+    {
+      "file": "lab3.1/prompt_library_printed.md",
+      "description": "Printed prompts for the four relay tasks, used when the room has no assistant access. Distinct from labs/my_prompt_library.md, which is a Lab 4.2 output artifact.",
+      "used_by": ["Lab 3.1"]
+    },
+    {
+      "file": "lab3.1/rubric_1to3.md",
+      "description": "The 1-3 rubric (accurate / complete / right format+tone) printed in the workbook for Lab 3.1.",
+      "used_by": ["Lab 3.1"]
+    },
+    {
+      "file": "ex6.1/beverage_sheet_template.csv",
+      "description": "Header-only sheet with the deliberately loose schema: your role, a beverage you drank this week, when, how much.",
+      "used_by": ["Ex 6.1"]
+    },
+    {
+      "file": "ex6.1/beverage_sheet_messy.csv",
+      "description": "Thirty pre-filled rows carrying defects across all six quality dimensions: 4 blanks, 1 exact duplicate, 7 malformed dates (including 2026-02-30 and a future date), 16 non-numeric quantities, 19 beverage spellings collapsing to 14, 20 role strings for ~17 roles, and 2 stale entries. Offline fallback when the room cannot share a live sheet.",
+      "used_by": ["Ex 6.1"]
+    }
   ]
 }

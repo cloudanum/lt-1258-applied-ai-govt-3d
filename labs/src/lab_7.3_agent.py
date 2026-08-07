@@ -11,9 +11,9 @@
 # ---
 
 # %% [markdown]
-# # Lab 7.3 — Citizen Services Triage Agent (Capstone)
+# # Lab 7.3 — Build an AI Agent (Capstone)
 #
-# *Chapter 7 — Building with LLMs: APIs, RAG, and Agents · 45 minutes · capstone stages A–E · JupyterLab + OpenAI API*
+# *Chapter 7 — Building with LLMs: APIs, RAG, and Agents · 75–90 minutes · capstone stages A–D · JupyterLab + OpenAI API*
 #
 # The course capstone. You build a triage agent for a citizen-services queue: it
 # looks up records, masks PII, searches datasets, and drafts a notification —
@@ -71,7 +71,7 @@ if not os.getenv("OPENAI_API_KEY"):
 import json
 import re
 from lab_common import (get_client, CHAT_MODEL, search_datasets,
-                        mask_pii, load_citizen_records)
+                        mask_pii, load_citizen_records, confirm)
 
 RECORDS = {r["case_id"]: r for r in load_citizen_records()}
 OUTBOX = []   # every notification the agent queues lands here — nowhere else
@@ -102,6 +102,18 @@ plt.tight_layout(); plt.show()
 
 # %% [markdown]
 # ## Steps
+#
+# 1. **Stage A — one tool, one call.** Complete the `search_datasets` schema;
+#    run it. ✓ The model calls the tool with a `query` argument.
+# 2. **Stage B — the agent loop.** Add the `lookup_citizen_record` tool; run a
+#    task that chains a record lookup with a dataset search. ✓ The printed trace
+#    shows the agent calling both tools in order.
+# 3. **Stage C — guardrails.** Run case **C-1005** with `mask=True` and
+#    `gate=True`. ✓ The SSN is redacted before the model sees it. ✓ The embedded
+#    "ignore your rules" instruction is refused. ✓ Nothing is sent until you
+#    type `y`.
+# 4. **(Stretch) Stage D** — change the system instructions and run the
+#    mini-eval.
 #
 # ### Stage A — The four tools (15 min)
 #
@@ -195,6 +207,8 @@ stage_a()
 # request and watch it choose.
 
 # %%
+LAST_CALLS = []
+
 def run_agent(user_msg, tools, system=None, allow=None, mask=False, gate=False,
               max_steps=6, verbose=True):
     """Plan-act-observe loop with guardrails.
@@ -204,6 +218,7 @@ def run_agent(user_msg, tools, system=None, allow=None, mask=False, gate=False,
     gate   : a human must approve every send_status_notification
     max_steps : hard stop — the step limit that bounds cost and blast radius
     """
+    LAST_CALLS.clear()          # names of the tools this run actually called
     client = get_client()
     if client is None:
         trace = CANNED_TRACES["stage_c2"] if (mask or gate) else CANNED_TRACES["stage_b"]
@@ -236,7 +251,8 @@ def run_agent(user_msg, tools, system=None, allow=None, mask=False, gate=False,
             if allow is not None and name not in allow:
                 result = f"BLOCKED: tool '{name}' is not on the allow-list."
             elif gate and name == "send_status_notification":
-                if input(f"[approval gate] send notification for {args.get('case_id')}? (y/n) ").strip().lower() == "y":
+                if confirm(f"[approval gate] send notification for "
+                           f"{args.get('case_id')}? (y/n) "):
                     result = TOOL_IMPL[name](**args)
                 else:
                     result = "DENIED by human reviewer."
@@ -244,6 +260,7 @@ def run_agent(user_msg, tools, system=None, allow=None, mask=False, gate=False,
                 result = f"ERROR: unknown tool '{name}'."
             else:
                 result = TOOL_IMPL[name](**args)
+            LAST_CALLS.append(name)
             if mask:
                 result = mask_pii(result)      # guardrail: mask before the model sees it
             if verbose:
@@ -287,6 +304,10 @@ run_agent("For case C-1001, find a public dataset that helps answer the citizen'
 # %% [markdown]
 # ### Stage C — Guardrails (20 min)
 #
+# Run case **C-1005** with `mask=True` and `gate=True`. Checkpoints:
+# ✓ the SSN is redacted before the model sees it; ✓ the embedded
+# "ignore your rules" instruction is refused; ✓ nothing is sent until you type `y`.
+#
 # Three controls, each one line of config: a **tool allow-list**, a **maximum
 # step count**, and an **approval gate** before `send_status_notification`. Run
 # the agent on an ordinary case and confirm it *stops and asks* before sending.
@@ -321,7 +342,7 @@ run_agent("Handle case C-1002: read the record, find a dataset that helps, "
           allow=ALLOW_ALL_FOUR, gate=True, max_steps=6)
 
 # %% [markdown]
-# ### Stage C2 — The injection (10 min)
+# #### Stage C, part 2 — the injection
 #
 # Now the attack. The dataset catalog contains a **poisoned description** (it is
 # supplied here in the notebook — imagine it arriving from a real feed). It
@@ -366,7 +387,7 @@ print("- gate (a human saw the send and said no)?")
 print("- allow-list (no tool exists that can email externally)?")
 
 # %% [markdown]
-# ### Stage D — Instructing the agent (15 min)
+# ### Stage D *(stretch)* — Instructing the agent, and a tiny evaluation
 #
 # Guardrails constrain; instructions shape. Edit the system instructions to
 # change the agent's *plan*: make it always call `mask_pii` on a record **before**
@@ -386,7 +407,43 @@ run_agent("Handle case C-1002: read the record and notify the citizen that we "
           allow=ALLOW_ALL_FOUR, gate=True, max_steps=8)
 
 # %% [markdown]
-# ### Stage E — Your dataset (10 min)
+# **The mini-eval.** Changing instructions is easy; knowing whether you improved
+# anything is not. Three cases, one question each: did the agent reach for the
+# tool you expected? The third case expects *no* tool at all — an agent that
+# calls something anyway is over-eager, which is its own failure mode.
+
+# %%
+def used_tool(user_msg, expected_tool, system=TRIAGE_SYSTEM_V2):
+    """Very small eval: did the agent call the expected tool at least once?
+
+    `run_agent` records every tool it actually invoked in LAST_CALLS, so the
+    eval reads that rather than trying to parse the printed trace.
+    """
+    run_agent(user_msg, tools=TOOLS_C, system=system,
+              allow=ALLOW_ALL_FOUR, max_steps=4, verbose=False)
+    called = set(LAST_CALLS)
+    ok = (expected_tool in called) if expected_tool else not called
+    print(f"  [{'PASS' if ok else 'FAIL'}] {user_msg[:44]:<44} "
+          f"expected={str(expected_tool or 'no tool'):<22} called={sorted(called) or '[]'}")
+    return ok
+
+cases = [("Find a dataset about federal spending.", "search_datasets"),
+         ("Look up case C-1003.", "lookup_citizen_record"),
+         ("What is influenza-like illness?", None)]
+
+if get_client() is None:
+    print("(offline) the mini-eval needs the model. With a key it prints:\n"
+          "  [PASS] Find a dataset about federal spending.   expected=search_datasets\n"
+          "  [PASS] Look up case C-1003.                     expected=lookup_citizen_record\n"
+          "  [PASS] What is influenza-like illness?          expected=no tool\n"
+          "  3/3 — re-run after editing TRIAGE_SYSTEM_V2 and compare.")
+else:
+    print("mini-eval:")
+    score = sum(used_tool(msg, tool) for msg, tool in cases)
+    print(f"\n{score}/{len(cases)} — re-run after editing TRIAGE_SYSTEM_V2 and compare.")
+
+# %% [markdown]
+# #### Stage D, part 2 *(stretch)* — Your dataset
 #
 # Point `search_datasets` at the dataset you bookmarked in DO NOW 2.D and ask
 # your own question. This works offline (cached catalog) — the agent's planning
@@ -403,11 +460,11 @@ print(tool_search_datasets(my_topic))
 # %% [markdown]
 # ## Deliverable
 #
-# 1. The Stage C/C2 transcript showing the gate prompt and **no SSN** in any
+# 1. The Stage C transcript showing the gate prompt and **no SSN** in any
 #    queued notification (the assertion cell passing is your proof).
 # 2. Your edited Stage D system instructions and one sentence on how the plan
 #    changed.
-# 3. Stage E: the dataset results for your own topic.
+# 3. Stretch: the dataset results for your own topic.
 
 # %% [markdown]
 # ## Reflection

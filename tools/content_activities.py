@@ -692,6 +692,24 @@ CH06 = [
          reflection=["What did it map wrongly but confidently?",
                      "Why does forcing an `unmapped` list matter?"]),
 
+    dict(id="Ex 6.1", kind="lab", title="Shared-Spreadsheet Data Collection",
+         chapter="Ch06", env="browser", minutes=20, needs_key=False,
+         data=["ex6.1/beverage_sheet_template.csv", "ex6.1/beverage_sheet_messy.csv"],
+         spine=None, flex=False,
+         objectives=["Experience data-quality problems by creating them.",
+                     "Connect messy data to the quality attributes from Chapter 6."],
+         scenario="Your instructor shares a link (and QR code) to a shared sheet with a loose "
+                  "schema, e.g., columns: your role · a beverage you drank this week · when · "
+                  "how much. A prepared “messy” sheet is available if the room is offline.",
+         steps=["Each participant adds three rows. Do not coordinate formats.",
+                "The instructor projects the sheet. As a class, audit it against the six "
+                "quality attributes: completeness, accuracy, consistency, timeliness, "
+                "validity, uniqueness.",
+                "For each defect, name one governance rule (a schema constraint, a controlled "
+                "vocabulary, a required field) that would have prevented it."],
+         reflection=["Which is worse for AI: missing data or inconsistent data? Why?",
+                     "Who in an agency should own data quality for a shared dataset?"]),
+
     dict(id="Lab 6.1", kind="lab", title="Data Quality Assessment of Chicago 311",
          chapter="Ch06", env="vm", minutes=30, needs_key=False,
          data=["chicago_311.csv"], spine=None, flex=False,
@@ -843,7 +861,8 @@ CH07 = [
 
     dict(id="Lab 7.3", kind="lab", title="Citizen Services Triage Agent (Capstone)",
          chapter="Ch07", env="vm", minutes=45, needs_key=True,
-         data=["citizen_records.json", "chicago_311.csv", "MANIFEST.json"],
+         data=["citizen_records.json", "cached_datagov.json", "chicago_311.csv",
+               "MANIFEST.json"],
          spine="P9", flex=False,
          objectives=["Build an agent that plans, calls tools, and acts under supervision.",
                      "Add guardrails: allow-lists, approval gates, step and spend limits.",

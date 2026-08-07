@@ -3,11 +3,11 @@ Captured by an offline run (OPENAI_API_KEY=""), so model cells show
 the canned fallbacks; live runs will differ in wording, not in the
 verified numbers. Use as the read-along fallback if the API is down.
 
-.env loaded from: (none — relying on environment variables)
+.env loaded from: /home/student/1258-new/.env
 chat model alias  : gpt-5-mini
 embedding model   : text-embedding-3-small
 API key configured: False
-data directory    : /Users/iahmad/Creator/Courses_and_conferences/LT/1258/1258a4-author-input/labs/data
+data directory    : /home/student/1258-new/labs/data
 data pack retrieved: 2026-08-01
 
 federal_ai_use_cases.csv      1,200 rows — OMB 2025 Federal Agency AI Use Case Inventory — individually reported use cases (3,611 across 56 agencies; capped here). The course's own subject matter, as data.

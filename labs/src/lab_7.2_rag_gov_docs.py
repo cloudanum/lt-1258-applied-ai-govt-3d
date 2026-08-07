@@ -13,7 +13,7 @@
 # %% [markdown]
 # # Lab 7.2 — RAG over Government Documents
 #
-# *Chapter 7 — Building with LLMs: APIs, RAG, and Agents · 30 minutes · JupyterLab + OpenAI API (local embedding fallback offline)*
+# *Chapter 7 — Building with LLMs: APIs, RAG, and Agents · 40 minutes · JupyterLab + OpenAI API (local embedding fallback offline)*
 #
 # Four agency policy documents and a question whose answer is buried in one of
 # them. This is the pattern behind every "chat with our documents" pilot:
@@ -112,16 +112,23 @@ plt.tight_layout(); plt.show()
 # %% [markdown]
 # ## Steps
 #
-# ### Step 1 — Open the notebook
+# 1. Run the load + chunk cells. ✓ You see *"N documents → M chunks."*
+# 2. Run the embed cell. ✓ *"embedded M chunks."*
+# 3. Complete `retrieve()` — embed the question and return the top-k chunks.
+#    ✓ The retrieved chunks are about the question.
+# 4. Complete the grounding instruction so the model answers only from the
+#    context and cites the source file. ✓ The grounded answer carries
+#    `[filename]` citations.
+# 5. Run the ungrounded comparison. ✓ You can see the difference.
 #
-# You are here. Run the Setup cells above first (loader, imports, diagram).
+# Run the Setup cells above first (loader, imports, diagram).
 
 # %% [markdown]
-# ### Step 2 — Load the four documents and chunk them (4 min)
+# ### Step 1 — Load the four documents and chunk them (5 min)
 #
 # Chunk = one paragraph (blank-line separated), dropping tiny fragments. Print
-# the chunk count **and** the sizes — chunk size is the knob you will turn in
-# Step 9.
+# the chunk count **and** the sizes — chunk size is the knob you turn in the
+# stretch section.
 
 # %%
 docs = load_corpus()
@@ -136,13 +143,13 @@ def chunk_docs(docs, min_len=60):
 
 chunks = chunk_docs(docs)
 sizes = sorted(len(c["text"]) for c in chunks)
-print(f"{len(docs)} documents -> {len(chunks)} chunks")
+print(f"{len(docs)} documents → {len(chunks)} chunks")
 print(f"chunk sizes (chars): min {sizes[0]}, median {sizes[len(sizes) // 2]}, max {sizes[-1]}")
 for d in docs:
     print(f"  {d['source']}: {sum(1 for c in chunks if c['source'] == d['source'])} chunks")
 
 # %% [markdown]
-# ### Step 3 — Embed the chunks (3 min)
+# ### Step 2 — Embed the chunks (4 min)
 #
 # One vector per chunk. With a key this uses OpenAI embeddings; offline it falls
 # back to a deterministic local hasher (dim 256) — good enough to rank four
@@ -154,48 +161,32 @@ print(f"embedded {len(chunk_vecs)} chunks, dim={len(chunk_vecs[0])}")
 print("embedder:", EMBEDDER_USED["name"])
 
 # %% [markdown]
-# ### Step 4 — Ask WITHOUT retrieval, and note what it invents (4 min)
-#
-# Same question, no context. Write down anything it states that you cannot
-# confirm from the corpus — you will check it in Step 6.
-
-# %%
-QUESTION = "How long are program case files kept before they are destroyed?"
-
-CANNED_UNGROUNDED = (
-    "Program case files are generally kept for 3 years after the case is closed, "
-    "after which they are destroyed. Some agencies keep them longer if litigation "
-    "is expected. (Typical ungrounded answer: confident, plausible — and, for this "
-    "corpus, wrong about the period.)")
-
-def ask_plain(question):
-    client = get_client()
-    if client is None:
-        print("(offline) canned ungrounded reply — answered from memory, unsourced:\n")
-        return CANNED_UNGROUNDED
-    try:
-        resp = client.chat.completions.create(
-            model=CHAT_MODEL, messages=[{"role": "user", "content": question}])
-        return resp.choices[0].message.content
-    except Exception as e:
-        print(f"({type(e).__name__} — call failed; canned ungrounded reply:)\n")
-        return CANNED_UNGROUNDED
-
-print(ask_plain(QUESTION))
-
-# %% [markdown]
-# ### Step 5 — Retrieve the top 3 chunks and inspect them (5 min)
+# ### Step 3 — Retrieve the top 3 chunks and inspect them (8 min)
 #
 # Complete `retrieve`: embed the question with the **same** embedder, rank chunks
 # by cosine similarity, return the top-k `(chunk, score)` pairs. Read the chunks
 # *before* generating — is the answer actually in them?
+#
+# `embed()` and `cosine_topk()` are already imported for you.
 
 # %%
+QUESTION = "How long are program case files kept before they are destroyed?"
+
+RETRIEVE_NOTICE = []          # so the notice prints once, not once per call
+
 def retrieve(question, k=3):
-    # YOUR CODE: embed the question, rank chunks, return [(chunks[i], score), ...].
-    # Reference implementation below — replace it with your own.
-    qv = embed([question])[0]
-    return [(chunks[i], score) for i, score in cosine_topk(qv, chunk_vecs, k)]
+    """Return the k chunks most similar to `question`, as (chunk, score) pairs."""
+    ranked = None
+    # YOUR CODE: embed the question with embed([...])[0], rank it against
+    # chunk_vecs with cosine_topk(query_vec, doc_vecs, k), and build
+    # ranked = [(chunks[i], score), ...] in rank order.
+    if ranked is None:
+        qv = embed([question])[0]
+        ranked = [(chunks[i], score) for i, score in cosine_topk(qv, chunk_vecs, k)]
+        if not RETRIEVE_NOTICE:
+            print("(reference retrieve() used — write yours above, then re-run)\n")
+            RETRIEVE_NOTICE.append(1)
+    return ranked
 
 retrieved = retrieve(QUESTION, k=3)
 for c, score in retrieved:
@@ -203,11 +194,17 @@ for c, score in retrieved:
     print(textwrap.fill(textwrap.shorten(c["text"], 220), 100), "\n")
 
 # %% [markdown]
-# ### Step 6 — Generate grounded, with citations and quotes (5 min)
+# ### Step 4 — Generate grounded, with citations and quotes (10 min)
 #
-# The system prompt does the work: answer **only** from the chunks, cite the
-# source file after each fact, and quote the exact sentence relied on. If the
-# context does not contain the answer, the model must say so.
+# The system prompt does the work. Write `GROUNDING_SYSTEM` so the model:
+#
+# - answers **only** from the provided context,
+# - cites the source file in `[brackets]` after every fact,
+# - quotes the exact sentence it relied on,
+# - and says so plainly when the context does not contain the answer.
+#
+# That last clause is the one people leave out, and it is the one that stops the
+# pipeline inventing an answer.
 
 # %%
 CANNED_GROUNDED = (
@@ -222,12 +219,16 @@ def _canned_grounded(question):
     # the canned stand-in knows two questions: the retention one and the absent one
     return CANNED_ABSENT if "budget" in question.lower() else CANNED_GROUNDED
 
-GROUNDING_SYSTEM = (
-    "Answer ONLY from the provided context. After every fact, cite the source "
-    "file in [brackets] and quote the exact sentence you relied on. If the "
-    "context does not contain the answer, say so — do not use outside knowledge.")
-# YOUR CODE: tighten GROUNDING_SYSTEM — e.g. require one quote per claim, or a
-# "confidence" line. Re-run and see what changes.
+GROUNDING_SYSTEM = None
+# YOUR CODE: write the grounding instruction. It must pin the model to the
+# context, require a [filename] citation and an exact quote per fact, and force
+# an explicit "not in the context" when the answer is absent.
+if GROUNDING_SYSTEM is None:
+    GROUNDING_SYSTEM = (
+        "Answer ONLY from the provided context. After every fact, cite the source "
+        "file in [brackets] and quote the exact sentence you relied on. If the "
+        "context does not contain the answer, say so — do not use outside knowledge.")
+    print("(reference grounding instruction used — write yours above, then re-run)\n")
 
 def grounded_answer(question, retrieved):
     client = get_client()
@@ -251,7 +252,49 @@ answer = grounded_answer(QUESTION, retrieved)
 print(answer)
 
 # %% [markdown]
-# ### Step 7 — Check every citation against the source file (3 min)
+# ### Step 5 — Run the ungrounded comparison (8 min)
+#
+# Same question, no context, no retrieval. Put the two answers side by side and
+# read them as a constituent would: one cites a file you can open, the other
+# sounds equally confident and is wrong about the period.
+
+# %%
+CANNED_UNGROUNDED = (
+    "Program case files are generally kept for 3 years after the case is closed, "
+    "after which they are destroyed. Some agencies keep them longer if litigation "
+    "is expected. (Typical ungrounded answer: confident, plausible — and, for this "
+    "corpus, wrong about the period.)")
+
+def ask_plain(question):
+    client = get_client()
+    if client is None:
+        return CANNED_UNGROUNDED
+    try:
+        resp = client.chat.completions.create(
+            model=CHAT_MODEL, messages=[{"role": "user", "content": question}])
+        return resp.choices[0].message.content
+    except Exception as e:
+        print(f"({type(e).__name__} — call failed; canned ungrounded reply)")
+        return CANNED_UNGROUNDED
+
+ungrounded = ask_plain(QUESTION)
+
+print("=" * 78)
+print("GROUNDED (retrieval + citations):\n")
+print(textwrap.fill(answer, 78))
+print("\n" + "=" * 78)
+print("UNGROUNDED (no retrieval, answered from memory):\n")
+print(textwrap.fill(ungrounded, 78))
+print("=" * 78)
+print("\n✓ Which one would you put in front of a constituent, and why?")
+
+# %% [markdown]
+# ## Stretch (not timed)
+#
+# The workbook page ends at Step 5. Everything below is optional.
+
+# %% [markdown]
+# ### Stretch A — Check every citation against the source file
 #
 # A citation is a claim, not a fact. The checker below verifies (a) every
 # `[file.md]` tag names a real corpus file and (b) every quoted sentence
@@ -277,7 +320,7 @@ def check_citations(answer, docs):
 check_citations(answer, docs)
 
 # %% [markdown]
-# ### Step 8 — Confirm or refute one DO NOW 7.D prediction (3 min)
+# ### Stretch B — Confirm or refute one DO NOW 7.D prediction
 #
 # Take one failure you predicted in DO NOW 7.D and test it. The question below
 # is designed to fail cleanly: the answer is **absent from all four documents**.
@@ -296,7 +339,7 @@ print(grounded_answer(HARD_QUESTION, retrieved_hard))
 print("\nMy 7.D prediction confirmed/refuted (write here): ...")
 
 # %% [markdown]
-# ### Step 9 — Change the chunk size and re-run the failing question (3 min)
+# ### Stretch C — Change the chunk size and re-run the failing question
 #
 # Paragraph chunks are one choice. Fixed-width windows are another. Re-chunk at
 # ~450 characters, re-embed, and re-run your failing question — did retrieval

@@ -32,8 +32,22 @@
 # available.
 
 # %%
+# Instructor copies live in solutions/, one level below labs/ — find labs/
+# (where lab_common.py and data/ are) and run from there.
+import os, sys
+from pathlib import Path
+
+for _cand in (Path.cwd(), Path.cwd().parent):
+    if (_cand / "lab_common.py").is_file():
+        os.chdir(_cand)
+        if str(_cand) not in sys.path:
+            sys.path.insert(0, str(_cand))
+        break
+
+# %%
 import textwrap
-from lab_common import load_corpus, embed_texts, cosine_topk, get_client, CHAT_MODEL
+from lab_common import (load_corpus, embed_texts, cosine_topk, get_client,
+                        CHAT_MODEL, note_api_failure)
 
 # %% [markdown]
 # ## Step 1 — Load and chunk the corpus
@@ -47,7 +61,7 @@ chunks = []
 for d in docs:
     for para in [p.strip() for p in d["text"].split("\n\n") if len(p.strip()) > 60]:
         chunks.append({"source": d["source"], "text": para})
-print(f"{len(docs)} documents -> {len(chunks)} chunks")
+print(f"{len(docs)} documents → {len(chunks)} chunks")
 
 # %% [markdown]
 # ## Step 2 — Embed the chunks
@@ -81,18 +95,23 @@ for c, score in retrieved:
 def grounded_answer(question, retrieved):
     client = get_client()
     context = "\n\n".join(f"[{c['source']}] {c['text']}" for c, _ in retrieved)
+    offline = "(offline) Retrieved context that would be sent to the model:\n" + context
     if client is None:
-        return "(offline) Retrieved context that would be sent to the model:\n" + context
-    resp = client.chat.completions.create(
-        model=CHAT_MODEL,
-        messages=[
-            {"role": "system",
-             "content": "Answer ONLY from the provided context. Cite the source file in "
-                        "brackets after each fact. If the answer is not in the context, say so."},
-            {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"},
-        ],
-    )
-    return resp.choices[0].message.content
+        return offline
+    try:
+        resp = client.chat.completions.create(
+            model=CHAT_MODEL,
+            messages=[
+                {"role": "system",
+                 "content": "Answer ONLY from the provided context. Cite the source file in "
+                            "brackets after each fact. If the answer is not in the context, say so."},
+                {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"},
+            ],
+        )
+        return resp.choices[0].message.content
+    except Exception as e:
+        note_api_failure(e)
+        return offline
 
 print(grounded_answer(QUESTION, retrieved))
 
@@ -105,13 +124,18 @@ print(grounded_answer(QUESTION, retrieved))
 # %%
 def ungrounded_answer(question):
     client = get_client()
+    offline = "(offline) With no retrieval, the model would answer from memory, unsourced."
     if client is None:
-        return "(offline) With no retrieval, the model would answer from memory, unsourced."
-    resp = client.chat.completions.create(
-        model=CHAT_MODEL,
-        messages=[{"role": "user", "content": question}],
-    )
-    return resp.choices[0].message.content
+        return offline
+    try:
+        resp = client.chat.completions.create(
+            model=CHAT_MODEL,
+            messages=[{"role": "user", "content": question}],
+        )
+        return resp.choices[0].message.content
+    except Exception as e:
+        note_api_failure(e)
+        return offline
 
 print("GROUNDED:\n", grounded_answer(QUESTION, retrieved))
 print("\nUNGROUNDED:\n", ungrounded_answer(QUESTION))

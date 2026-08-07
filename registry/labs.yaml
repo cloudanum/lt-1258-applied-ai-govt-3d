@@ -2,7 +2,7 @@ course: '1258'
 # a3 -> a4: 12 notebooks authored for the a4 roster (canonical facts in registry/activities.yaml)
 revision: a4
 labs:
-- id: DONOW 0.1
+- id: DO NOW 0.1
   title: Environment Healthcheck
   chapter: Ch00
   artifact: lab_0.1_healthcheck.ipynb
@@ -274,7 +274,7 @@ labs:
   - Ch07-Building-with-LLMs:29
   - Ch07-Building-with-LLMs:32
 - id: Lab 7.3
-  title: Build an AI Agent
+  title: Build an AI Agent (Capstone)
   chapter: Ch07
   artifact: lab_7.3_agent.ipynb
   environment: VM

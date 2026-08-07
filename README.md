@@ -29,7 +29,7 @@ LT-1258-govt-3-days/
 │   ├── lab_6.2_genai_cleaning.ipynb     Lab 6.2 — GenAI-Assisted Cleaning
 │   ├── lab_7.1_openai_api.ipynb         Lab 7.1 — First Calls with the OpenAI API
 │   ├── lab_7.2_rag_gov_docs.ipynb       Lab 7.2 — RAG over Government Documents
-│   ├── lab_7.3_agent.ipynb              Lab 7.3 — Citizen Services Triage Agent (capstone)
+│   ├── lab_7.3_agent.ipynb              Lab 7.3 — Build an AI Agent (capstone)
 │   ├── lab_8.1_visualization.ipynb      Lab 8.1 — Visualization & Reporting (EPA)
 │   ├── lab_8.2_genai_reporting.ipynb    Lab 8.2 — GenAI-Assisted Analysis & Briefing
 │   ├── src/                    Jupytext sources (notebooks are generated from these)
@@ -47,7 +47,17 @@ LT-1258-govt-3-days/
 
 ## Prerequisites
 
-- Python 3.10+ (pandas, matplotlib, scikit-learn, openai, jupyter)
+- Python 3.10+ (pandas, matplotlib, scikit-learn, openai, jupyter, jupytext).
+  `labs/build_notebooks.sh` finds an interpreter via `$VIRTUAL_ENV`, then
+  `./.venv`, then `python3`. To build one:
+
+  ```sh
+  uv venv --python 3.12 .venv
+  uv pip install --python .venv/bin/python jupyterlab jupytext openai \
+      pandas scikit-learn matplotlib pyyaml nbformat nbconvert ipykernel
+  .venv/bin/python -m ipykernel install --user --name 1258-a4 \
+      --display-name "Python 3.12 (1258 a4)"
+  ```
 - An OpenAI API key — **optional**. With no key, or `OPENAI_API_KEY=""`,
   every lab runs fully offline on canned fallbacks; a present-but-dead key is
   survived the same way (every call site has a guarded fallback).
@@ -62,7 +72,9 @@ jupyter lab                 # or open the notebooks in VS Code
 ```
 
 `lab_common.load_dotenv()` searches for `.env` from the labs directory upward;
-real environment variables always win, and the key is never printed. After
+**real environment variables always win**, so an `OPENAI_API_KEY` exported from
+your shell will shadow the `.env` value — unset it if the labs seem to ignore
+`.env`. The key is never printed. After
 editing sources in `labs/src/`, rebuild:
 
 ```sh
@@ -77,7 +89,11 @@ editing sources in `labs/src/`, rebuild:
 | 2 | 4.1, 4.2, 5.1, 5.2, 6.1, 6.2 | Prompt engineering, security & PII, data quality |
 | 3 | 7.1, 7.2, 7.3, 8.1, 8.2 | APIs, RAG, the agent capstone, ops & reporting |
 
-(Labs 3.1 and 9.1 are browser-based by design — no notebooks.)
+(Labs 3.1, Ex 6.1 and 9.1 are browser-based by design — no notebooks. Their
+student-facing material ships as assets: `labs/data/lab3.1/` holds the source
+pack and printed prompt library for the Desktop GenAI relay, and
+`labs/data/ex6.1/` holds the shared-sheet template plus the prepared messy
+sheet used when the room is offline.)
 
 ## The labs
 
@@ -88,8 +104,10 @@ editing sources in `labs/src/`, rebuild:
   English.
 - **Lab 2.1** — profile an agency dataset end to end (shape, dtypes, missing
   values, per-column profiler) with a cached data.gov fallback.
-- **Lab 4.1 / 4.2** — prompt patterns on a government memo with rubric scoring;
-  then package the winners as a reusable, versioned prompt-template library.
+- **Lab 4.1 / 4.2** — the four-rung prompt ladder on a government memo
+  (zero-shot → few-shot → role + format contract → reasoning-model comparison)
+  with rubric scoring; then package the winners as a reusable, versioned
+  prompt-template library.
 - **Lab 5.1 / 5.2** — adversarial inputs and model robustness (flip-rate
   analysis); detect and mask PII in synthetic citizen records (regex first,
   NLP optional).

@@ -37,8 +37,11 @@ def load_dotenv(path=None):
     Deliberately dependency-free: python-dotenv is not guaranteed on the VM
     image, and one 15-line reader is cheaper than another provisioning request.
     """
+    here = Path(__file__).resolve()
+    # list(...) before slicing: Path.parents is only sliceable on 3.10+, and the
+    # classroom VM image is not guaranteed to be newer than 3.9.
     candidates = [Path(path)] if path else [
-        p / ".env" for p in [Path(__file__).resolve().parent, *Path(__file__).resolve().parents[:3]]
+        p / ".env" for p in [here.parent, *list(here.parents)[:3]]
     ]
     for env_path in candidates:
         if not env_path.is_file():
@@ -59,16 +62,120 @@ DOTENV_PATH = load_dotenv()
 
 # Model + embedding names come from the environment / .env, with current
 # low-cost aliases as defaults. One line to bump when a model retires.
-CHAT_MODEL = os.getenv("OPENAI_MODEL", "gpt-5-mini")
-EMBED_MODEL = os.getenv("OPENAI_EMBED_MODEL", "text-embedding-3-small")
+# `or` rather than a getenv default: .env ships these keys present-but-empty
+# (OPENAI_REASONING_MODEL=), and getenv's default only applies when the name is
+# *absent*, so an empty value would sail through as "" and be sent as the model.
+CHAT_MODEL = os.getenv("OPENAI_MODEL") or "gpt-5-mini"
+EMBED_MODEL = os.getenv("OPENAI_EMBED_MODEL") or "text-embedding-3-small"
+
+# Lab 4.1 rung 4 compares a standard model against a reasoning model on the same
+# hard task. Env-driven so the classroom account decides which reasoning model is
+# actually available — confirm the value before teaching, and leave it equal to
+# CHAT_MODEL if the account has no reasoning model provisioned (the lab then
+# reports that the comparison is unavailable rather than silently comparing a
+# model with itself).
+REASONING_MODEL = os.getenv("OPENAI_REASONING_MODEL") or CHAT_MODEL
+
+# Lab 7.1 Exercise 3 varies `temperature`, which the gpt-5 family rejects
+# outright ("Unsupported value: 'temperature' does not support 0.0 with this
+# model. Only the default (1) is supported"). That exercise therefore pins its
+# own temperature-capable model; everything else stays on CHAT_MODEL. Override
+# in .env if your account carries a different one.
+TEMPERATURE_MODEL = os.getenv("OPENAI_TEMPERATURE_MODEL") or "gpt-4.1-mini"
 
 
 # --------------------------------------------------------------------------- #
-# OpenAI client (returns None cleanly when no key is present)
+# OpenAI client (returns None cleanly when no key is present *or works*)
 # --------------------------------------------------------------------------- #
+# A key that is configured is not the same as a key that can spend. An expired
+# card, an exhausted classroom account or a revoked key all authenticate fine
+# and then fail at call time with 429/401 — and the old code only checked that
+# the variable was non-empty, so every helper raised straight out of the cell
+# and stopped the notebook. Every call site here already carries a canned
+# answer for the no-key case; this makes a *failing* key take that same path.
+_API_FAILED = False
+
+
+def note_api_failure(exc) -> None:
+    """Record a failed live call and say so. Never silent: a student must not
+    read a canned reply as live model output."""
+    global _API_FAILED
+    first, _API_FAILED = not _API_FAILED, True
+    if first:
+        print(f"[canned fallback] The OpenAI call failed — "
+              f"{type(exc).__name__}: {str(exc)[:160]}\n"
+              f"[canned fallback] The rest of this notebook uses its built-in "
+              f"canned responses. The lab still works; the wording is fixed "
+              f"rather than generated.")
+    else:
+        print(f"(canned fallback — {type(exc).__name__})")
+
+
+def api_failed() -> bool:
+    """True once a live call has failed in this session."""
+    return _API_FAILED
+
+
+def confirm(prompt: str, default: bool = False) -> bool:
+    """Ask a yes/no question, or fall back to `default` where there is no stdin.
+
+    Lab 7.3's approval gate is interactive by design — a student types y/n in
+    JupyterLab. Under `nbconvert --execute` there is no stdin, so a bare
+    input() raises StdinNotImplementedError and takes the whole notebook down.
+    That only bites with a working key (offline, the agent returns its canned
+    trace before ever reaching the gate), which is precisely when the release
+    smoke test most needs to get through. Denying by default keeps the
+    guardrail's meaning intact: no reviewer present, no consequential action.
+    """
+    try:
+        return input(prompt).strip().lower() == "y"
+    except Exception:
+        # input() has already echoed `prompt`; only add the outcome.
+        print(f"[no reviewer available — defaulting to "
+              f"{'APPROVE' if default else 'DENY'}]")
+        return default
+
+
+def _call_with_retry(fn, attempts: int = 4, base: float = 1.5):
+    """Run `fn()`, waiting out transient failures with exponential backoff.
+
+    A classroom is a thundering herd: twenty students hitting one org key in
+    the same minute trip org-level rate limits even on a perfectly healthy
+    account, and a lab that gives up on the first 429 teaches the wrong lesson
+    about reliability. Those are worth retrying.
+
+    An exhausted balance, a bad key or an unsupported parameter are not — no
+    amount of backoff fixes them — so they re-raise immediately and the caller
+    falls back to its canned answer.
+    """
+    import time
+    import random
+    for i in range(attempts):
+        try:
+            return fn()
+        except Exception as e:
+            s = str(e).lower()
+            # Match both the machine `code` and the human message text: the
+            # SDK stringifies the whole error body, so e.g. an unsupported
+            # parameter shows up as code `unsupported_value` *and* as the
+            # prose "Unsupported value: 'temperature' does not support 0.0".
+            permanent = any(k in s for k in (
+                "insufficient_quota", "credit_balance", "invalid_api_key",
+                "unsupported_value", "unsupported value",
+                "unsupported_parameter", "unsupported parameter",
+                "does not support", "does not exist", "model_not_found",
+                "invalid_request_error"))
+            if permanent or i == attempts - 1:
+                raise
+            time.sleep(base * (2 ** i) + random.random())
+
+
 def get_client():
-    """Return an OpenAI client if a key is configured, else None (offline)."""
-    if not os.getenv("OPENAI_API_KEY"):
+    """Return an OpenAI client if a key is configured and has not already
+    failed, else None (offline). Returning None after the first failure is what
+    lets the notebooks' existing `if client is not None:` branches fall back on
+    their own, instead of every later cell re-raising the same error."""
+    if not os.getenv("OPENAI_API_KEY") or _API_FAILED:
         return None
     try:
         from openai import OpenAI
@@ -84,19 +191,27 @@ def online() -> bool:
 # --------------------------------------------------------------------------- #
 # Chat helpers: one-call text and JSON completions with canned offline fallback
 # --------------------------------------------------------------------------- #
-def chat(messages, offline=None, **kwargs):
+def chat(messages, offline=None, model=None, **kwargs):
     """
     One chat completion; returns the assistant's message text.
 
     When no key is configured, returns `offline` (a canned string supplied by
     the caller) instead, so the lab keeps working with a realistic-looking
     response. Extra kwargs (e.g. temperature=...) are passed through to the API.
+
+    `model` defaults to CHAT_MODEL. Lab 4.1 rung 4 overrides it to run the same
+    prompt on REASONING_MODEL and compare.
     """
     client = get_client()
     if client is None:
         return offline
-    resp = client.chat.completions.create(model=CHAT_MODEL, messages=messages, **kwargs)
-    return resp.choices[0].message.content
+    try:
+        resp = _call_with_retry(lambda: client.chat.completions.create(
+            model=model or CHAT_MODEL, messages=messages, **kwargs))
+        return resp.choices[0].message.content
+    except Exception as e:
+        note_api_failure(e)
+        return offline
 
 
 def chat_json(messages, offline=None, **kwargs):
@@ -109,10 +224,16 @@ def chat_json(messages, offline=None, **kwargs):
     client = get_client()
     if client is None:
         return offline
-    resp = client.chat.completions.create(
-        model=CHAT_MODEL, messages=messages,
-        response_format={"type": "json_object"}, **kwargs)
-    return json.loads(resp.choices[0].message.content)
+    try:
+        resp = _call_with_retry(lambda: client.chat.completions.create(
+            model=CHAT_MODEL, messages=messages,
+            response_format={"type": "json_object"}, **kwargs))
+        return json.loads(resp.choices[0].message.content)
+    except Exception as e:
+        # Also catches a model that returns unparseable JSON: the caller wants
+        # a usable object either way, and the canned one is schema-correct.
+        note_api_failure(e)
+        return offline
 
 
 # --------------------------------------------------------------------------- #
@@ -138,8 +259,12 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
     """Embed a list of texts. Uses OpenAI embeddings if a key is set, else local."""
     client = get_client()
     if client is not None:
-        resp = client.embeddings.create(model=EMBED_MODEL, input=texts)
-        return [d.embedding for d in resp.data]
+        try:
+            resp = _call_with_retry(
+                lambda: client.embeddings.create(model=EMBED_MODEL, input=texts))
+            return [d.embedding for d in resp.data]
+        except Exception as e:
+            note_api_failure(e)
     return [_local_embed(t) for t in texts]
 
 

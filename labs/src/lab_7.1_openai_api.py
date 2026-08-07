@@ -70,9 +70,13 @@ from openai import OpenAI
 
 ONLINE = bool(os.getenv("OPENAI_API_KEY"))
 client = OpenAI() if ONLINE else None               # reads OPENAI_API_KEY from the environment
-MODEL = os.getenv("OPENAI_MODEL", "gpt-5-mini")     # one place to change the model
+MODEL = os.getenv("OPENAI_MODEL") or "gpt-5-mini"   # one place to change the model
+# Exercise 3 only. Reasoning models (the gpt-5 family) accept just the default
+# temperature and reject any other value, so the temperature exercise needs a
+# model that actually has the knob.
+TEMPERATURE_MODEL = os.getenv("OPENAI_TEMPERATURE_MODEL") or "gpt-4.1-mini"
 print("key loaded:", "yes (value never shown)" if ONLINE else "no — OFFLINE mode, canned replies below")
-print("model:", MODEL)
+print("Using model:", MODEL, f"(Exercise 3 uses {TEMPERATURE_MODEL})")
 
 # Canned replies from the instructor transcript — used only where labelled, so
 # the lab never hard-fails on a keyless machine.
@@ -100,29 +104,47 @@ CANNED = {
                 "Trustworthy Bots, Transparent Government: A Starter Guide"],
     },
     "memo_json": {
-        "title": "Interim Guidance on Generative AI for Constituent Services",
-        "date": "2026-03-14",
-        "decision": ("Interim rules for generative AI in constituent services: every "
-                     "AI-assisted work product is human-reviewed before release, only "
-                     "public information goes into public tools, internal work uses "
-                     "approved enterprise tools, and AI-assisted correspondence is "
-                     "kept as a federal record."),
-        "owner": "Office of the Chief Data Officer",
+        "subject": "Interim Guidance on Generative AI for Constituent Services",
+        "effective_date": "2026-03-14",
+        "key_rules": [
+            "Every AI-assisted work product must be reviewed by a responsible "
+            "employee before release; the employee, not the tool, is accountable.",
+            "Only public information may be entered into public AI tools; PII must "
+            "never be entered into an unapproved tool, and exposure is reported "
+            "within one business day.",
+            "Tasks involving internal information must use the enterprise assistant "
+            "on the approved-tools list maintained by the CIO.",
+            "AI-assisted correspondence documenting agency business is a federal "
+            "record and must be retained on the applicable schedule.",
+            "Correspondence drafted with AI assistance must disclose that in a "
+            "closing line, and the tool and reviewer are logged in the case system.",
+        ],
     },
-    "usage": {"prompt_tokens": 574, "completion_tokens": 88, "total_tokens": 662},
+    "usage": {"prompt_tokens": 631, "completion_tokens": 174, "total_tokens": 805},
 }
 
 # %% [markdown]
 # ## Steps
 #
-# ### Step 1 — Setup and key check (3 min)
+# 1. Run the setup cell — confirm it prints the model name.
+#    ✓ *"Using model: …"* prints.
+# 2. Complete **Exercise 2**: two calls with different system prompts, same
+#    question. ✓ Two answers in different voices, same facts.
+# 3. Complete **Exercise 3**: the same prompt at temperature 0.0 and 1.0.
+#    ✓ You can see focused vs. varied output.
+# 4. Complete **Exercise 4**: extract `subject`, `effective_date`, `key_rules`
+#    from the memo as JSON with `response_format={"type":"json_object"}`.
+#    ✓ `json.loads` succeeds and the keys are present.
+# 5. Complete **Exercise 5**: print token usage and estimate the cost of 1,000
+#    calls. ✓ You have a dollar estimate.
 #
-# You just did it: run the two Setup cells above and confirm the output reports
-# the key loaded **without printing it** (`key loaded: yes`). If it says OFFLINE,
-# tell your instructor — the lab still works, with canned replies.
+# Step 1 is already done: you ran the two Setup cells above and the output
+# reported the key loaded **without printing it** (`key loaded: yes`) and the
+# pinned model. If it says OFFLINE, tell your instructor — the lab still works,
+# with canned replies.
 
 # %% [markdown]
-# ### Step 2 — Your first call: user message only (4 min)
+# ### Exercise 1 — Your first chat call (4 min)
 #
 # A chat call takes a list of *messages*, each with a `role` (`system`, `user`,
 # `assistant`) and `content`. This one has a user message only — the pattern for
@@ -144,7 +166,7 @@ else:
     print(CANNED["first_call"])
 
 # %% [markdown]
-# ### Step 3 — Add a system message that fixes the register (5 min)
+# ### Exercise 2 — The system prompt changes the voice (5 min)
 #
 # Same question, two different `system` messages. The system message sets the
 # register the user message cannot. Ask *"How quickly must an agency respond to
@@ -168,33 +190,37 @@ print("FORMAL REGISTER:\n", replies[0])
 print("\nPLAIN-LANGUAGE REGISTER:\n", replies[1])
 
 # %% [markdown]
-# ### Step 4 — Temperature: three runs at 0, three at 1.0 (5 min)
+# ### Exercise 3 — Temperature (5 min)
 #
 # `temperature` controls variance. Low (0) = repeatable; high (1.0+) = varied.
-# Run the **same** prompt three times at `temperature=0.0`, then three times at
-# `temperature=1.0`, and compare.
+# Send the **same** prompt once at `temperature=0.0` and once at
+# `temperature=1.0`, and compare focused against varied output.
+#
+# Use `model=TEMPERATURE_MODEL` for these two calls, not `MODEL`: reasoning
+# models reject every temperature except the default, so the call would fail
+# with `unsupported_value`. Which knobs a model exposes is a property of the
+# model, not of the API — worth remembering when you pick one.
 
 # %%
 prompt = [{"role": "user",
            "content": "Suggest a title for a one-page guide on using AI responsibly in government."}]
 
 runs = None
-# YOUR CODE: send `prompt` three times with temperature=0.0 and three times with
-# temperature=1.0. Set runs = {"0.0": [three strings], "1.0": [three strings]}.
+# YOUR CODE: send `prompt` once with temperature=0.0 and once with
+# temperature=1.0, passing model=TEMPERATURE_MODEL to both.
+# Set runs = {"0.0": "<title>", "1.0": "<title>"}.
 if runs is None:
-    runs = CANNED["temperature"]
-    print("(canned runs applied — write your loop above)\n")
-for temp, titles in runs.items():
-    print(f"temperature={temp}:")
-    for t in titles:
-        print("  -", t)
-    print("  all three identical?", len(set(titles)) == 1, "\n")
+    runs = {t: titles[0] for t, titles in CANNED["temperature"].items()}
+    print("(canned runs applied — write your two calls above)\n")
+for temp, title in runs.items():
+    print(f"temperature={temp}: {title}")
+print("\nRun the cell again. At 0.0 the title should barely move; at 1.0 it should.")
 
 # %% [markdown]
-# ### Step 5 — Structured JSON out of a real memo (6 min)
+# ### Exercise 4 — Structured output (JSON) from a real document (6 min)
 #
 # Programs need structured data, not prose. Load `data/gov_memo.txt` and extract
-# **`title`, `date`, `decision`, `owner`** as JSON, enforced with
+# **`subject`, `effective_date`, `key_rules`** as JSON, enforced with
 # `response_format={"type": "json_object"}`.
 
 # %%
@@ -202,22 +228,56 @@ memo = open("data/gov_memo.txt").read()
 
 extraction = None
 # YOUR CODE: call with response_format={"type": "json_object"} and a system
-# message asking for JSON with exactly the keys title, date, decision, owner
-# (all strings; date as YYYY-MM-DD). Parse with json.loads into `extraction`.
+# message asking for JSON with exactly the keys subject (string),
+# effective_date (string, YYYY-MM-DD) and key_rules (array of short strings).
+# Parse with json.loads into `extraction`.
 if extraction is None:
     extraction = CANNED["memo_json"]
     print("(canned extraction applied — write your call above)\n")
 print(json.dumps(extraction, indent=2))
 
+# ✓ json.loads succeeded and the keys are present:
+assert isinstance(extraction, dict), "extraction should be a dict from json.loads"
+for _k in ("subject", "effective_date", "key_rules"):
+    assert _k in extraction, f"expected key {_k!r} in the extraction"
+print(f"\n✓ all three keys present; key_rules has {len(extraction['key_rules'])} entries")
+
 # %% [markdown]
-# ### Step 6 — Tighten the prompt until it validates every time (4 min)
+# ### Exercise 5 — Token usage and cost (3 min)
+#
+# Every response carries a `usage` object: prompt, completion and total tokens.
+# Capture it from your Exercise 4 call and multiply out to agency scale.
+
+# %%
+usage = None
+# YOUR CODE: capture resp.usage from your Exercise 4 call as
+# usage = {"prompt_tokens": ..., "completion_tokens": ..., "total_tokens": ...}
+if usage is None:
+    usage = CANNED["usage"]
+    print("(illustrative usage applied — capture resp.usage from your own call above)\n")
+
+PRICE_IN_PER_1K, PRICE_OUT_PER_1K = 0.00015, 0.0006   # illustrative — check current rates for your pinned model
+per_call = (usage["prompt_tokens"] / 1000 * PRICE_IN_PER_1K
+            + usage["completion_tokens"] / 1000 * PRICE_OUT_PER_1K)
+print(f"prompt {usage['prompt_tokens']} + completion {usage['completion_tokens']} "
+      f"= {usage['total_tokens']} tokens")
+print(f"≈ ${per_call:.5f} per call  →  ${per_call * 1000:.2f} per 1,000 calls")
+
+# %% [markdown]
+# ## Stretch (not timed)
+#
+# The workbook page ends at Exercise 5. Everything below is optional — work it
+# if you finish early or want to go further after class.
+
+# %% [markdown]
+# ### Stretch A — Tighten the prompt until it validates every time
 #
 # One successful parse proves nothing. The validator below checks keys *and*
 # types. Re-run your extraction three times; if any run fails, tighten the
 # prompt — name the keys, show an example, forbid extra text — until it is 3/3.
 
 # %%
-REQUIRED = {"title": str, "date": str, "decision": str, "owner": str}
+REQUIRED = {"subject": str, "effective_date": str, "key_rules": list}
 
 def validate(obj):
     """Return a list of problems; an empty list means valid."""
@@ -229,8 +289,8 @@ def validate(obj):
 n_runs, passes = 3, 0
 for i in range(n_runs):
     result = None
-    # YOUR CODE: re-run your Step 5 extraction into `result` (paste your call,
-    # with the tightened prompt).
+    # YOUR CODE: re-run your Exercise 4 extraction into `result` (paste your
+    # call, with the tightened prompt).
     if result is None:
         result = CANNED["memo_json"]   # canned stands in so you can see the mechanics
     problems = validate(result)
@@ -239,25 +299,6 @@ for i in range(n_runs):
 print(f"\n{passes}/{n_runs} valid — keep tightening until it is {n_runs}/{n_runs}.")
 
 # %% [markdown]
-# ### Step 7 — Tokens and the cost of 1,000 memos (3 min)
-#
-# Every response carries a `usage` object: prompt, completion and total tokens.
-# Capture it from your Step 5 call and multiply out to agency scale.
-
-# %%
-usage = None
-# YOUR CODE: capture resp.usage from your Step 5/6 call as
-# usage = {"prompt_tokens": ..., "completion_tokens": ..., "total_tokens": ...}
-if usage is None:
-    usage = CANNED["usage"]
-    print("(illustrative usage applied — capture resp.usage from your own call above)\n")
-
-PRICE_IN_PER_1K, PRICE_OUT_PER_1K = 0.00015, 0.0006   # illustrative — check current rates for your pinned model
-per_call = (usage["prompt_tokens"] / 1000 * PRICE_IN_PER_1K
-            + usage["completion_tokens"] / 1000 * PRICE_OUT_PER_1K)
-print(f"prompt {usage['prompt_tokens']} + completion {usage['completion_tokens']} "
-      f"= {usage['total_tokens']} tokens")
-print(f"≈ ${per_call:.5f} per memo  →  ${per_call * 1000:.2f} per 1,000 memos")
 
 # %% [markdown]
 # ## Deliverable

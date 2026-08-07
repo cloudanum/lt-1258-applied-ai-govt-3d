@@ -19,10 +19,12 @@
 #
 # Nothing else in the week works until this is green, so it is the first thing
 # you do. Run this notebook first, before Chapter 1: **Run → Run All Cells**,
-# then read the four checks below. Every check should print a green **PASS**
-# (check 3 may print a yellow **SKIP** if you are not on the class VM). If any
-# prints a red **FAIL**, raise your hand — your instructor has a fix for each
-# one.
+# then read the four checks below. **Checks 1–3 should read PASS** — that is
+# what "ready" looks like. **Check 4 is informational** and prints `INFO`
+# whatever it finds. If any of checks 1–3 prints a red **FAIL**, or a yellow
+# **SKIP** on the class VM, raise your hand — your instructor has a fix for each
+# one. (Off the class VM, a SKIP on check 3 is expected: there is no key, and
+# the AI cells fall back to canned replies.)
 #
 # You do **not** need to edit anything in this notebook.
 
@@ -53,7 +55,10 @@
 # lab_common.py and data/ live — no matter where Jupyter was started from.
 # Importing lab_common runs its .env loader: it reads the course .env file (or
 # uses the key already in the environment) without ever printing the key.
-import os, sys, importlib, json
+# importlib.util must be imported explicitly — `import importlib` alone does not
+# bind the submodule, and on 3.12 the healthcheck's find_spec call raises
+# AttributeError before any check prints.
+import os, sys, importlib, importlib.util, json
 from pathlib import Path
 
 for _cand in (Path.cwd(), *Path.cwd().parents):
@@ -67,14 +72,23 @@ import lab_common as lc
 
 DATA = lc.DATA_DIR
 
-GREEN, YELLOW, RED, RESET = "\033[92m", "\033[93m", "\033[91m", "\033[0m"
-def result(ok, label, detail=""):
+GREEN, YELLOW, BLUE, RED, RESET = (
+    "\033[92m", "\033[93m", "\033[94m", "\033[91m", "\033[0m")
+
+# The workbook page tells students to read these off by number ("Red on Check 3
+# (API key)"), so the number is part of the printed line, not just the heading
+# above it.
+def result(n, ok, label, detail=""):
     tag = f"{GREEN}PASS{RESET}" if ok else f"{RED}FAIL{RESET}"
-    print(f"[{tag}] {label}" + (f" — {detail}" if detail else ""))
+    print(f"[{tag}] Check {n} — {label}" + (f" — {detail}" if detail else ""))
     return ok
 
-def skip(label, detail=""):
-    print(f"[{YELLOW}SKIP{RESET}] {label}" + (f" — {detail}" if detail else ""))
+def skip(n, label, detail=""):
+    print(f"[{YELLOW}SKIP{RESET}] Check {n} — {label}" + (f" — {detail}" if detail else ""))
+
+def info(n, label, detail=""):
+    """Check 4 is informational: it must never read as pass or fail."""
+    print(f"[{BLUE}INFO{RESET}] Check {n} — {label}" + (f" — {detail}" if detail else ""))
 
 # %% [markdown]
 # ## Steps
@@ -98,7 +112,7 @@ def skip(label, detail=""):
 # %%
 needed = ["openai", "pandas", "requests", "matplotlib", "sklearn"]
 missing = [m for m in needed if importlib.util.find_spec(m) is None]
-result(not missing,
+result(1, not missing,
        "Python packages installed",
        "all present" if not missing else f"missing: {', '.join(missing)}")
 import openai
@@ -116,7 +130,7 @@ manifest = json.loads((DATA / "MANIFEST.json").read_text())
 expected = [ds["file"] for ds in manifest["datasets"]] + [
     "cached_datagov.json", "citizen_records.json", "gov_memo.txt", "corpus"]
 missing_files = [f for f in expected if not (DATA / f).exists()]
-result(not missing_files,
+result(2, not missing_files,
        "Lab data files present",
        f"all {len(expected)} found ({len(manifest['datasets'])} datasets "
        f"+ {len(expected) - len(manifest['datasets'])} support files)"
@@ -134,8 +148,12 @@ result(not missing_files,
 # %%
 key = os.getenv("OPENAI_API_KEY")
 model = lc.CHAT_MODEL
+# One label, whatever happens: the workbook's troubleshooting entry says
+# "Red on Check 3 (API key)", so the line must be recognisable as the API key
+# check on the SKIP and FAIL paths too.
+LABEL_3 = "OpenAI API key"
 if not key:
-    skip("OpenAI API key configured",
+    skip(3, LABEL_3,
          "OPENAI_API_KEY is not set — on the class VM, tell your instructor; "
          "otherwise the AI cells will use canned fallbacks")
 else:
@@ -147,9 +165,10 @@ else:
             model=model,
             messages=[{"role": "user", "content": "Reply with the single word: ready"}],
         )
-        result(True, "OpenAI API reachable", f"model replied: {resp.choices[0].message.content.strip()!r}")
+        result(3, True, LABEL_3,
+               f"configured and reachable; model replied: {resp.choices[0].message.content.strip()!r}")
     except Exception as e:
-        result(False, "OpenAI API reachable", f"{type(e).__name__}: {e}")
+        result(3, False, LABEL_3, f"key is set but the call failed — {type(e).__name__}: {e}")
 
 # %% [markdown]
 # ### Check 4 — data.gov reachable (used in Labs 2.1 / 7.2 / 7.3)
@@ -164,10 +183,10 @@ try:
                      headers={"User-Agent": "lt-1258-lab"})
     # Any HTTP response means the host is reachable; the labs use the live API
     # when possible and the cached copy otherwise.
-    result(True, "data.gov reachable", f"host responded (HTTP {r.status_code})")
+    info(4, "data.gov reachable", f"host responded (HTTP {r.status_code})")
 except Exception as e:
-    result(True, "data.gov reachable",
-           f"offline ({type(e).__name__}) — labs will use the bundled cached copy")
+    info(4, "data.gov reachable",
+         f"offline ({type(e).__name__}) — labs will use the bundled cached copy")
 
 # %% [markdown]
 # ## Deliverable

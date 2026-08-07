@@ -10,3 +10,5 @@ __pycache__/
 .ipynb_checkpoints/
 # generated lab outputs
 labs/output/
+# local test environment (Phase 0)
+.venv/

@@ -32,6 +32,9 @@ material that was not reviewed for accuracy.
    d. Recordkeeping. AI-assisted correspondence that documents agency business is a
       federal record and must be retained according to the applicable records
       schedule.
+   e. Disclosure. Correspondence sent to a constituent that was drafted with AI
+      assistance must say so in a brief closing line. Divisions must log the tool
+      used and the reviewing employee in the case management system.
 
 4. EFFECTIVE DATE. This guidance is effective immediately and remains in effect
 until superseded by final Department policy.

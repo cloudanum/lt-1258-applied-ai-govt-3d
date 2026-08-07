@@ -1,0 +1,34 @@
+EXPECTED OUTPUT — lab_7.1_openai_api (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+Using model: gpt-5-mini
+(offline — canned instructor answers below; live runs differ in wording, not in the verified numbers)
+The Freedom of Information Act (FOIA) gives any person the right to request records from U.S. executive-branch agencies. Agencies must generally respond within 20 business days, releasing records unless one of nine exemptions applies.
+
+--- persona: You are a policy analyst. Answer formall... ---
+Under the Freedom of Information Act (5 U.S.C. § 552), an agency must determine whether to comply within twenty (20) business days of receipt. In unusual circumstances it may extend by up to ten additional business days, provided it notifies the requester in writing.
+
+--- persona: You are explaining to a brand-new employ... ---
+Think of it as a 20-working-day clock: once your FOIA request arrives, the agency has about four weeks of business days to get back to you. If things get complicated it can take a bit longer, but it has to tell you first.
+Exercise 3 uses: gpt-4.1-mini (the rest of this lab uses gpt-5-mini)
+temperature=0.0: Responsible AI in Government: A One-Page Guide
+temperature=1.0: AI With Guardrails: A Field Guide for Public Servants
+{
+  "subject": "Interim Guidance on Generative AI for Constituent Services",
+  "effective_date": "2026-03-14",
+  "key_rules": [
+    "Every AI-assisted work product must be reviewed by a responsible employee before release.",
+    "Only public information may be entered into public AI tools; PII never.",
+    "Internal information must use the approved enterprise assistant.",
+    "AI-assisted correspondence is a federal record and must be retained.",
+    "AI assistance must be disclosed in the reply and the reviewer logged."
+  ]
+}
+prompt tokens:     631
+completion tokens: 174
+total tokens:      805
+
+this call ≈ $0.00020
+1,000 similar calls ≈ $0.20

@@ -6,9 +6,35 @@
 # are extracted from the executed solution notebooks.
 # Usage: bash build_notebooks.sh
 set -euo pipefail
-VENV="$(cd "$(dirname "$0")/../../.." && pwd)/.venv-courseware/bin"
-PY="$VENV/python"
 cd "$(dirname "$0")"
+
+# Interpreter: an active venv wins, then the repo's own .venv, then whatever
+# python3 is on PATH. The old hard-coded ../../../.venv-courseware path assumed
+# the repo sat three levels below the venv's parent and resolved to /home in a
+# plain clone, so the very first jupytext call aborted the whole run.
+if [[ -n "${VIRTUAL_ENV:-}" && -x "$VIRTUAL_ENV/bin/python" ]]; then
+  PY="$VIRTUAL_ENV/bin/python"
+elif [[ -x "../.venv/bin/python" ]]; then
+  PY="$(cd .. && pwd)/.venv/bin/python"
+else
+  PY="$(command -v python3 || true)"
+fi
+if [[ -z "$PY" ]] || ! "$PY" -c "import jupytext, nbconvert" 2>/dev/null; then
+  echo "ERROR: no interpreter with jupytext + nbconvert." >&2
+  echo "  tried: \$VIRTUAL_ENV, ../.venv/bin/python, python3" >&2
+  echo "  fix:   uv venv --python 3.12 ../.venv && \\" >&2
+  echo "         uv pip install --python ../.venv/bin/python jupyterlab jupytext openai \\" >&2
+  echo "             pandas scikit-learn matplotlib pyyaml nbformat nbconvert ipykernel" >&2
+  exit 2
+fi
+KERNEL="${KERNEL:-1258-a4}"
+if ! "$PY" -m jupyter kernelspec list 2>/dev/null | grep -qw "$KERNEL"; then
+  echo "note: kernel '$KERNEL' not registered; using the notebooks' own kernelspec." >&2
+  KERNEL=""
+fi
+KERNEL_ARG=()
+[[ -n "$KERNEL" ]] && KERNEL_ARG=(--ExecutePreprocessor.kernel_name="$KERNEL")
+echo "interpreter: $PY"
 
 echo "== Converting jupytext sources to .ipynb =="
 for src in src/*.py; do
@@ -27,9 +53,10 @@ echo
 echo "== Offline smoke test (OPENAI_API_KEY=\"\", no network) =="
 export OPENAI_API_KEY=""   # force the offline/canned paths
 
-# Notebooks that must execute fully offline. The pre-existing 7.x notebooks
-# need a live key by design (their fallback is the transcript), so the smoke
-# covers the healthcheck and the a4 roster only.
+# Every notebook must execute fully offline. The 7.x labs used to be excluded
+# as "needs a live key", but each of their call sites has a labelled canned
+# fallback, so keeping them out only hid regressions in exactly the notebooks
+# whose documented contingency is the transcript.
 STUDENT=(
   lab_0.1_healthcheck
   lab_0.1_environment_tour
@@ -42,6 +69,9 @@ STUDENT=(
   lab_5.2_pii
   lab_6.1_data_quality
   lab_6.2_genai_cleaning
+  lab_7.1_openai_api
+  lab_7.2_rag_gov_docs
+  lab_7.3_agent
   lab_8.1_visualization
   lab_8.2_genai_reporting
 )
@@ -56,6 +86,9 @@ SOLUTION=(
   lab_5.2_pii
   lab_6.1_data_quality
   lab_6.2_genai_cleaning
+  lab_7.1_openai_api
+  lab_7.2_rag_gov_docs
+  lab_7.3_agent
   lab_8.1_visualization
   lab_8.2_genai_reporting
 )
@@ -63,31 +96,36 @@ SOLUTION=(
 fail=0
 for nb in "${STUDENT[@]}"; do
   if "$PY" -m nbconvert --to notebook --execute --inplace \
-       --ExecutePreprocessor.timeout=180 "${nb}.ipynb" >/dev/null 2>&1; then
+       --ExecutePreprocessor.timeout=180 "${KERNEL_ARG[@]}" \
+       "${nb}.ipynb" >"/tmp/1258-smoke-${nb}.log" 2>&1; then
     echo "  PASS  ${nb}.ipynb"
   else
-    echo "  FAIL  ${nb}.ipynb"
+    echo "  FAIL  ${nb}.ipynb   (log: /tmp/1258-smoke-${nb}.log)"
+    tail -n 12 "/tmp/1258-smoke-${nb}.log" | sed "s/^/        /"
     fail=1
   fi
 done
 for nb in "${SOLUTION[@]}"; do
   if ( cd solutions && "$PY" -m nbconvert --to notebook --execute --inplace \
-       --ExecutePreprocessor.timeout=180 "${nb}_solutions.ipynb" >/dev/null 2>&1 ); then
+       --ExecutePreprocessor.timeout=180 "${KERNEL_ARG[@]}" \
+       "${nb}_solutions.ipynb" >"/tmp/1258-smoke-${nb}-sol.log" 2>&1 ); then
     echo "  PASS  solutions/${nb}_solutions.ipynb"
   else
-    echo "  FAIL  solutions/${nb}_solutions.ipynb"
+    echo "  FAIL  solutions/${nb}_solutions.ipynb   (log: /tmp/1258-smoke-${nb}-sol.log)"
+    tail -n 12 "/tmp/1258-smoke-${nb}-sol.log" | sed "s/^/        /"
     fail=1
   fi
 done
 
 echo
+if [[ "$fail" -ne 0 ]]; then
+  echo "== SMOKE FAILURES — see above =="
+  echo "   transcripts NOT regenerated (a partial run would overwrite good ones)"
+  exit 1
+fi
+
 echo "== Transcripts from executed solution notebooks =="
 "$PY" make_transcripts.py "${SOLUTION[@]}"
 
-echo
-if [[ "$fail" -ne 0 ]]; then
-  echo "== SMOKE FAILURES — see above =="
-  exit 1
-fi
 echo "== Done. Notebooks in $(pwd) and $(pwd)/solutions =="
 ls -1 *.ipynb

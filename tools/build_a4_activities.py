@@ -57,12 +57,51 @@ def notebook_for(a):
 
 
 # --------------------------------------------------------------------------- registry
+LABS_YAML = ROOT / "registry" / "labs.yaml"
+
+# `Do Now 1.A` / `DONOW 0.1` / `DO NOW 0.1` are the same activity written three
+# ways. The workbook prints "DO NOW", so that is the form the registry carries.
+def canon_id(lab_id):
+    out = re.sub(r"^DONOW\b", "DO NOW", lab_id.strip())
+    return re.sub(r"^Do Now\b", "DO NOW", out)
+
+
+def kind_of(lab_id):
+    if lab_id.startswith(("Lab ", "Optional Lab ", "Ex ")):
+        return "lab"
+    return "demo" if lab_id.startswith("Demo ") else "donow"
+
+
+def labs_overlay():
+    """registry/labs.yaml is canonical for the scheduling facts.
+
+    a4 shipped two registries that disagreed: labs.yaml matched the workbook's
+    durations on all seven new lab pages, while activities.yaml carried flat
+    30-minute placeholders, a different Lab 7.3 title, and no Ex 6.1 at all.
+    labs.yaml now wins for id, title, chapter, artifact, environment, duration
+    and flex; content_activities.py keeps ownership of the prose.
+    """
+    doc = yaml.safe_load(LABS_YAML.read_text())
+    out = {}
+    for lab in doc["labs"]:
+        out[canon_id(lab["id"])] = {
+            "title": lab["title"],
+            "chapter": lab["chapter"],
+            "artifact": lab["artifact"],
+            "environment": str(lab["environment"]).lower(),
+            "duration_min": lab["duration_min"],
+            "flex": bool(lab.get("flex", False)),
+            "slide_ref": lab.get("slide_ref") or [],
+        }
+    return out
+
+
 def build_registry():
     rows = []
     for ch, items in C.CHAPTERS:
         for a in items:
             rows.append({
-                "id": a["id"],
+                "id": canon_id(a["id"]),
                 "title": a["title"],
                 "kind": a["kind"],
                 "chapter": ch,
@@ -75,12 +114,54 @@ def build_registry():
                 "spine_rung": a["spine"],
                 "flex": bool(a["flex"]),
             })
+
+    # --- apply the canonical overlay -------------------------------------- #
+    overlay = labs_overlay()
+    prior = {}
+    if REG.exists():                      # keep slide_ref that validate_registry
+        old = yaml.safe_load(REG.read_text()) or {}   # --fix-slide-refs populated
+        prior = {canon_id(a["id"]): a for a in old.get("activities", [])}
+
+    for row in rows:
+        row["slide_ref"] = prior.get(row["id"], {}).get("slide_ref", [])
+        if row["id"] in overlay:
+            row.update({k: v for k, v in overlay[row["id"]].items() if v != []})
+            if overlay[row["id"]]["slide_ref"]:
+                row["slide_ref"] = overlay[row["id"]]["slide_ref"]
+
+    # activities that exist only in labs.yaml (carried-forward and paper labs)
+    have = {r["id"] for r in rows}
+    for lab_id, facts in overlay.items():
+        if lab_id in have:
+            continue
+        old = prior.get(lab_id, {})
+        rows.append({
+            "id": lab_id,
+            "title": facts["title"],
+            "kind": old.get("kind", kind_of(lab_id)),
+            "chapter": facts["chapter"],
+            "deck": C.DECK_OF.get(facts["chapter"], ""),
+            "artifact": facts["artifact"],
+            "environment": facts["environment"],
+            "duration_min": facts["duration_min"],
+            "needs_openai_key": bool(old.get("needs_openai_key", False)),
+            "data": old.get("data", []),
+            "spine_rung": old.get("spine_rung"),
+            "flex": facts["flex"],
+            "slide_ref": facts["slide_ref"] or old.get("slide_ref", []),
+        })
+
+    order = {ch: i for i, (ch, _) in enumerate(C.CHAPTERS)}
+    rows.sort(key=lambda r: (order.get(r["chapter"], 99), r["id"]))
+
     doc = {
         "course": "1258",
         "revision": "a4",
         "contract": ("id == workbook heading == slide callout == handout section. "
-                     "This file is GENERATED from tools/content_activities.py — edit there, "
-                     "then re-run tools/build_a4_activities.py."),
+                     "GENERATED: prose from tools/content_activities.py, scheduling facts "
+                     "(title/chapter/artifact/environment/duration/flex) from "
+                     "registry/labs.yaml, which is canonical. Edit those, then re-run "
+                     "tools/build_a4_activities.py."),
         "shape": "each chapter: 1 demo + 4 activities/Do Nows + 1-2 labs (Ch07 has 3: the "
                  "agent capstone is the course deliverable)",
         "openai_key": "read from .env at the package root; see .env.example",

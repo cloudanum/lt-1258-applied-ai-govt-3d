@@ -13,19 +13,19 @@ environment variable (injected on the CloudShare VM) and pin the model via
 | `lab_1.1_ai_inventory.ipynb` | Lab 1.1 federal AI use case inventory | no | fully self-contained (pandas) |
 | `lab_1.2_clustering.ipynb` | Lab 1.2 K-Means on EPA county AQI | no | fully self-contained (sklearn) |
 | `lab_2.1_data_expedition.ipynb` | Lab 2.1 dataset profiling | no | cached data.gov snapshot fallback |
-| `lab_4.1_prompt_studio.ipynb` | Lab 4.1 seven prompt patterns | yes | canned outputs per pattern |
+| `lab_4.1_prompt_studio.ipynb` | Lab 4.1 the four-rung prompt ladder | yes | canned outputs per rung |
 | `lab_4.2_prompt_templates.ipynb` | Lab 4.2 prompt template library | yes | canned outputs built from real rows |
 | `lab_5.1_adversarial.ipynb` | Lab 5.1 adversarial robustness | no | fully self-contained (sklearn) |
 | `lab_5.2_pii.ipynb` | Lab 5.2 PII detect & mask | no | regex fallback (Presidio on the VM) |
 | `lab_6.1_data_quality.ipynb` | Lab 6.1 311 data-quality assessment | no | fully self-contained (pandas) |
 | `lab_6.2_genai_cleaning.ipynb` | Lab 6.2 GenAI cleaning, JSON schema | yes | canned mapping with validation |
-| `lab_7.1_openai_api.ipynb` | Lab 7.1 (rewrite of old 6.3) | yes | cells guard on key; use transcript |
+| `lab_7.1_openai_api.ipynb` | Lab 7.1 (rewrite of old 6.3) | yes | canned per exercise; runs keyless |
 | `lab_7.2_rag_gov_docs.ipynb` | Lab 7.2 (new) | embeddings/answer | retrieval runs offline via local embedding fallback |
-| `lab_7.3_agent.ipynb` | Lab 7.3 capstone (new) | agent loop | tools run offline; loop needs key |
+| `lab_7.3_agent.ipynb` | Lab 7.3 capstone (new) | agent loop | tools run offline; loop shows canned trace |
 | `lab_8.1_visualization.ipynb` | Lab 8.1 EPA charts & briefing | no | fully self-contained (matplotlib) |
 | `lab_8.2_genai_reporting.ipynb` | Lab 8.2 GenAI-assisted briefing | yes | canned findings + briefing |
 | `lab_common.py` | shared helpers | — | OpenAI + offline fallbacks for chat/JSON, embeddings, data.gov, PII |
-| `data/` | lab data | — | six public datasets + cached data.gov, synthetic records, RAG corpus, gov memo |
+| `data/` | lab data | — | six public datasets + the synthetic half (records, RAG corpus, memo, constituent feedback, Lab 3.1 and Ex 6.1 packs) — all declared in `MANIFEST.json` |
 | `solutions/` | instructor copies | — | fully-worked `_solutions.ipynb` |
 | `solutions/transcripts/` | expected outputs | — | read-along fallback if the API is down in class |
 
@@ -37,13 +37,21 @@ complete.
 bash build_notebooks.sh      # jupytext src/*.py -> *.ipynb, offline smoke, transcripts
 ```
 The script converts every `src/*.py` (`*_SOLUTION.py` →
-`solutions/*_solutions.ipynb`), then executes the healthcheck and all twelve
-a4 notebooks — student **and** solution copies — with `OPENAI_API_KEY=""`,
-proving the offline/canned paths work (release-gate item 5 in the Lab
-Environment Plan). Solutions execute from `solutions/`; their first cell
-shims cwd/`sys.path` back to `labs/`. `make_transcripts.py` then extracts
-expected-output transcripts from the executed solution notebooks. The 7.x
-notebooks need a live key by design — their fallback is the transcript.
+`solutions/*_solutions.ipynb`), then executes **all 16 student and 15 solution
+notebooks** with `OPENAI_API_KEY=""`, proving the offline/canned paths work
+(release-gate item 5 in the Lab Environment Plan). Solutions execute from
+`solutions/`; their first cell shims cwd/`sys.path` back to `labs/`.
+`make_transcripts.py` then extracts expected-output transcripts from the
+executed solution notebooks, and reports any transcript no source regenerates.
+
+The 7.x notebooks used to be excluded as "needs a live key". They are in the
+smoke test now: every call site has a labelled canned fallback, and excluding
+them only hid regressions in the three labs whose documented contingency *is*
+the transcript.
+
+The interpreter is picked in this order: `$VIRTUAL_ENV`, then `../.venv`, then
+`python3` — it must have `jupytext` and `nbconvert`. Cells execute on the
+`1258-a4` kernel when that kernelspec is registered.
 
 ## What changed from rev a2 (the Lab 6.3 fix)
 The old `lab_6.3_genai.ipynb` used `openai.Completion.create(engine="text-davinci-003", …)`
