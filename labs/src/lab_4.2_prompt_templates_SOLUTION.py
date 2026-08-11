@@ -22,16 +22,18 @@
 
 # %%
 # Instructor copies live in solutions/, one level below labs/ — find labs/
-# (where lab_common.py and data/ are) and run from there.
+# (where lab_common.py, lab_helpers.py and data/ are) and run from there.
 import os, sys
 from pathlib import Path
 
-for _cand in (Path.cwd(), Path.cwd().parent):
+for _cand in (Path.cwd(), *Path.cwd().parents):
     if (_cand / "lab_common.py").is_file():
         os.chdir(_cand)
         if str(_cand) not in sys.path:
             sys.path.insert(0, str(_cand))
         break
+
+from lab_helpers import *
 
 # %% [markdown]
 # ## Step 1 — From prompt to template
@@ -40,24 +42,14 @@ for _cand in (Path.cwd(), Path.cwd().parent):
 # deliberate flaw left in: v1 trusts that `stage` and `problem` exist.
 
 # %%
-import pandas as pd
-from lab_common import chat, chat_json
-
-uc = pd.read_csv("data/federal_ai_use_cases.csv", encoding="utf-8-sig")
-cols = ["agency_name", "use_case_name", "development_stage",
-        "is_high_impact", "problem_solved"]
-print(uc[cols].head(3).to_string())
+uc = load_use_case_inventory()
 
 # %%
-def use_case_brief(agency, name, stage, problem, audience="a non-technical executive"):
-    """Template v1 — slots: agency, name, stage, problem, audience."""
-    prompt = (f"In two sentences for {audience}, summarize this federal AI "
-              f"use case.\nAgency: {agency}\nUse case: {name}\n"
-              f"Stage: {stage}\nProblem it solves: {problem}")
-    canned = (f"[offline example for: {name[:60]}] {agency} is applying AI "
-              f"({stage}) to {str(problem)[:80]}. The system, '{name}', is "
-              f"intended to turn that manual work into an automated pipeline.")
-    return chat([{"role": "user", "content": prompt}], offline=canned)
+TEMPLATE_V1 = """In two sentences for [AUDIENCE], summarize this federal AI use case.
+Agency: [AGENCY]
+Use case: [NAME]
+Stage: [STAGE]
+Problem it solves: [PROBLEM]"""
 
 # %% [markdown]
 # ## Step 2 — Test on five rows it was not written for
@@ -67,13 +59,7 @@ def use_case_brief(agency, name, stage, problem, audience="a non-technical execu
 # parrots the whole name — and for the blank fields Step 3 targets.
 
 # %%
-test_rows = uc[cols].dropna(subset=["use_case_name"]).sample(5, random_state=11)
-outputs = {}
-for i, row in test_rows.iterrows():
-    outputs[i] = use_case_brief(row["agency_name"], row["use_case_name"],
-                                row["development_stage"], row["problem_solved"])
-    print(f"--- {row['use_case_name'][:70]}")
-    print(outputs[i], "\n")
+test_template_on_rows(uc, TEMPLATE_V1)
 
 # %% [markdown]
 # ## Step 3 — The breaking input, and fixing the template
@@ -89,33 +75,16 @@ for i, row in test_rows.iterrows():
 # sentence's meaning; `stage` can be dropped without the output collapsing.
 
 # %%
-breaking_row = uc[uc["problem_solved"].isna()][cols].iloc[0]
-print(breaking_row.to_string(), "\n")
-broken = use_case_brief(breaking_row["agency_name"], breaking_row["use_case_name"],
-                        breaking_row["development_stage"], breaking_row["problem_solved"])
-print("BROKEN OUTPUT:\n", broken)
+show_breaking_row(uc, TEMPLATE_V1)
 
 # %%
-def use_case_brief_v2(agency, name, stage, problem, audience="a non-technical executive"):
-    """Template v2 — missing data is a prompt case, not an accident."""
-    stage_txt = f"Stage: {stage}" if pd.notna(stage) else "Stage: not reported"
-    prob_txt = (f"Problem it solves: {problem}" if pd.notna(problem)
-                else "Problem statement: not reported in the inventory")
-    prompt = (f"In two sentences for {audience}, summarize this federal AI "
-              f"use case. If a field says 'not reported', do not invent it — "
-              f"say the inventory does not report it.\nAgency: {agency}\n"
-              f"Use case: {name}\n{stage_txt}\n{prob_txt}")
-    canned = (f"[offline example for: {name[:60]}] {agency} reports an AI use "
-              f"case, '{name[:60]}'"
-              + (f", currently {str(stage).lower()}" if pd.notna(stage) else
-                 ", though the inventory does not report its stage")
-              + ". Details beyond that are not reported in the inventory.")
-    return chat([{"role": "user", "content": prompt}], offline=canned)
+TEMPLATE_V2 = """In two sentences for [AUDIENCE], summarize this federal AI use case. If a field says 'not reported', do not invent it — say the inventory does not report it.
+Agency: [AGENCY]
+Use case: [NAME]
+Stage: [STAGE]
+Problem it solves: [PROBLEM]"""
 
-
-fixed = use_case_brief_v2(breaking_row["agency_name"], breaking_row["use_case_name"],
-                          breaking_row["development_stage"], breaking_row["problem_solved"])
-print("FIXED OUTPUT:\n", fixed)
+show_fixed_brief(uc, TEMPLATE_V2)
 
 # %% [markdown]
 # ## Step 4 — A second template, a different pattern
@@ -125,26 +94,19 @@ print("FIXED OUTPUT:\n", fixed)
 # output says triage, not assessment.
 
 # %%
-def triage_use_case(agency, name, stage, is_high_impact):
-    prompt = (f"Return JSON with keys plain_english, risk_flag (low|review), "
-              f"one_question_to_ask for this use case.\nAgency: {agency}\n"
-              f"Use case: {name}\nStage: {stage}\nHigh-impact: {is_high_impact}")
-    canned = {"plain_english": f"{name} — an AI use case reported by {agency}.",
-              "risk_flag": "review" if is_high_impact == "High-impact" else "low",
-              "one_question_to_ask":
-                  "What human review exists before this system's output reaches a decision?"}
-    return chat_json([{"role": "user", "content": prompt}], offline=canned)
+TRIAGE_TEMPLATE = """Return JSON with keys plain_english, risk_flag (low|review), one_question_to_ask for this use case.
+Agency: [AGENCY]
+Use case: [NAME]
+Stage: [STAGE]
+High-impact: [IS_HIGH_IMPACT]"""
 
-
-for i, row in test_rows.head(3).iterrows():
-    print(triage_use_case(row["agency_name"], row["use_case_name"],
-                          row["development_stage"], row["is_high_impact"]))
+triage_use_cases(uc, TRIAGE_TEMPLATE)
 
 # %% [markdown]
 # ## Step 5 — Export the library
 
 # %%
-library_md = f"""# My Prompt Library
+LIBRARY_MD = """# My Prompt Library
 
 Two tested templates from Course 1258 Labs 4.1–4.2. Each lists its slots, the
 prompt text, and the limitations the tests exposed. Offline runs return canned
@@ -155,7 +117,7 @@ outputs; on the VM they call the enterprise assistant.
 Two-sentence executive briefing of a federal AI use case.
 
 ```
-{use_case_brief_v2.__doc__}
+Template v2 — missing data is a prompt case, not an accident.
 Prompt: "In two sentences for [AUDIENCE], summarize this federal AI use case.
 If a field says 'not reported', do not invent it — say the inventory does not
 report it. Agency: [AGENCY] / Use case: [NAME] / Stage: [STAGE] / Problem: [PROBLEM]"
@@ -172,9 +134,8 @@ Structured JSON triage: `plain_english`, `risk_flag` (low|review),
 **Known limitation:** risk_flag keys only off the reported high-impact label;
 it is triage, not assessment. Missing stage handled as "not reported".
 """
-with open("my_prompt_library.md", "w") as f:
-    f.write(library_md)
-print(open("my_prompt_library.md").read())
+
+save_to_prompt_library(LIBRARY_MD)
 
 # %% [markdown]
 # ## Reflection (expected answers)

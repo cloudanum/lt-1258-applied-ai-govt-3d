@@ -19,7 +19,8 @@
 # A programme office wants to use 311 data to target service improvements.
 # You have been asked whether the data supports that. Answer with numbers.
 #
-# Cells marked `# YOUR CODE` are for you to complete. No API key is needed.
+# Cells marked `# YOUR TURN` ask you to change a simple value and re-run.
+# No API key is needed.
 
 # %% [markdown]
 # ## Objectives
@@ -46,11 +47,21 @@
 # **Data rule:** this is genuinely public data, downloaded for offline
 # classroom use. Treat it with the same care you would any operational
 # extract: address fields in it belong to real residents.
+#
+# **How this notebook works:** every step is one provided cell — run it with
+# Shift+Enter and read what it prints. Cells marked `# YOUR TURN` ask you to
+# change a simple value (like the blank-rate limit that flags a column) and
+# re-run the cell. Everything runs as shipped, so you can never get stuck.
+
+# %%
+# ▶ Setup — run this cell first (click it, then Shift+Enter).
+# It loads the course helper functions used by every step below.
+from lab_helpers import *
 
 # %% [markdown]
 # ## Steps
 #
-# 1. Open `lab_6.1_data_quality.ipynb` and load the file. (3 min)
+# 1. Load the file. (3 min)
 # 2. **Completeness:** null rate per column; flag anything above 20%. (6 min)
 # 3. **Uniqueness:** duplicate `sr_number` count; inspect a duplicate pair.
 #    (6 min)
@@ -71,124 +82,62 @@
 # ### Step 1 — Load (3 min, provided)
 #
 # `data/chicago_311.csv` is a genuine operational extract — 4,000 recent
-# service requests, warts included on purpose.
+# service requests, warts included on purpose. Run this cell to load it.
 
 # %%
-import pandas as pd
-
-pd.set_option("display.width", 220)
-pd.set_option("display.max_columns", 45)
-
-df = pd.read_csv("data/chicago_311.csv", low_memory=False)
-print("shape:", df.shape)
-print("columns:", list(df.columns))
+df = load_311_data()
 
 # %% [markdown]
 # ### Step 2 — Completeness (6 min)
 #
-# Null rate per column; flag anything above 20%. Watch for columns that are
-# null for a *reason* (a `closed_date` on an open request is not a defect).
+# Run this cell for the blank rate per column; it flags anything above 20%.
+# Watch for columns that are blank for a *reason* (a `closed_date` on an open
+# request is not a defect — the cell checks that too). Then try a stricter or
+# looser limit.
 
 # %%
-completeness = None
-# YOUR CODE: null percentage per column, sorted descending; flag columns > 20%.
-
-if completeness is None:
-    completeness = (df.isna().mean() * 100).round(1).sort_values(ascending=False)
-    print("(reference answer applied)\n")
-print(completeness[completeness > 0].to_string())
-flagged = completeness[completeness > 20]
-print(f"\ncolumns above 20% null: {len(flagged)}")
+NULL_LIMIT = 20   # ← YOUR TURN: the % of blanks that flags a column — try 10 or 50 and re-run this cell
+completeness = completeness_report(df, NULL_LIMIT)
 
 # %% [markdown]
-# ### Step 3 — Uniqueness (6 min)
+# ### Step 3 — Uniqueness (6 min, provided)
 #
-# Duplicate `sr_number` count; inspect a duplicate pair. Then look at the
-# city's own `duplicate` flag — do the two stories agree?
+# Run this cell for the duplicate `sr_number` count and a duplicate pair to
+# inspect. Then look at the city's own `duplicate` flag — do the two stories
+# agree?
 
 # %%
-dup_sr = None
-flagged_dups = None
-# YOUR CODE: dup_sr = number of duplicated sr_number values;
-# flagged_dups = rows where the duplicate flag is True. Inspect both.
-
-if dup_sr is None:
-    dup_sr = int(df["sr_number"].duplicated().sum())
-    flagged_dups = int(df["duplicate"].sum())
-    print("(reference answers applied)\n")
-print(f"duplicated sr_number values: {dup_sr}")
-print(f"rows flagged duplicate=True by the city: {flagged_dups}")
-
-# near-duplicates the key alone can't see:
-key_dups = int(df.duplicated(subset=["sr_type", "street_address", "created_date"]).sum())
-print(f"same type + address + timestamp (likely double submissions): {key_dups}")
+uniqueness = uniqueness_report(df)
 
 # %% [markdown]
-# ### Step 4 — Consistency (6 min)
+# ### Step 4 — Consistency (6 min, provided)
 #
-# Case and whitespace variants in categorical columns. Check `city`, `state`,
-# and the dtype of `zip_code` — a ZIP is an identifier, not a quantity.
+# Run this cell for the case and whitespace variants in the categorical
+# columns — `city`, `state` — and the way `zip_code` is stored: a ZIP is an
+# identifier, not a quantity.
 
 # %%
-consistency = None
-# YOUR CODE: distinct raw values of city and state (with counts), and the
-# dtype + a sample of zip_code.
-
-if consistency is None:
-    consistency = {
-        "city": df["city"].value_counts(dropna=False).head(5).to_dict(),
-        "state": df["state"].value_counts(dropna=False).head(5).to_dict(),
-        "zip_dtype": str(df["zip_code"].dtype),
-        "zip_sample": df["zip_code"].dropna().head(3).tolist(),
-    }
-    print("(reference answer applied)\n")
-for k, v in consistency.items():
-    print(f"{k}: {v}")
+consistency_report(df)
 
 # %% [markdown]
-# ### Step 5 — Validity (6 min)
+# ### Step 5 — Validity (6 min, provided)
 #
-# Dates outside a plausible range; requests closed before they were created.
-# A zero here is a *pass* — record it as one, with the query that proved it.
+# Run this cell for dates outside a plausible range and requests closed
+# before they were created. A zero here is a *pass* — record it as one, with
+# the check that proved it.
 
 # %%
-created = pd.to_datetime(df["created_date"], errors="coerce")
-closed = pd.to_datetime(df["closed_date"], errors="coerce")
-
-validity = None
-# YOUR CODE: count unparseable created dates, closed-before-created rows,
-# and print the date range.
-
-if validity is None:
-    validity = {
-        "created_unparseable": int(created.isna().sum()),
-        "closed_before_created": int((closed < created).sum()),
-        "range": f"{created.min()} -> {created.max()}",
-    }
-    print("(reference answer applied)\n")
-print(validity)
+validity = validity_report(df)
 
 # %% [markdown]
-# ### Step 6 — Timeliness (5 min)
+# ### Step 6 — Timeliness (5 min, provided)
 #
-# The distribution of `created_date`: how current is the extract, and how
-# wide is its window? Currency and coverage are different claims — assess
-# both.
+# Run this cell for the `created_date` coverage: how current is the extract,
+# and how wide is its window? Currency and coverage are different claims —
+# assess both.
 
 # %%
-timeliness = None
-# YOUR CODE: min/max of created_date and the number of distinct calendar
-# days covered.
-
-if timeliness is None:
-    timeliness = {
-        "newest": str(created.max()),
-        "oldest": str(created.min()),
-        "calendar_days": int(created.dt.date.nunique()),
-        "window_hours": round((created.max() - created.min()).total_seconds() / 3600, 1),
-    }
-    print("(reference answer applied)\n")
-print(timeliness)
+timeliness = timeliness_report(df)
 
 # %% [markdown]
 # ### Step 7 — Accuracy (5 min)
@@ -205,36 +154,15 @@ print(timeliness)
 # -
 
 # %% [markdown]
-# ### Step 8 — The scorecard (5 min)
+# ### Step 8 — The scorecard (5 min, provided)
 #
-# One table: dimension, metric, value, pass/fail. Fill it from the numbers
-# above — the thresholds are yours to defend.
+# Run this cell for the one-table scorecard: dimension, metric, value,
+# pass/fail, filled from the numbers above. The thresholds baked in are a
+# defensible starting point — if you defend different ones, say so in your
+# recommendation.
 
 # %%
-scorecard = None
-# YOUR CODE: a DataFrame with columns [dimension, metric, value, passes]
-# covering all six dimensions.
-
-if scorecard is None:
-    scorecard = pd.DataFrame([
-        {"dimension": "Completeness", "metric": "columns >20% null",
-         "value": f"{len(flagged)} of {df.shape[1]}", "passes": False},
-        {"dimension": "Uniqueness", "metric": "duplicate sr_number",
-         "value": dup_sr, "passes": dup_sr == 0},
-        {"dimension": "Uniqueness", "metric": "city-flagged duplicates",
-         "value": flagged_dups, "passes": False},
-        {"dimension": "Consistency", "metric": "city/state case variants + zip dtype",
-         "value": "Chicago/CHICAGO, Illinois/IL, zip as float", "passes": False},
-        {"dimension": "Validity", "metric": "closed-before-created",
-         "value": validity["closed_before_created"], "passes": True},
-        {"dimension": "Timeliness", "metric": "window covered",
-         "value": f"{timeliness['window_hours']}h, {timeliness['calendar_days']} days",
-         "passes": False},
-        {"dimension": "Accuracy", "metric": "testable from data alone?",
-         "value": "no", "passes": None},
-    ])
-    print("(reference scorecard applied — adjust thresholds and defend your own)\n")
-print(scorecard.to_string(index=False))
+scorecard = quality_scorecard(df, completeness, uniqueness, validity, timeliness)
 
 # %% [markdown]
 # ### Step 9 — Go / no-go recommendation (3 min, write here)
@@ -269,15 +197,21 @@ print(scorecard.to_string(index=False))
 # %% [markdown]
 # ## Troubleshooting
 #
-# - **`FileNotFoundError: data/chicago_311.csv`** — the kernel's working
-#   directory is not `labs/`. Restart the kernel from the `labs/` folder and
-#   Run All.
-# - **`DtypeWarning` on load** — expected on this file (mixed types in
-#   operational columns); `low_memory=False` in the load cell silences it.
-# - **A dimension shows zero defects** — that is a pass, not a bug. Record it
-#   in the scorecard with the query that proved it (Step 5 shows how).
-# - **`zip_code` prints as float (60618.0)** — that *is* the consistency
-#   defect Step 4 asks you to find, not a display error.
-# - **Your scorecard values differ from a neighbour's** — the reference
-#   scorecard is a starting point; if you measured the dimensions yourself,
-#   defend your numbers. Only the load cell is shared state.
+# - **A red error mentioning `chicago_311.csv` or "No such file".** The
+#   course data pack is missing or incomplete — tell your instructor; run the
+#   Day-0 healthcheck to confirm.
+# - **A warning about mixed column types on load.** Expected on this file
+#   (mixed types in operational columns) — the provided load already handles
+#   it.
+# - **A dimension shows zero defects.** That is a pass, not a bug. Record it
+#   in the scorecard with the check that proved it (Step 5 shows how).
+# - **`zip_code` prints with a decimal point (60618.0).** That *is* the
+#   consistency defect Step 4 asks you to find, not a display error.
+# - **Your numbers differ from a neighbour's.** They should not — every
+#   number is computed from the same file. Re-run the notebook in order
+#   (Kernel → Restart & Run All).
+
+# %% [markdown]
+# ---
+# *Curious about the Python behind these steps? The full code-forward version
+# of this lab lives in the `For_Python_Programmers/` folder.*

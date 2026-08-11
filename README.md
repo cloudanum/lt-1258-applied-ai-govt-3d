@@ -7,6 +7,14 @@ quality, prompt engineering, security, and on to calling the OpenAI API,
 building RAG over government documents, and shipping a guarded
 citizen-services triage agent as the capstone.
 
+The labs are written for a **non-programmer audience**: every step is a
+single plain-English helper call (`labs/lab_helpers.py` hides the pandas /
+scikit-learn / OpenAI SDK machinery), and students only edit simple values —
+prompt text, a number, a keyword — in cells marked `# YOUR TURN`. The
+original code-forward versions, where participants write the Python
+themselves, are preserved in `labs/For_Python_Programmers/` for rooms with
+programming experience. Same datasets, same steps, same outputs.
+
 Every lab **executes end-to-end with no API key**: API-backed steps degrade
 to labelled canned outputs, so the course survives a dead key, a quota-exhausted
 account, or a no-internet classroom.
@@ -35,13 +43,19 @@ LT-1258-govt-3-days/
 │   ├── src/                    Jupytext sources (notebooks are generated from these)
 │   ├── solutions/              Instructor solution notebooks + expected-output transcripts
 │   ├── data/                   Public/synthetic datasets (see MANIFEST.json)
-│   ├── lab_common.py           Shared helpers: .env loading, chat wrappers, canned fallbacks
+│   ├── lab_helpers.py          Plain-English one-call-per-step functions the student
+│   │                           notebooks run (the non-programmer facade over lab_common)
+│   ├── lab_common.py           Shared helpers: key/.env loading, chat wrappers, fallbacks
+│   ├── For_Python_Programmers/ The original code-forward labs (frozen snapshot) for
+│   │                           participants comfortable writing Python
 │   └── build_notebooks.sh      Jupytext -> .ipynb + forced-offline smoke test
 ├── registry/                   activities.yaml / labs.yaml — the canonical activity registry
 │                               (id == workbook heading == slide callout == handout section)
 ├── tools/                      Course build & QA tooling (deck branding, enrichment,
 │                             notes injection, timing, validate_registry.py gate)
 ├── .env.example                API-key template (copy to .env; never commit the real one)
+├── start_jupyter_labs.sh       Classroom-VM launcher behind the Desktop icon
+├── sync_key.sh                 Copies the class key from /home/student/Keys/keys.txt to .env
 └── README.md
 ```
 
@@ -71,11 +85,19 @@ cp ../.env.example .env     # fill in OPENAI_API_KEY (author machine only)
 jupyter lab                 # or open the notebooks in VS Code
 ```
 
-`lab_common.load_dotenv()` searches for `.env` from the labs directory upward;
-**real environment variables always win**, so an `OPENAI_API_KEY` exported from
-your shell will shadow the `.env` value — unset it if the labs seem to ignore
-`.env`. The key is never printed. After
-editing sources in `labs/src/`, rebuild:
+`lab_common.load_dotenv()` searches for `.env` from the labs directory upward,
+and `lab_common.load_keys_file()` reads the classroom key file first
+(`/home/student/Keys/keys.txt`, override with `$COURSE_KEYS_FILE`). Precedence
+is **real environment variable > key file > `.env`** — an `OPENAI_API_KEY`
+exported from your shell shadows both files, so unset it if the labs seem to
+ignore `.env`. The key is never printed.
+
+On the classroom VM nothing is edited by hand: IT fills in
+`/home/student/Keys/keys.txt` and `sync_key.sh` — run by the Desktop launcher
+on every start — copies that key into the `OPENAI_API_KEY` line of `.env`,
+leaving the model aliases and comments alone. See the VM's
+`Desktop/WHERE_TO_PUT_OPENAI_KEY.txt`. After editing sources in `labs/src/`,
+rebuild:
 
 ```sh
 ./build_notebooks.sh        # jupytext + offline smoke run + transcripts
@@ -134,12 +156,18 @@ sheet used when the room is offline.)
   Debrief → Troubleshooting); the registry holds the canonical contract.
 - **Offline-first** — keyless and dead-key runs degrade to labelled canned
   outputs, so a classroom never blocks on API health.
+- **Two audiences, one lab pack** — the root notebooks are the guided,
+  low-code versions (one helper call per step, `# YOUR TURN` value edits);
+  `labs/For_Python_Programmers/` keeps the code-forward originals. Both run
+  the same data through the same steps. `tools/check_friendly.py` guards the
+  contract: no scary constructs in student cells and every `# YOUR TURN`
+  cell pre-filled with a working value.
 
 ## Troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| `OPENAI_API_KEY not set` note | Expected off the VM — canned outputs are used. To run live, copy `.env.example` to `.env` and add your key. |
+| `OPENAI_API_KEY not set` note | Expected off the VM — canned outputs are used. To run live, copy `.env.example` to `.env` and add your key. On the VM, check `/home/student/Keys/keys.txt` and run `./sync_key.sh`. |
 | Notebook out of date after editing `src/` | Re-run `./build_notebooks.sh`; notebooks are generated artifacts. |
 | A dataset file is missing | Re-clone or check `labs/data/MANIFEST.json` for the expected pack. |
 | API calls fail with 429/quota errors | The lab keeps working on canned fallbacks; nothing else to do. |

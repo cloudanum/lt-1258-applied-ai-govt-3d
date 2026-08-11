@@ -34,4 +34,4 @@ Graffiti Removal Request      136
 The OMB AI use case inventory tracks how federal agencies are using artificial intelligence — each reported system's purpose, development stage, and whether it is high-impact.
 
 (offline canned reply — token counts need a live call; a call this size is typically ~40 tokens total)
-lc is still defined: True | uc rows: 1200
+helpers are still loaded: yes | uc rows: 1200

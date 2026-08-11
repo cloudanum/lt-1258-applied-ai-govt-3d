@@ -1,0 +1,111 @@
+EXPECTED OUTPUT — lab_6.2_genai_cleaning (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+60 raw values, e.g.: ['Aircraft Noise Complaint', '311 INFORMATION ONLY CALL', 'Water On Street Complaint', 'Tree Emergency', 'Graffiti Removal Request', 'Tree Debris Clean-Up Request']
+                         raw                  canonical  confidence
+    Aircraft Noise Complaint                      Noise        0.98
+   311 INFORMATION ONLY CALL Information & 311 Services        0.97
+   Water On Street Complaint             Urban Forestry        0.92
+              Tree Emergency             Urban Forestry        0.92
+    Graffiti Removal Request Graffiti & Property Damage        0.95
+Tree Debris Clean-Up Request             Urban Forestry        0.92
+ Water in Basement Complaint           Water & Drainage        0.90
+  Street Light Out Complaint             Urban Forestry        0.92
+ Abandoned Vehicle Complaint   Streets & Transportation        0.85
+    Garbage Cart Maintenance         Sanitation & Waste        0.90
+valid: True
+validator correctly rejected the corrupt item (item 3: 'Stuff' not in vocabulary)
+                                          raw                   canonical  confidence
+1                   311 INFORMATION ONLY CALL  Information & 311 Services        0.97
+10          Sewer Cleaning Inspection Request            Water & Drainage        0.90
+12                Pothole in Street Complaint              Urban Forestry        0.92
+13               Rodent Baiting/Rat Complaint       Pest & Animal Control        0.90
+15    Finance Parking Code Enforcement Review    Streets & Transportation        0.85
+16                         Building Violation         Buildings & Housing        0.85
+17                E-Scooter Parking Complaint    Streets & Transportation        0.85
+18                      Fly Dumping Complaint          Sanitation & Waste        0.90
+20                Dead Animal Pick-Up Request       Pest & Animal Control        0.90
+21                        Blue Recycling Cart          Sanitation & Waste        0.90
+27                       Weed Removal Request              Urban Forestry        0.92
+30         Street Light Pole Damage Complaint              Urban Forestry        0.92
+31      Sign Repair Request - All Other Signs    Streets & Transportation        0.88
+32             City Vehicle Sticker Violation    Streets & Transportation        0.85
+34                 Yard Waste Pick-Up Request          Sanitation & Waste        0.90
+35                Sidewalk Inspection Request    Streets & Transportation        0.88
+37                    Alley Pothole Complaint    Streets & Transportation        0.88
+44                   Report an Injured Animal       Pest & Animal Control        0.90
+45        Vacant/Abandoned Building Complaint         Buildings & Housing        0.85
+59  Bungalow/Vintage Home Information Request                       Other        0.50
+error rate: 5% of the audited sample (1 wrong of 20)
+                                     raw                  canonical  confidence
+                Aircraft Noise Complaint                      Noise        0.98
+               311 INFORMATION ONLY CALL Information & 311 Services        0.97
+               Water On Street Complaint             Urban Forestry        0.92
+                          Tree Emergency             Urban Forestry        0.92
+                Graffiti Removal Request Graffiti & Property Damage        0.95
+            Tree Debris Clean-Up Request             Urban Forestry        0.92
+             Water in Basement Complaint           Water & Drainage        0.90
+              Street Light Out Complaint             Urban Forestry        0.92
+             Abandoned Vehicle Complaint   Streets & Transportation        0.85
+                Garbage Cart Maintenance         Sanitation & Waste        0.90
+       Sewer Cleaning Inspection Request           Water & Drainage        0.90
+            Traffic Signal Out Complaint   Streets & Transportation        0.88
+             Pothole in Street Complaint             Urban Forestry        0.92
+            Rodent Baiting/Rat Complaint      Pest & Animal Control        0.90
+                 Tree Removal Inspection             Urban Forestry        0.92
+ Finance Parking Code Enforcement Review   Streets & Transportation        0.85
+                      Building Violation        Buildings & Housing        0.85
+             E-Scooter Parking Complaint   Streets & Transportation        0.85
+                   Fly Dumping Complaint         Sanitation & Waste        0.90
+               Sanitation Code Violation         Sanitation & Waste        0.90
+             Dead Animal Pick-Up Request      Pest & Animal Control        0.90
+                     Blue Recycling Cart         Sanitation & Waste        0.90
+          Buildings - Plumbing Violation        Buildings & Housing        0.85
+            Divvy Bike Parking Complaint   Streets & Transportation        0.85
+          Alley Sewer Inspection Request           Water & Drainage        0.90
+             Water Lead Test Kit Request           Water & Drainage        0.90
+        Sewer Cave-In Inspection Request           Water & Drainage        0.90
+                    Weed Removal Request             Urban Forestry        0.92
+                  Stray Animal Complaint      Pest & Animal Control        0.90
+                   Tree Planting Request             Urban Forestry        0.92
+      Street Light Pole Damage Complaint             Urban Forestry        0.92
+   Sign Repair Request - All Other Signs   Streets & Transportation        0.88
+          City Vehicle Sticker Violation   Streets & Transportation        0.85
+                          Check for Leak           Water & Drainage        0.90
+              Yard Waste Pick-Up Request         Sanitation & Waste        0.90
+             Sidewalk Inspection Request   Streets & Transportation        0.88
+                            Cab Feedback        Buildings & Housing        0.85
+                 Alley Pothole Complaint   Streets & Transportation        0.88
+         Sign Repair Request - Stop Sign   Streets & Transportation        0.88
+        Missed Garbage Pick-Up Complaint         Sanitation & Waste        0.90
+                      No Water Complaint           Water & Drainage        0.90
+                Clean Vacant Lot Request         Sanitation & Waste        0.90
+                    Restaurant Complaint        Buildings & Housing        0.85
+               Nuisance Animal Complaint      Pest & Animal Control        0.90
+                Report an Injured Animal      Pest & Animal Control        0.90
+     Vacant/Abandoned Building Complaint        Buildings & Housing        0.85
+                       Recycling Pick Up         Sanitation & Waste        0.90
+               Alley Light Out Complaint   Streets & Transportation        0.88
+                 Street Cleaning Request             Urban Forestry        0.92
+              Pet Wellness Check Request      Pest & Animal Control        0.90
+                     Business Complaints        Buildings & Housing        0.85
+      Sign Repair Request - One Way Sign   Streets & Transportation        0.88
+  Sidewalk Café/Outdoor Dining Complaint        Buildings & Housing        0.85
+                Vicious Animal Complaint      Pest & Animal Control        0.90
+Shared Housing/Vacation Rental Complaint        Buildings & Housing        0.85
+                Public Vehicle Complaint   Streets & Transportation        0.85
+    Street Light On During Day Complaint             Urban Forestry        0.92
+      Consumer Retail Business Complaint        Buildings & Housing        0.85
+
+the confidently wrong one:
+                      raw          canonical  confidence
+Sanitation Code Violation Sanitation & Waste         0.9
+re-running failures: ['Building Violation', 'Sanitation Code Violation', 'Buildings - Plumbing Violation', 'City Vehicle Sticker Violation']
+                           raw                     canonical  confidence
+            Building Violation Code Enforcement & Violations         0.9
+     Sanitation Code Violation Code Enforcement & Violations         0.9
+Buildings - Plumbing Violation Code Enforcement & Violations         0.9
+City Vehicle Sticker Violation Code Enforcement & Violations         0.9
+re-mapped valid: True

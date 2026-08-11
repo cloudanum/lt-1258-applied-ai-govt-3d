@@ -3,9 +3,12 @@ Captured by an offline run (OPENAI_API_KEY=""), so model cells show
 the canned fallbacks; live runs will differ in wording, not in the
 verified numbers. Use as the read-along fallback if the API is down.
 
+loaded 5 synthetic citizen records from data/citizen_records.json
 {'ssn': 5, 'email': 6, 'phone': 5}
 
 record keys: ['case_id', 'name', 'ssn', 'email', 'phone', 'address', 'topic', 'summary', 'status']
+{'ssn': 5, 'email': 6, 'phone': 5}
+{'ssn': 0, 'email': 0, 'phone': 0}
 {'ssn': 0, 'email': 0, 'phone': 0}
 
 C-1001 — Jordan Alvarez

@@ -26,7 +26,7 @@
 #
 # By the end of this lab, you will:
 #
-# - Load, filter, group and summarise a real federal dataset with pandas.
+# - Load, filter, group and summarise a real federal dataset.
 # - Answer substantive questions about federal AI adoption from evidence.
 # - Practise the analysis habits every later lab depends on.
 
@@ -37,152 +37,110 @@
 #   portion of OMB's 2025 Federal Agency AI Use Case Inventory — capped
 #   extract) and `data/federal_ai_cots.csv` (its commercial off-the-shelf
 #   companion). Provenance in `data/MANIFEST.json`.
-# - **Tools:** pandas. Run from the `labs/` folder (the VM's **Start Labs**
-#   shortcut puts you there); both files load with `encoding="utf-8-sig"`.
 # - **No API key is needed** — this lab never calls a model.
 # - **The one rule that never changes:** public or synthetic data only.
-# - Cells marked `# YOUR CODE` are for you to complete. Each has a reference
-#   fallback that runs if you leave it blank — replace it with your own line
-#   when you can.
+# - **How this notebook works:** every step is one provided cell — run it with
+#   Shift+Enter and read what it prints. Cells marked `# YOUR TURN` ask you to
+#   change a simple value and re-run the cell. Everything runs as shipped, so
+#   you can never get stuck.
+
+# %%
+# ▶ Setup — run this cell first (click it, then Shift+Enter).
+# It loads the course helper functions used by every step below.
+from lab_helpers import *
 
 # %% [markdown]
 # ## Steps
 #
-# 1. **(3 min)** Open `lab_1.1_ai_inventory.ipynb` and run the setup cell.
+# 1. **(3 min)** Run the setup cell above, then load the inventory.
 # 2. **(3 min)** Print the shape and columns. How many use cases, how many
 #    agencies?
-# 3. **(4 min)** Group by `agency_name` and produce the top 10 agencies by
-#    use-case count.
-# 4. **(4 min)** Group by `development_stage`. What share is actually in
-#    production?
-# 5. **(4 min)** Filter `is_high_impact`. Which agencies report the most
-#    high-impact AI?
+# 3. **(4 min)** Produce the top 10 agencies by use-case count.
+# 4. **(4 min)** Break the inventory down by development stage. What share is
+#    actually in production?
+# 5. **(4 min)** Which agencies report the most high-impact AI?
 # 6. **(4 min)** Cross-tabulate `topic_area` against `development_stage` and
 #    read one row aloud.
-# 7. **(4 min)** Join the COTS file. Which commercial tools appear most often?
-# 8. **(4 min)** Write three findings in the notebook, each with the line of
-#    code that produced it.
+# 7. **(4 min)** Which commercial tools appear most often?
+# 8. **(4 min)** Write three findings in the notebook, each with the step that
+#    produced it.
 
 # %% [markdown]
-# ### Step 1 — Setup and load
+# ### Step 1 — Load the inventory (provided)
 #
-# Run this cell. It imports pandas and loads
-# `data/federal_ai_use_cases.csv` — the individually-reported portion of OMB's
-# 2025 inventory (capped extract — see `data/MANIFEST.json` for provenance).
+# Run this cell. It loads `data/federal_ai_use_cases.csv` — the
+# individually-reported portion of OMB's 2025 inventory (capped extract — see
+# `data/MANIFEST.json` for provenance).
 
 # %%
-import pandas as pd
-
-pd.set_option("display.width", 200)
-pd.set_option("display.max_columns", 40)
-
-uc = None
-# YOUR CODE: load data/federal_ai_use_cases.csv into `uc` with pd.read_csv
-# (use encoding="utf-8-sig" — the file starts with a byte-order mark).
-
-if uc is None:
-    uc = pd.read_csv("data/federal_ai_use_cases.csv", encoding="utf-8-sig")
-    print("(reference load applied — replace with your own line above)")
+uc = load_ai_inventory()
 
 # %% [markdown]
-# ### Step 2 — First look: shape, columns, agencies
+# ### Step 2 — First look: shape, columns, agencies (provided)
 #
-# Print the shape and columns. **How many use cases, and how many agencies?**
+# Run this cell to print the shape and columns. **How many use cases, and how
+# many agencies?**
 
 # %%
-print("shape:", uc.shape, "| agencies:", uc["agency_name"].nunique())
-print("columns:", list(uc.columns))
+inventory_overview(uc)
 
 # %% [markdown]
 # ### Step 3 — Top 10 agencies by use-case count
 #
-# Group by `agency_name` and produce the ten agencies reporting the most use
-# cases.
+# Run this cell to rank agencies by how many use cases they reported. Then
+# change `TOP_N` below and re-run — what changes?
 
 # %%
-top_agencies = None
-# YOUR CODE: value_counts (or groupby().size()) on agency_name, top 10.
-
-if top_agencies is None:
-    top_agencies = uc["agency_name"].value_counts().head(10)
-    print("(reference answer applied)\n")
-print(top_agencies.to_string())
+TOP_N = 10   # ← YOUR TURN: how many agencies to show — try 3 or 20, then re-run this cell
+top_ai_agencies(uc, top_n=TOP_N)
 
 # %% [markdown]
-# ### Step 4 — What share is actually in production?
+# ### Step 4 — What share is actually in production? (provided)
 #
-# Group by `development_stage`. What share of use cases is `Deployed`? Decide
-# for yourself what to do with blank values — and be ready to defend it.
+# Run this cell to break the inventory down by `development_stage`. What share
+# of use cases is `Deployed`? The cell prints the share two ways — blanks
+# excluded, and blanks counted in the total. Decide for yourself which you
+# would quote — and be ready to defend it.
 
 # %%
-deployed_share = None
-# YOUR CODE: the percentage of use cases with development_stage == "Deployed".
-# (Hint: value_counts with dropna=False first, then decide your denominator.)
-
-if deployed_share is None:
-    stage = uc["development_stage"]
-    deployed_share = round((stage == "Deployed").sum() / stage.notna().sum() * 100, 1)
-    print("(reference answer applied — blanks excluded from the denominator)\n")
-print(uc["development_stage"].value_counts(dropna=False).to_string())
-print(f"\nDeployed share: {deployed_share}%")
+show_deployed_share(uc)
 
 # %% [markdown]
-# ### Step 5 — Who reports the most high-impact AI?
+# ### Step 5 — Who reports the most high-impact AI? (provided)
 #
-# Filter to rows flagged `is_high_impact == "High-impact"` and rank agencies.
-# (Lab 0.1 already showed this column has more than two values — filter
-# deliberately, don't just count non-blanks.)
+# Run this cell to keep only the rows flagged `is_high_impact == "High-impact"`
+# and rank agencies. (Lab 0.1 already showed this column has more than two
+# values — the cell filters deliberately, it does not just count non-blanks.)
 
 # %%
-high_impact_by_agency = None
-# YOUR CODE: filter to High-impact rows, then rank agencies by count.
-
-if high_impact_by_agency is None:
-    high_impact_by_agency = (uc[uc["is_high_impact"] == "High-impact"]
-                             ["agency_name"].value_counts())
-    print("(reference answer applied)\n")
-print(high_impact_by_agency.to_string())
+high_impact_agencies(uc)
 
 # %% [markdown]
-# ### Step 6 — Topic area × development stage
+# ### Step 6 — Topic area × development stage (provided)
 #
-# Cross-tabulate `topic_area` against `development_stage` and read one row
-# aloud to your neighbour: what does it tell you about where that topic's AI
-# actually is?
+# Run this cell to cross-tabulate `topic_area` against `development_stage`,
+# then read one row aloud to your neighbour: what does it tell you about where
+# that topic's AI actually is?
 
 # %%
-xtab = None
-# YOUR CODE: pd.crosstab(uc["topic_area"], uc["development_stage"])
-
-if xtab is None:
-    xtab = pd.crosstab(uc["topic_area"], uc["development_stage"])
-    print("(reference answer applied)\n")
-print(xtab.to_string())
+topic_stage_crosstab(uc)
 
 # %% [markdown]
-# ### Step 7 — The commercial tools underneath
+# ### Step 7 — The commercial tools underneath (provided)
 #
 # `federal_ai_cots.csv` is the companion file: consolidated commercial
-# off-the-shelf AI use. Which commercial products appear most often? Notice the
-# near-duplicates in the product names while you count — a preview of Lab 6.2.
+# off-the-shelf AI use. Run this cell to see which commercial products appear
+# most often. Notice the near-duplicates in the product names while you read —
+# a preview of Lab 6.2.
 
 # %%
-top_tools = None
-# YOUR CODE: load data/federal_ai_cots.csv (encoding="utf-8-sig") and count
-# the 10 most frequent values of "Name of Commercial Product or Service Used".
-
-if top_tools is None:
-    cots = pd.read_csv("data/federal_ai_cots.csv", encoding="utf-8-sig")
-    top_tools = (cots["Name of Commercial Product or Service Used"]
-                 .value_counts().head(10))
-    print("(reference answer applied)\n")
-print(top_tools.to_string())
+top_commercial_tools()
 
 # %% [markdown]
-# ### Step 8 — Three findings, each with the code that produced it
+# ### Step 8 — Three findings, each with the step that produced it
 #
 # Write three findings for your CIO in the markdown cell below. Each must be
-# one sentence *plus* the line of code that produced the number. A finding is
+# one sentence *plus* the step above that produced the number. A finding is
 # something a decision-maker could act on, not a restated table.
 
 # %% [markdown]
@@ -197,7 +155,7 @@ print(top_tools.to_string())
 #
 # 1. The top-10 agency table, the deployed share, the high-impact ranking.
 # 2. The topic × stage cross-tab with one row read aloud.
-# 3. Your three findings, each with its line of code.
+# 3. Your three findings, each with the step that produced it.
 
 # %% [markdown]
 # ## Reflection
@@ -222,13 +180,16 @@ print(top_tools.to_string())
 # %% [markdown]
 # ## Troubleshooting
 #
-# - **`FileNotFoundError: data/federal_ai_use_cases.csv`.** You are not running
-#   from the `labs/` folder — close the notebook, open it from the file
-#   browser in JupyterLab, and Run All.
-# - **`KeyError: 'agency_name'` or a weird first column name.** The file's
-#   byte-order mark got into the header — reload with `encoding="utf-8-sig"`.
-# - **Your value counts don't add up to the row count.** Blank values are
-#   dropped by default — use `value_counts(dropna=False)` to see them.
+# - **A red error mentioning a data file.** The course data pack is incomplete
+#   — tell your instructor; run the Day-0 healthcheck to confirm.
+# - **The counts in a step don't add up to the row count.** Blank values are
+#   left out of most counts by default — Step 4's table shows them as `NaN`.
 # - **Your numbers differ from your neighbour's.** Check you are both on the
 #   same shipped extract; this file is capped (see `data/MANIFEST.json`), not
 #   the full 56-agency inventory.
+# - **Out-of-order errors after experimenting.** Kernel → Restart & Run All.
+
+# %% [markdown]
+# ---
+# *Curious about the Python behind these steps? The full code-forward version
+# of this lab lives in the `For_Python_Programmers/` folder.*

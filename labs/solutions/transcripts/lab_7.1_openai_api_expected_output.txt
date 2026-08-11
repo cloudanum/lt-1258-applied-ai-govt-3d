@@ -3,32 +3,48 @@ Captured by an offline run (OPENAI_API_KEY=""), so model cells show
 the canned fallbacks; live runs will differ in wording, not in the
 verified numbers. Use as the read-along fallback if the API is down.
 
-Using model: gpt-5-mini
-(offline — canned instructor answers below; live runs differ in wording, not in the verified numbers)
-The Freedom of Information Act (FOIA) gives any person the right to request records from U.S. executive-branch agencies. Agencies must generally respond within 20 business days, releasing records unless one of nine exemptions applies.
+(offline) canned reply from the instructor transcript:
 
---- persona: You are a policy analyst. Answer formall... ---
-Under the Freedom of Information Act (5 U.S.C. § 552), an agency must determine whether to comply within twenty (20) business days of receipt. In unusual circumstances it may extend by up to ten additional business days, provided it notifies the requester in writing.
+The Freedom of Information Act (FOIA) is a federal law that gives any person the right to request records from U.S. executive-branch agencies. Agencies must generally respond within 20 business days, releasing records unless one of nine exemptions applies — for example personal privacy, law-enforcement sensitivity, or national security.
+'The Freedom of Information Act (FOIA) is a federal law that gives any person the right to request records from U.S. executive-branch agencies. Agencies must generally respond within 20 business days, releasing records unless one of nine exemptions applies — for example personal privacy, law-enforcement sensitivity, or national security.'
+(offline) canned replies from the instructor transcript:
 
---- persona: You are explaining to a brand-new employ... ---
-Think of it as a 20-working-day clock: once your FOIA request arrives, the agency has about four weeks of business days to get back to you. If things get complicated it can take a bit longer, but it has to tell you first.
-Exercise 3 uses: gpt-4.1-mini (the rest of this lab uses gpt-5-mini)
+FORMAL REGISTER:
+ Under the Freedom of Information Act (5 U.S.C. § 552), an agency must determine whether to comply with a request within twenty (20) business days of receipt. In unusual circumstances the agency may extend this period by up to ten additional business days, provided it notifies the requester in writing.
+
+PLAIN-LANGUAGE REGISTER:
+ Think of it as a 20-working-day clock: once your FOIA request arrives, the agency has about four weeks of business days to get back to you. If things get complicated it can take a bit longer, but it has to tell you first.
+('Under the Freedom of Information Act (5 U.S.C. § 552), an agency must determine whether to comply with a request within twenty (20) business days of receipt. In unusual circumstances the agency may extend this period by up to ten additional business days, provided it notifies the requester in writing.',
+ 'Think of it as a 20-working-day clock: once your FOIA request arrives, the agency has about four weeks of business days to get back to you. If things get complicated it can take a bit longer, but it has to tell you first.')
+(offline) canned titles from the instructor transcript:
+
 temperature=0.0: Responsible AI in Government: A One-Page Guide
 temperature=1.0: AI With Guardrails: A Field Guide for Public Servants
+
+Run the cell again. At 0.0 the title should barely move; at 1.0 it should.
+{'0.0': 'Responsible AI in Government: A One-Page Guide',
+ '1.0': 'AI With Guardrails: A Field Guide for Public Servants'}
+(offline) canned extraction from the instructor transcript:
+
 {
   "subject": "Interim Guidance on Generative AI for Constituent Services",
   "effective_date": "2026-03-14",
   "key_rules": [
-    "Every AI-assisted work product must be reviewed by a responsible employee before release.",
-    "Only public information may be entered into public AI tools; PII never.",
-    "Internal information must use the approved enterprise assistant.",
-    "AI-assisted correspondence is a federal record and must be retained.",
-    "AI assistance must be disclosed in the reply and the reviewer logged."
+    "Every AI-assisted work product must be reviewed by a responsible employee before release; the employee, not the tool, is accountable.",
+    "Only public information may be entered into public AI tools; PII must never be entered into an unapproved tool, and exposure is reported within one business day.",
+    "Tasks involving internal information must use the enterprise assistant on the approved-tools list maintained by the CIO.",
+    "AI-assisted correspondence documenting agency business is a federal record and must be retained on the applicable schedule.",
+    "Correspondence drafted with AI assistance must disclose that in a closing line, and the tool and reviewer are logged in the case system."
   ]
 }
-prompt tokens:     631
-completion tokens: 174
-total tokens:      805
 
-this call ≈ $0.00020
-1,000 similar calls ≈ $0.20
+✓ all three keys present; key_rules has 5 entries
+(illustrative token counts from the instructor transcript — a live run shows your own)
+
+prompt 631 + completion 174 = 805 tokens
+≈ $0.00020 per call  →  $0.20 per 1,000 calls
+run 1: VALID
+run 2: VALID
+run 3: VALID
+
+3/3 valid — keep tightening until it is 3/3.

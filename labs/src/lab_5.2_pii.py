@@ -21,8 +21,9 @@
 # model — someone has to find the PII. Today that is you. **All records here
 # are synthetic.**
 #
-# Cells marked `# YOUR CODE` are for you to complete. No API key is needed
-# (on the VM, `mask_pii` uses Presidio; elsewhere it falls back to regex).
+# Cells marked `# YOUR TURN` ask you to change a simple value and re-run.
+# No API key is needed (on the VM, the masking helper uses Presidio;
+# elsewhere it falls back to regex).
 
 # %% [markdown]
 # ## Objectives
@@ -44,17 +45,27 @@
 # - `chicago_311.csv` — 4,000 real Chicago 311 service requests, for the
 #   free-text scan (real, public; see `data/MANIFEST.json`)
 #
-# **Tools:** pandas, Python `re`, and `lab_common` (regex patterns +
-# `mask_pii`). No OpenAI key is required for any step.
+# **Tools:** pandas, the course's regex patterns, and the course masking
+# helper. No OpenAI key is required for any step.
 #
 # **Data rule:** the citizen records are synthetic precisely so this lab can
 # show real PII patterns safely. Outside class, never load real citizen PII
 # into an unapproved environment — that is the boundary this lab rehearses.
+#
+# **How this notebook works:** every step is one provided cell — run it with
+# Shift+Enter and read what it prints. Cells marked `# YOUR TURN` ask you to
+# change a simple value and re-run the cell. Everything runs as shipped, so
+# you can never get stuck.
+
+# %%
+# ▶ Setup — run this cell first (click it, then Shift+Enter).
+# It loads the course helper functions used by every step below.
+from lab_helpers import *
 
 # %% [markdown]
 # ## Steps
 #
-# 1. Open `lab_5.2_pii.ipynb` and run the Setup cells.
+# 1. Run the Setup cell above.
 # 2. Run the regex detector over `citizen_records.json`. Record hits by type.
 #    (7 min)
 # 3. Run it over the free-text fields of `chicago_311.csv`. (5 min)
@@ -65,31 +76,18 @@
 # 7. Write the residual risk you would report. (5 min)
 
 # %% [markdown]
-# ### Step 2 — The regex detector over citizen records (7 min)
+# ### Step 2 — The regex detector over citizen records (7 min, provided)
 #
-# `data/citizen_records.json` holds five synthetic constituent cases.
-# `lab_common` ships the course's regex patterns for SSN, email, and phone.
-# Run the detector over the whole file and record hits by type.
+# `data/citizen_records.json` holds five synthetic constituent cases. The
+# course ships ready-made patterns for SSN, email, and phone. Run the next
+# two cells: the first loads the records, the second runs the detector over
+# the whole file and prints the hits by type.
 
 # %%
-import json
-import pandas as pd
-import lab_common as lc
+records = load_pii_records()
 
-records = lc.load_citizen_records()
-blob = json.dumps(records)
-
-hits = None
-# YOUR CODE: count hits per PII type using lc._SSN, lc._EMAIL, lc._PHONE
-# over `blob`. Store {"ssn": n, "email": n, "phone": n} in hits.
-
-if hits is None:
-    hits = {"ssn": len(lc._SSN.findall(blob)),
-            "email": len(lc._EMAIL.findall(blob)),
-            "phone": len(lc._PHONE.findall(blob))}
-    print("(reference counts applied)\n")
-print(hits)
-print("\nrecord keys:", list(records[0].keys()))
+# %%
+scan_records_for_pii(records)
 
 # %% [markdown]
 # #### ✓ Checkpoint
@@ -98,26 +96,14 @@ print("\nrecord keys:", list(records[0].keys()))
 # field before you answer.
 
 # %% [markdown]
-# ### Step 3 — The same detector over Chicago 311 free text (5 min)
+# ### Step 3 — The same detector over Chicago 311 free text (5 min, provided)
 #
-# Now point it at the free-text-ish fields of a real operational dataset.
-# What does zero hits mean — and what does it *not* mean?
+# Run this cell to point the same detector at the free-text-ish fields of a
+# real operational dataset. What does zero hits mean — and what does it
+# *not* mean?
 
 # %%
-c311 = pd.read_csv("data/chicago_311.csv", low_memory=False)
-
-hits_311 = None
-# YOUR CODE: count SSN/email/phone hits across the street_address, city and
-# state columns of c311.
-
-if hits_311 is None:
-    text = "\n".join(c311[["street_address", "city", "state"]]
-                     .fillna("").agg(" ".join, axis=1))
-    hits_311 = {"ssn": len(lc._SSN.findall(text)),
-                "email": len(lc._EMAIL.findall(text)),
-                "phone": len(lc._PHONE.findall(text))}
-    print("(reference counts applied)\n")
-print(hits_311)
+scan_311_for_pii()
 
 # %% [markdown]
 # ### Step 4 — Find three items the detector missed (7 min)
@@ -127,10 +113,7 @@ print(hits_311)
 # has a digit in it.)
 
 # %%
-for r in records:
-    print(f"\n{r['case_id']} — {r['name']}")
-    print("  address:", r["address"])
-    print("  summary:", r["summary"][:110])
+show_records_for_review(records)
 
 # %% [markdown]
 # #### Three misses (write here)
@@ -142,55 +125,26 @@ for r in records:
 # %% [markdown]
 # ### Step 5 — Improve one pattern (8 min)
 #
-# Pick one miss class and write a pattern for it. Then prove you did not
-# create false positives: run your new pattern over text that should **not**
-# match.
+# The cell below carries a pattern (a piece of search text) that catches US
+# street addresses like "418 Maple Court, Springfield, VA 22150". Run it: it
+# checks the pattern against every record's address — and, to prove it
+# creates no false positives, against the summaries, which contain no
+# addresses and must stay silent. Then try improving it.
 
 # %%
-ADDRESS = re_pattern = None
-# YOUR CODE: a compiled regex that catches US street addresses like
-# "418 Maple Court, Springfield, VA 22150" (number + words + street type is
-# enough — perfection is not the goal). Store it in ADDRESS.
-
-if ADDRESS is None:
-    import re
-    ADDRESS = re.compile(r"\b\d+\s+[\w ]+\s+"
-                         r"(Street|St|Avenue|Ave|Lane|Court|Way|Road|Rd|Boulevard|Blvd|Drive|Dr)\b")
-    print("(reference pattern applied)\n")
-
-# does it catch the record addresses?
-for r in records:
-    m = ADDRESS.search(r["address"])
-    print(f"{r['case_id']}: {'HIT -> ' + m.group(0) if m else 'miss'}")
-
-# false-positive check: summaries contain no addresses — it must stay silent
-fp = [r["case_id"] for r in records if ADDRESS.search(r["summary"])]
-print("\nfalse positives on summaries:", fp or "none")
+ADDRESS_PATTERN = r"\b\d+\s+[\w ]+\s+(Street|St|Avenue|Ave|Lane|Court|Way|Road|Rd|Boulevard|Blvd|Drive|Dr)\b"   # ← YOUR TURN: edit this search text to catch more (or fewer) address styles, then re-run — the false-positive check must still print "none"
+test_address_pattern(records, ADDRESS_PATTERN)
 
 # %% [markdown]
-# ### Step 6 — Mask, don't delete (8 min)
+# ### Step 6 — Mask, don't delete (8 min, provided)
 #
-# Deleting the PII fields would also delete the record's usefulness. Mask
-# instead, and show that the masked file still answers an analytic question:
-# how many open cases per topic?
+# Deleting the PII fields would also delete the record's usefulness. Run this
+# cell to mask instead (using your pattern from Step 5), and show that the
+# masked file still answers an analytic question: how many open cases per
+# topic?
 
 # %%
-masked_records = None
-# YOUR CODE: a copy of `records` with lc.mask_pii() applied to every string
-# field (and your ADDRESS pattern applied to the address field if you want
-# full marks). Keep case_id, topic, status usable.
-
-if masked_records is None:
-    def _mask_value(v):
-        return ADDRESS.sub("[REDACTED-ADDRESS]", lc.mask_pii(str(v)))
-    masked_records = [{k: _mask_value(v) for k, v in r.items()} for r in records]
-    print("(reference masking applied)\n")
-
-print(json.dumps(masked_records[0], indent=2))
-
-mdf = pd.DataFrame(masked_records)
-print("\nstill analysable — open cases by topic:")
-print(mdf[mdf["status"] == "open"]["topic"].value_counts().to_string())
+masked_records = mask_records_pii(records, ADDRESS_PATTERN)
 
 # %% [markdown]
 # ### Step 7 — Residual risk (5 min)
@@ -234,17 +188,23 @@ print(mdf[mdf["status"] == "open"]["topic"].value_counts().to_string())
 # %% [markdown]
 # ## Troubleshooting
 #
-# - **`FileNotFoundError: data/citizen_records.json`** — the kernel's working
-#   directory is not `labs/`. Restart the kernel from the `labs/` folder and
-#   Run All.
-# - **`NameError: name 're' is not defined`** — the reference pattern imports
-#   `re` inside its fallback block; if you write your own `ADDRESS` first,
-#   add `import re` at the top of your cell.
-# - **Presidio `ImportError` on your own machine** — expected: `mask_pii`
-#   falls back to regex automatically. Only the classroom VM image has
-#   Presidio.
-# - **Your improved pattern finds nothing** — test it on one string directly
-#   (`ADDRESS.search(records[0]['address'])`) and build it up token by token.
-# - **False positives on summaries** — your pattern is too broad (usually a
-#   bare `\d+` or a too-greedy `[\w ]+`). Tighten it until the check prints
+# - **A red error mentioning `citizen_records.json` or "No such file".** The
+#   course data pack is missing or incomplete — tell your instructor; run the
+#   Day-0 healthcheck to confirm.
+# - **A red error after you edited `ADDRESS_PATTERN`.** The search text is no
+#   longer valid — undo your edit (the shipped value above always works) and
+#   change it more carefully, one piece at a time.
+# - **Names are masked on the classroom VM but not on your own machine (or
+#   vice versa).** Expected: the VM uses a smarter name-aware masker
+#   (Presidio); elsewhere the helper falls back to simpler pattern-matching
+#   automatically. That gap is one of the teaching points.
+# - **Your improved pattern finds nothing.** Put the shipped value back,
+#   confirm it catches all five addresses, then change one piece at a time.
+# - **False positives on summaries.** Your pattern is too broad (usually a
+#   bare number or a too-greedy word run). Tighten it until the check prints
 #   `none`.
+
+# %% [markdown]
+# ---
+# *Curious about the Python behind these steps? The full code-forward version
+# of this lab lives in the `For_Python_Programmers/` folder.*

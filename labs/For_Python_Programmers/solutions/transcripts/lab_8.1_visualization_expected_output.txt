@@ -1,0 +1,15 @@
+EXPECTED OUTPUT — lab_8.1_visualization (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+shape: (997, 19)
+     State   County  unhealthy_total  Median AQI  Max AQI
+0  Alabama  Baldwin                0          40       90
+1  Alabama     Clay                0          29       75
+2  Alabama   DeKalb                0          43       87
+<Figure size 800x500 with 1 Axes>
+<Figure size 800x400 with 1 Axes>
+<Figure size 1000x400 with 1 Axes>
+<Figure size 900x1200 with 3 Axes>
+saved epa_briefing.png

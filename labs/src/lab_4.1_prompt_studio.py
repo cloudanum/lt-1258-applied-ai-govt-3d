@@ -14,7 +14,8 @@
 # # Lab 4.1 — Prompt Engineering Studio
 #
 # *Chapter 4 — Modern GenAI and Prompt Engineering · 45 minutes · JupyterLab
-# with pandas and the OpenAI API via `lab_common` (canned offline fallback)*
+# with pandas and the OpenAI API via the course helpers (canned offline
+# fallback)*
 #
 # This is the consolidation lab, and it is a ladder: four rungs, each one
 # change to the prompt — **zero-shot → few-shot → role + format contract →
@@ -22,8 +23,9 @@
 # The finding is not the four outputs; it is which single rung bought the most
 # quality. Prompting spine: rung **P4**.
 #
-# Cells marked `# YOUR CODE` are for you. Offline, every call returns a
-# realistic canned answer so you can keep working.
+# Cells marked `# YOUR TURN` ask you to edit the prompt text and re-run.
+# Offline, every call returns a realistic canned answer so you can keep
+# working.
 
 # %% [markdown]
 # ## Objectives
@@ -49,54 +51,35 @@
 # - `chicago_311.csv`, `corpus/ai_acceptable_use_policy.md` — used by the
 #   stretch section.
 #
-# **Tools:** pandas, plus the OpenAI chat API through `lab_common.chat()` /
-# `lab_common.chat_json()` — offline these return canned stand-ins, so the
-# notebook never hard-fails on a keyless machine.
+# **Tools:** the OpenAI chat API through the course helpers — offline these
+# return canned stand-ins, so the notebook never hard-fails on a keyless
+# machine.
 #
 # **Data rule:** every file above is either genuinely public US government
 # data (documented in `data/MANIFEST.json`) or synthetic material written for
 # this course. Never paste real agency data containing PII into these
 # notebooks — or into any AI tool.
+#
+# **How this notebook works:** every step is one provided cell — run it with
+# Shift+Enter and read what it prints. Cells marked `# YOUR TURN` ask you to
+# edit the prompt text (ordinary quoted text — no code) and re-run the cell.
+# Everything runs as shipped, so you can never get stuck.
 
 # %%
-# API key status — lab_common loads OPENAI_API_KEY from the environment
-# (classroom VM) or the course .env file at import. The key is never printed.
-# With no key, every AI call below falls back to a realistic canned output.
-import lab_common as lc
-
-if lc.online():
-    print(f"OpenAI API key found — live mode (model: {lc.CHAT_MODEL}).")
-else:
-    print("No API key found — offline mode: AI calls return realistic canned "
-          "outputs, so every step still runs.\nAsk your instructor if you "
-          "expected a key on this machine.")
+# ▶ Setup — run this cell first (click it, then Shift+Enter).
+# It loads the course helper functions used by every step below.
+from lab_helpers import *
+lab_status()
 
 # %% [markdown]
 # ### The substrate (provided)
 #
 # The workbook source pack: the policy memo, the constituent-feedback set, and
 # the dataset description in `MANIFEST.json` — plus the two files the stretch
-# section uses.
+# section uses. Run this cell to load them.
 
 # %%
-from lab_common import chat, chat_json
-
-memo = open("data/gov_memo.txt").read()
-policy = open("data/corpus/ai_acceptable_use_policy.md").read()
-
-import pandas as pd
-c311 = pd.read_csv("data/chicago_311.csv", low_memory=False)
-sr_types = c311["sr_type"].dropna().unique().tolist()
-
-# The constituent-feedback set: fifteen messages of deliberately mixed urgency,
-# from routine records requests to two live safety emergencies. Rung 4's hard
-# task.
-feedback = pd.read_csv("data/constituent_feedback.csv")
-complaints = feedback["text"].tolist()
-
-print(f"memo: {len(memo)} chars | policy: {len(policy)} chars | "
-      f"{len(sr_types)} distinct 311 request types | "
-      f"{len(complaints)} constituent messages")
+materials = load_prompt_studio_materials()
 
 # %% [markdown]
 # ## Steps
@@ -117,8 +100,8 @@ print(f"memo: {len(memo)} chars | policy: {len(policy)} chars | "
 #    reasoning model. Compare. ✓ You can describe when the reasoning model
 #    helped.
 #
-# Score every output 1–5 per rubric dimension and record it in the `scorecard`
-# dict.
+# Score every output 1–5 per rubric dimension and record it in the scorecard
+# below.
 
 # %% [markdown]
 # ### The course rubric — score every output 1–5 per dimension
@@ -129,71 +112,43 @@ print(f"memo: {len(memo)} chars | policy: {len(policy)} chars | "
 # | **Completeness** | misses the point | covers it thinly | covers it, no padding |
 # | **Format** | ignores instructions | mostly follows them | exactly what was asked |
 # | **Tone** | wrong register | uneven | right for the audience |
-
-# %%
-scorecard = {}  # {pattern_name: {"accuracy": n, "completeness": n, "format": n, "tone": n}}
-# You will fill this in as you go — it drives Stretch B (improve the weakest).
+#
+# #### My scorecard (write here — it drives Stretch B: improve the weakest)
+#
+# | output | accuracy | completeness | format | tone |
+# |---|---|---|---|---|
+# | zero-shot | | | | |
+# | few-shot | | | | |
+# | role + format | | | | |
+# | reasoning comparison | | | | |
 
 # %% [markdown]
 # ### Rung 1 — Zero-shot (8 min)
 #
 # Ask the assistant to "summarize the policy memo" with no examples, no role, no
-# scaffolding — the baseline everything else is measured against. Score it.
+# scaffolding — the baseline everything else is measured against. The cell below
+# carries a working prompt; **edit the text** to make it yours, re-run, and
+# score the output.
 
 # %%
-CANNED_ZEROSHOT = (
-    "The memo gives divisions interim rules for using generative AI in "
-    "constituent services: a human must review every AI-assisted product "
-    "before release, only public information may go into public AI tools, "
-    "internal work must use the approved enterprise assistant, and AI-drafted "
-    "correspondence is a federal record that must be retained. It is "
-    "effective immediately until a final policy is issued."
-)
+MY_PROMPT = """Summarize this memorandum for a division director in one short paragraph."""   # ← YOUR TURN: edit this prompt text, then re-run this cell
 
-zero_shot = None
-# YOUR CODE: chat() with a one-line user message asking for a summary of
-# `memo`. Pass offline=CANNED_ZEROSHOT.
-
-if zero_shot is None:
-    zero_shot = CANNED_ZEROSHOT
-    print("(canned zero-shot summary — write your prompt above to run your own)\n")
-print(zero_shot)
+zero_shot = ask_about_memo(materials, MY_PROMPT)
 
 # %% [markdown]
 # ### Rung 2 — Few-shot (10 min)
 #
 # Same memo, same request — but first show the model **two examples of the
-# summary style you want**. Nothing else changes. Write the two exemplars in the
-# house style you would actually send: one line per rule, the affected group
-# named, no throat-clearing.
+# summary style you want**. Nothing else changes. The cell below carries two
+# exemplars in the house style you would actually send: one line per rule, the
+# affected group named, no throat-clearing. **Edit them into your own style**
+# and re-run.
 
 # %%
-CANNED_FEWSHOT = (
-    "Human review — every division: no AI-assisted product reaches a "
-    "constituent or the public record until a named employee has approved it. "
-    "The employee carries the accountability, not the tool.\n"
-    "Data handling — every employee: public information only in public tools. "
-    "Constituent records and SSNs never go into an unapproved tool; suspected "
-    "exposure is reported within one business day.\n"
-    "Approved tools — division IT leads: internal work uses the enterprise "
-    "assistant covered by the data-protection agreement. The CIO owns the list.\n"
-    "Recordkeeping — records officers: AI-assisted correspondence documenting "
-    "agency business is a federal record and follows the retention schedule.\n"
-    "Disclosure — constituent-facing staff: say in the closing line when a "
-    "reply was drafted with AI help, and log the tool and the reviewer."
-)
+MY_EXAMPLES = """Human review — every division: no AI-assisted product reaches a constituent or the public record until a named employee has approved it.
+Data handling — every employee: public information only in public tools; suspected exposure is reported within one business day."""   # ← YOUR TURN: replace with YOUR two exemplars, then re-run this cell
 
-few_shot = None
-# YOUR CODE: write two exemplars showing the summary STYLE you want (take two
-# rules from the memo and write them the way you would send them), then ask for
-# the rest of the memo in that same style. chat() with offline=CANNED_FEWSHOT.
-
-if few_shot is None:
-    few_shot = CANNED_FEWSHOT
-    print("(canned few-shot output — write your exemplars above to run your own)\n")
-print(few_shot)
-print("\n✓ Compare against rung 1. What did the two examples actually change —")
-print("  the content, or the shape?")
+few_shot = ask_with_examples(materials, MY_EXAMPLES)
 
 # %% [markdown]
 # ### Rung 3 — Role + format contract (12 min)
@@ -210,32 +165,11 @@ print("  the content, or the shape?")
 # the clause it used, so you can check it.
 
 # %%
-ROLE_FORMAT_SYSTEM = "You are a policy analyst."
-ROLE_FORMAT_ASK = (
-    "Summarize the memo as a 5-row markdown table with exactly these columns: "
-    "rule | who it affects | effective date | source line. One row per lettered "
-    "rule in section 3. The source line column must quote the clause you used.")
+MY_ROLE = "You are a policy analyst."   # ← YOUR TURN: change the role, then re-run this cell
 
-CANNED_ROLE_FORMAT = """\
-| rule | who it affects | effective date | source line |
-|---|---|---|---|
-| Human review before release | Every division releasing AI-assisted work | 2026-03-14 | "must be reviewed and approved by a responsible employee before release" |
-| Public information only in public tools | All employees using AI tools | 2026-03-14 | "Only public information may be entered into public AI tools." |
-| Use the approved enterprise assistant | Divisions handling internal information | 2026-03-14 | "Divisions must use the enterprise assistant provisioned under the Department's data-protection agreement" |
-| Retain AI-assisted correspondence as a record | Records officers, correspondence staff | 2026-03-14 | "is a federal record and must be retained according to the applicable records schedule" |
-| Disclose AI assistance and log the reviewer | Constituent-facing staff | 2026-03-14 | "must say so in a brief closing line" |"""
+MY_ASK = """Summarize the memo as a 5-row markdown table with exactly these columns: rule | who it affects | effective date | source line. One row per lettered rule in section 3. The source line column must quote the clause you used."""   # ← YOUR TURN: change the format contract too, if you like
 
-role_format = None
-# YOUR CODE: chat() with ROLE_FORMAT_SYSTEM as the system message and
-# ROLE_FORMAT_ASK + the memo as the user message. Pass
-# offline=CANNED_ROLE_FORMAT.
-
-if role_format is None:
-    role_format = CANNED_ROLE_FORMAT
-    print("(canned role+format output — write your call above to run your own)\n")
-print(role_format)
-print("\n✓ Five rows, four columns, every source line traceable to section 3?")
-print("  Score format adherence honestly — a 4-row table is not a 5-row table.")
+role_format = ask_with_role(materials, MY_ROLE, MY_ASK)
 
 # %% [markdown]
 # ### Rung 4 — Reasoning-model comparison (15 min)
@@ -243,7 +177,8 @@ print("  Score format adherence honestly — a 4-row table is not a 5-row table.
 # The hardest task in the lab: classify **every** constituent message by
 # **theme** and **urgency**. Fifteen messages, mixed — two are live safety
 # emergencies, one is a compliment, several are routine records requests. Run it
-# on the standard model and on a reasoning model, then compare.
+# on the standard model and on a reasoning model, then compare. Both cells are
+# provided — run them and read.
 #
 # Urgency is where they diverge. Getting theme right is pattern-matching;
 # getting urgency right needs the model to notice that "flood water is coming up
@@ -251,84 +186,10 @@ print("  Score format adherence honestly — a 4-row table is not a 5-row table.
 # though both are politely worded.
 
 # %%
-from lab_common import CHAT_MODEL, REASONING_MODEL
-
-TRIAGE_ASK = (
-    "Classify each numbered constituent message by theme (a short noun phrase) "
-    "and urgency (high / medium / low). Return one line per message as: "
-    "N | theme | urgency. Judge urgency by consequence of delay, not by tone.")
-
-numbered = "\n".join(f"{i}. {t}" for i, t in enumerate(complaints, 1))
-
-CANNED_TRIAGE_STANDARD = """\
-1 | air quality | medium
-2 | disaster assistance | medium
-3 | website accessibility | medium
-4 | records request | low
-5 | building safety | medium
-6 | public health data | medium
-7 | billing dispute | medium
-8 | accessible parking | low
-9 | positive feedback | low
-10 | privacy complaint | medium
-11 | flooding | high
-12 | service navigation | low
-13 | address correction | low
-14 | records request | low
-15 | benefits stopped | medium"""
-
-CANNED_TRIAGE_REASONING = """\
-1 | air quality / health impact | medium
-2 | disaster assistance backlog | medium
-3 | website accessibility (civil rights) | high
-4 | records request | low
-5 | gas odour — building safety | high
-6 | public health data currency | high
-7 | billing dispute | medium
-8 | accessible parking (ADA) | medium
-9 | positive feedback | low
-10 | privacy breach — PII disclosed aloud | high
-11 | active flooding — life safety | high
-12 | service navigation | low
-13 | address correction | medium
-14 | records request | low
-15 | benefits terminated without notice | high"""
-
-def triage_with(model, canned):
-    """One classification pass on the given model, with a canned fallback."""
-    return chat([{"role": "user", "content": f"{TRIAGE_ASK}\n\n{numbered}"}],
-                model=model, offline=canned)
-
-if REASONING_MODEL == CHAT_MODEL:
-    print(f"NOTE: OPENAI_REASONING_MODEL is unset, so both columns would be "
-          f"{CHAT_MODEL}.\n      Set it in .env to run a real comparison; the "
-          f"canned outputs below show\n      what the difference looks like.\n")
-
-standard_out = triage_with(CHAT_MODEL, CANNED_TRIAGE_STANDARD)
-reasoning_out = triage_with(REASONING_MODEL, CANNED_TRIAGE_REASONING)
-
-print(f"--- standard model ({CHAT_MODEL}) ---")
-print(standard_out)
-print(f"\n--- reasoning model ({REASONING_MODEL}) ---")
-print(reasoning_out)
+standard, reasoning = compare_models_on_triage(materials)
 
 # %%
-# Where did they disagree on urgency? That is the whole finding.
-def urgency_map(text):
-    out = {}
-    for line in text.strip().splitlines():
-        parts = [p.strip() for p in line.split("|")]
-        if len(parts) == 3 and parts[0].isdigit():
-            out[int(parts[0])] = parts[2].lower()
-    return out
-
-a, b = urgency_map(standard_out), urgency_map(reasoning_out)
-diffs = [(n, a[n], b[n]) for n in sorted(set(a) & set(b)) if a[n] != b[n]]
-print(f"urgency disagreements: {len(diffs)} of {len(set(a) & set(b))}\n")
-for n, x, y in diffs:
-    print(f"  msg {n:>2}: standard={x:<7} reasoning={y:<7}  {complaints[n - 1][:60]}...")
-print("\n✓ Read the disagreements. Which model would you trust to route a queue,")
-print("  and what would it cost you to be wrong in each direction?")
+show_urgency_disagreements(materials, standard, reasoning)
 
 # %% [markdown]
 # ## Stretch (not timed)
@@ -342,51 +203,30 @@ print("  and what would it cost you to be wrong in each direction?")
 #
 # Give the model the hardest item you have — a multi-constraint question on the
 # memo — with **no** chain-of-thought instruction. Modern reasoning models do the
-# work internally; your job is to ask the hard thing clearly.
+# work internally; your job is to ask the hard thing clearly. A working question
+# is provided — edit it, or ask your own.
 
 # %%
-HARD_ITEM = (
-    "A division wants to use a free public chatbot to draft reply letters that "
-    "quote from constituent case files, and to skip review for 'routine' "
-    "replies. Under the memo, which specific clauses does this violate, and "
-    "what is the smallest change that would make the plan compliant?"
-)
-CANNED_REASONING = (
-    "The plan violates three clauses. Clause 3(b): case-file contents are "
-    "nonpublic constituent information and may never enter an unapproved "
-    "public tool. Clause 3(a): 'routine' is not an exception — every "
-    "AI-assisted product bound for a constituent must be reviewed and "
-    "approved by a responsible employee. Clause 3(c): internal information "
-    "may only be handled by the enterprise assistant under the Department's "
-    "data-protection agreement. The smallest compliant change: keep the "
-    "drafting workflow but run it on the approved enterprise assistant and "
-    "keep human review for every letter."
-)
+HARD_QUESTION = """A division wants to use a free public chatbot to draft reply letters that quote from constituent case files, and to skip review for 'routine' replies. Under the memo, which specific clauses does this violate, and what is the smallest change that would make the plan compliant?"""   # ← YOUR TURN: edit the hard question, then re-run this cell
 
-reasoning = None
-# YOUR CODE: chat() with HARD_ITEM + the memo text. Pass offline=CANNED_REASONING.
-
-if reasoning is None:
-    reasoning = CANNED_REASONING
-    print("(canned reasoning output — write your call above to run your own)\n")
-print(reasoning)
+reasoning_answer = ask_hard_question(materials, HARD_QUESTION)
 
 # %% [markdown]
 # ### Stretch B — Iterate on your weakest output
 #
 # Look at your scorecard. Take the **worst-scoring** output so
 # far and improve it in three rounds, keeping each version. Write what you
-# changed each round.
-
-# %%
-iterations = []
-# YOUR CODE: three rounds. Append (prompt, output) tuples to `iterations`.
-# Change ONE thing per round (specificity? format constraint? audience?) so
+# changed each round. The cell below carries a worked three-round improvement
+# of the rung-1 summary — **replace the three prompts with your own rounds**:
+# change ONE thing per round (specificity? format constraint? audience?) so
 # you can see what actually moved the score.
 
-if not iterations:
-    print("(no iterations yet — this step is yours; see the solution copy "
-          "for a worked example)")
+# %%
+ROUND_1_PROMPT = """Summarize this memorandum for a division director in one short paragraph; include why the guidance was issued."""   # ← YOUR TURN: your round-1 prompt
+ROUND_2_PROMPT = """Summarize this memorandum for a division director; include the two recurring risks the pilots surfaced."""   # ← YOUR TURN: your round-2 prompt (one more change)
+ROUND_3_PROMPT = """Summarize this memorandum in exactly four sentences: purpose, the two risks, the four rules, effective date."""   # ← YOUR TURN: your round-3 prompt (one more change)
+
+iterate_on_prompt(materials, [ROUND_1_PROMPT, ROUND_2_PROMPT, ROUND_3_PROMPT])
 
 # %% [markdown]
 # #### Iteration log (write here)
@@ -402,83 +242,32 @@ if not iterations:
 # acceptable-use policy.
 
 # %%
-CANNED_ROLE = (
-    "From a FOIA officer's desk, three points in this policy matter most. "
-    "First, AI-drafted correspondence about agency business is a federal "
-    "record, so it enters the retention system and is potentially FOIA-"
-    "releasable — drafts are not invisible. Second, the PII prohibition "
-    "aligns with Exemption 6 practice: what we would redact before release "
-    "must never leave the boundary in the first place. Third, the "
-    "human-review clause assigns accountability the way FOIA assigns it — "
-    "to a named official, not a tool."
-)
+MY_POLICY_ROLE = "You are a FOIA officer reviewing a draft acceptable-use policy before commenting to the Chief Data Officer."   # ← YOUR TURN: try a different role (an auditor? a union rep?), then re-run this cell
 
-role_out = None
-# YOUR CODE: system message "You are a FOIA officer reviewing a draft
-# acceptable-use policy..." + the policy text. Pass offline=CANNED_ROLE.
-
-if role_out is None:
-    role_out = CANNED_ROLE
-    print("(canned role output — write your role prompt above to run your own)\n")
-print(role_out)
+role_out = ask_policy_with_role(materials, MY_POLICY_ROLE)
 
 # %% [markdown]
 # ### Stretch D — Structured output: entities as JSON
 #
 # Extract the memo's key entities into a table a program can
-# use. Force JSON and parse it — this is the pattern that feeds downstream
-# systems.
+# use. JSON mode forces machine-readable output — this is the pattern that
+# feeds downstream systems. Provided — run it and read the table.
 
 # %%
-CANNED_ENTITIES = {"entities": [
-    {"type": "organization", "name": "Office of the Chief Data Officer", "detail": "issuing office and point of contact"},
-    {"type": "date", "name": "March 14, 2026", "detail": "memo date; effective immediately"},
-    {"type": "rule", "name": "Human review", "detail": "responsible employee must approve AI-assisted products before release"},
-    {"type": "rule", "name": "Data handling", "detail": "only public information in public tools; report exposure within one business day"},
-    {"type": "rule", "name": "Approved tools", "detail": "enterprise assistant required for internal information"},
-    {"type": "rule", "name": "Recordkeeping", "detail": "AI-assisted correspondence is a federal record"},
-]}
-
-entities = None
-# YOUR CODE: chat_json() asking for the memo's entities under key "entities",
-# each with {type, name, detail}. Pass offline=CANNED_ENTITIES.
-
-if entities is None:
-    entities = CANNED_ENTITIES
-    print("(canned entities — write your chat_json call above to run your own)\n")
-print(pd.DataFrame(entities["entities"]).to_string(index=False))
+entities = extract_memo_fields(materials)
 
 # %% [markdown]
 # ### Stretch E — Grounding: answer only from the policy
 #
 # Answer **only** from the acceptable-use policy, and require the
 # model to quote the sentence it relied on. Grounding is the difference
-# between "plausible" and "defensible".
+# between "plausible" and "defensible". The cell also checks the quote
+# mechanically against the policy text.
 
 # %%
-QUESTION = ("What happens if an employee pastes a constituent's record into "
-            "a public chatbot?")
-CANNED_GROUNDED = (
-    "It is a reportable data spill. The policy states: \"Pasting a "
-    "constituent's record into a public chatbot is a reportable data spill.\" "
-    "Constituent records are PII — a sensitive/regulated data category — and "
-    "may only be used with tools specifically authorized for that category, "
-    "which a public chatbot is not."
-)
+MY_QUESTION = "What happens if an employee pastes a constituent's record into a public chatbot?"   # ← YOUR TURN: ask a different question about the policy, then re-run this cell
 
-grounded = None
-# YOUR CODE: chat() with QUESTION + the policy text; instruct the model to
-# answer only from the policy and to quote the supporting sentence.
-# Pass offline=CANNED_GROUNDED.
-
-if grounded is None:
-    grounded = CANNED_GROUNDED
-    print("(canned grounded answer — write your call above to run your own)\n")
-print(grounded)
-
-# check the quote really is in the policy (grounding, verified mechanically):
-quote = "Pasting a constituent's record into a public chatbot is a reportable data spill."
-print("\nquote verified in policy:", quote in policy)
+grounded = ask_policy_only(materials, MY_QUESTION)
 
 # %% [markdown]
 # ### Stretch F — Your Prompt Card (Lab 4.2 builds on this)
@@ -502,7 +291,7 @@ print("\nquote verified in policy:", quote in policy)
 # One **before/after prompt pair** with its two rubric scores, and a one-line
 # note on **which rung of the ladder bought the most quality**.
 #
-# (Keep the full `scorecard` too — it is the evidence behind that one line.)
+# (Keep the full scorecard too — it is the evidence behind that one line.)
 
 # %% [markdown]
 # ## Reflection
@@ -524,16 +313,18 @@ print("\nquote verified in policy:", quote in policy)
 # %% [markdown]
 # ## Troubleshooting
 #
-# - **`FileNotFoundError: data/gov_memo.txt`** — the kernel's working
-#   directory is not `labs/`. Restart the kernel from the `labs/` folder and
-#   Run All.
-# - **`ModuleNotFoundError: lab_common`** — same cause: the notebook must run
-#   with `labs/` as its working directory.
-# - **Every AI cell prints "(canned ...)"** — no API key is visible. On the
-#   classroom VM the key is injected; on your own machine it comes from the
+# - **`ModuleNotFoundError: lab_helpers`** — the kernel's working directory is
+#   not `labs/`. Restart the kernel from the `labs/` folder and Run All.
+# - **Every AI cell prints "(offline canned ...)"** — no API key is visible. On
+#   the classroom VM the key is injected; on your own machine it comes from the
 #   course `.env`. The lab is fully usable either way.
 # - **API errors (rate limit, authentication)** — re-run the cell once; if it
 #   persists, the canned path keeps you moving. Tell your instructor.
 # - **`quote verified in policy: False`** — the quoted sentence is not in the
 #   policy. That is the grounding lesson: require the quote, then check it
 #   mechanically before you trust the answer.
+
+# %% [markdown]
+# ---
+# *Curious about the Python behind these steps? The full code-forward version
+# of this lab lives in the `For_Python_Programmers/` folder.*

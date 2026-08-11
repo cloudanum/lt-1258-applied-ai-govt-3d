@@ -4,29 +4,60 @@ the canned fallbacks; live runs will differ in wording, not in the
 verified numbers. Use as the read-along fallback if the API is down.
 
 4 documents → 26 chunks
+chunk sizes (chars): min 111, median 249, max 404
+  ai_acceptable_use_policy.md: 6 chunks
+  data_governance_standard.md: 7 chunks
+  foia_processing_guidance.md: 7 chunks
+  records_retention_policy.md: 6 chunks
 embedded 26 chunks, dim=256
-[0.500] records_retention_policy.md: This policy establishes how long agency records are kept and when they are destroyed [...]
-[0.466] records_retention_policy.md: - **Routine administrative correspondence** is retained for 3 years, then destroyed. [...]
-[0.429] records_retention_policy.md: Records that have met their retention period are destroyed using methods appropriate [...]
-(offline) Retrieved context that would be sent to the model:
-[records_retention_policy.md] This policy establishes how long agency records are kept and when they are destroyed or transferred to the National Archives. It implements the agency's records schedule approved by NARA.
+embedder: local hashing fallback (offline)
+[0.500] records_retention_policy.md
+This policy establishes how long agency records are kept and when they are destroyed or transferred
+to the National Archives. It implements the agency's records schedule approved by NARA. 
 
-[records_retention_policy.md] - **Routine administrative correspondence** is retained for 3 years, then destroyed.
-- **Program case files** are retained for 7 years after the case is closed.
-- **Financial and procurement records** are retained for 6 years and 3 months in accordance with federal appropriations requirements.
-- **Permanent records** of historical value are transferred to the National Archives 15 years after creation.
+[0.466] records_retention_policy.md
+- **Routine administrative correspondence** is retained for 3 years, then destroyed. - **Program
+case files** are retained for 7 years after the case is closed. - **Financial and procurement
+records** are retained [...] 
 
-[records_retention_policy.md] Records that have met their retention period are destroyed using methods appropriate to their sensitivity. Records containing personally identifiable information are shredded or securely wiped. A destruction log records what was destroyed and when.
-GROUNDED:
- (offline) Retrieved context that would be sent to the model:
-[records_retention_policy.md] This policy establishes how long agency records are kept and when they are destroyed or transferred to the National Archives. It implements the agency's records schedule approved by NARA.
+[0.429] records_retention_policy.md
+Records that have met their retention period are destroyed using methods appropriate to their
+sensitivity. Records containing personally identifiable information are shredded or securely wiped.
+A destruction log [...]
+(offline) canned grounded reply:
 
-[records_retention_policy.md] - **Routine administrative correspondence** is retained for 3 years, then destroyed.
-- **Program case files** are retained for 7 years after the case is closed.
-- **Financial and procurement records** are retained for 6 years and 3 months in accordance with federal appropriations requirements.
-- **Permanent records** of historical value are transferred to the National Archives 15 years after creation.
+Program case files are kept for 7 years after the case is closed, then destroyed [records_retention_policy.md]. The policy states: "Program case files are retained for 7 years after the case is closed." Note the contrast with routine administrative correspondence (3 years) in the same file.
+==============================================================================
+GROUNDED (retrieval + citations):
 
-[records_retention_policy.md] Records that have met their retention period are destroyed using methods appropriate to their sensitivity. Records containing personally identifiable information are shredded or securely wiped. A destruction log records what was destroyed and when.
+Program case files are kept for 7 years after the case is closed, then
+destroyed [records_retention_policy.md]. The policy states: "Program case
+files are retained for 7 years after the case is closed." Note the contrast
+with routine administrative correspondence (3 years) in the same file.
 
-UNGROUNDED:
- (offline) With no retrieval, the model would answer from memory, unsourced.
+==============================================================================
+UNGROUNDED (no retrieval, answered from memory):
+
+Program case files are generally kept for 3 years after the case is closed,
+after which they are destroyed. Some agencies keep them longer if litigation
+is expected. (Typical ungrounded answer: confident, plausible — and, for this
+corpus, wrong about the period.)
+==============================================================================
+
+✓ Which one would you put in front of a constituent, and why?
+source [records_retention_policy.md]: exists
+quote "Program case files are retained for 7 years after the case i...": verified in records_retention_policy.md
+top chunks for an unanswerable question (note the low scores):
+  [0.445] ai_acceptable_use_policy.md: - **Public data** (for example, published reports and open data from [...]
+  [0.444] records_retention_policy.md: Electronic records are subject to the same retention periods as their [...]
+  [0.442] data_governance_standard.md: Programs collect only the data needed for their mission and retain it only [...]
+
+(offline) canned grounded reply:
+
+The provided documents do not say anything about an AI training budget for fiscal year 2027. No citation is possible.
+
+My 7.D prediction confirmed/refuted (write here): ...
+fixed-width: 17 chunks (was 26 paragraphs)
+[0.476] records_retention_policy.md: retained for 3 years, then destroyed. - **Program case files** are retained for 7 [...]
+[0.428] records_retention_policy.md: # Records Retention Policy (Training Excerpt) *Simplified, synthetic training [...]
+[0.422] ai_acceptable_use_policy.md: data** (PII, health, financial, law enforcement) may be used only with tools [...]

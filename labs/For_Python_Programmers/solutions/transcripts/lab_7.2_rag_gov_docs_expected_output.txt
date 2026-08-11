@@ -1,0 +1,32 @@
+EXPECTED OUTPUT — lab_7.2_rag_gov_docs (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+4 documents → 26 chunks
+embedded 26 chunks, dim=256
+[0.500] records_retention_policy.md: This policy establishes how long agency records are kept and when they are destroyed [...]
+[0.466] records_retention_policy.md: - **Routine administrative correspondence** is retained for 3 years, then destroyed. [...]
+[0.429] records_retention_policy.md: Records that have met their retention period are destroyed using methods appropriate [...]
+(offline) Retrieved context that would be sent to the model:
+[records_retention_policy.md] This policy establishes how long agency records are kept and when they are destroyed or transferred to the National Archives. It implements the agency's records schedule approved by NARA.
+
+[records_retention_policy.md] - **Routine administrative correspondence** is retained for 3 years, then destroyed.
+- **Program case files** are retained for 7 years after the case is closed.
+- **Financial and procurement records** are retained for 6 years and 3 months in accordance with federal appropriations requirements.
+- **Permanent records** of historical value are transferred to the National Archives 15 years after creation.
+
+[records_retention_policy.md] Records that have met their retention period are destroyed using methods appropriate to their sensitivity. Records containing personally identifiable information are shredded or securely wiped. A destruction log records what was destroyed and when.
+GROUNDED:
+ (offline) Retrieved context that would be sent to the model:
+[records_retention_policy.md] This policy establishes how long agency records are kept and when they are destroyed or transferred to the National Archives. It implements the agency's records schedule approved by NARA.
+
+[records_retention_policy.md] - **Routine administrative correspondence** is retained for 3 years, then destroyed.
+- **Program case files** are retained for 7 years after the case is closed.
+- **Financial and procurement records** are retained for 6 years and 3 months in accordance with federal appropriations requirements.
+- **Permanent records** of historical value are transferred to the National Archives 15 years after creation.
+
+[records_retention_policy.md] Records that have met their retention period are destroyed using methods appropriate to their sensitivity. Records containing personally identifiable information are shredded or securely wiped. A destruction log records what was destroyed and when.
+
+UNGROUNDED:
+ (offline) With no retrieval, the model would answer from memory, unsourced.

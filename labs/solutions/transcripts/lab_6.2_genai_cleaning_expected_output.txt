@@ -4,6 +4,8 @@ the canned fallbacks; live runs will differ in wording, not in the
 verified numbers. Use as the read-along fallback if the API is down.
 
 60 raw values, e.g.: ['Aircraft Noise Complaint', '311 INFORMATION ONLY CALL', 'Water On Street Complaint', 'Tree Emergency', 'Graffiti Removal Request', 'Tree Debris Clean-Up Request']
+(offline canned mapping — keyword rules stand in for the model — with an API key, your prompt is answered live)
+
                          raw                  canonical  confidence
     Aircraft Noise Complaint                      Noise        0.98
    311 INFORMATION ONLY CALL Information & 311 Services        0.97
@@ -103,6 +105,8 @@ the confidently wrong one:
                       raw          canonical  confidence
 Sanitation Code Violation Sanitation & Waste         0.9
 re-running failures: ['Building Violation', 'Sanitation Code Violation', 'Buildings - Plumbing Violation', 'City Vehicle Sticker Violation']
+(offline canned re-mapping — with an API key, your prompt is answered live)
+
                            raw                     canonical  confidence
             Building Violation Code Enforcement & Violations         0.9
      Sanitation Code Violation Code Enforcement & Violations         0.9

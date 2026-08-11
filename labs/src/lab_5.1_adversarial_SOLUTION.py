@@ -22,42 +22,24 @@
 
 # %%
 # Instructor copies live in solutions/, one level below labs/ — find labs/
-# (where lab_common.py and data/ are) and run from there.
+# (where lab_common.py, lab_helpers.py and data/ are) and run from there.
 import os, sys
 from pathlib import Path
 
-for _cand in (Path.cwd(), Path.cwd().parent):
+for _cand in (Path.cwd(), *Path.cwd().parents):
     if (_cand / "lab_common.py").is_file():
         os.chdir(_cand)
         if str(_cand) not in sys.path:
             sys.path.insert(0, str(_cand))
         break
 
+from lab_helpers import *
+
 # %% [markdown]
 # ## Step 1 — Train the small classifier
 
 # %%
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-
-epa = pd.read_csv("data/epa_aqi_by_county.csv")
-epa["poor_air"] = ((epa["Unhealthy Days"] + epa["Very Unhealthy Days"]
-                    + epa["Hazardous Days"]) > 0).astype(int)
-
-FEATURES = ["Good Days", "Moderate Days",
-            "Unhealthy for Sensitive Groups Days", "Days with AQI"]
-X = epa[FEATURES].values
-y = epa["poor_air"].values
-print(f"{len(epa)} counties | positive (poor air): {y.sum()} ({y.mean():.0%})")
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.25, random_state=42, stratify=y)
-scaler = StandardScaler().fit(X_train)
-clf = LogisticRegression(max_iter=1000).fit(scaler.transform(X_train), y_train)
+model = train_air_risk_model()
 
 # %% [markdown]
 # ## Step 2 — Baseline accuracy
@@ -67,9 +49,7 @@ clf = LogisticRegression(max_iter=1000).fit(scaler.transform(X_train), y_train)
 # attacker exactly where to push. Model transparency cuts both ways.
 
 # %%
-baseline = clf.score(scaler.transform(X_test), y_test)
-print(f"baseline accuracy: {baseline:.1%}")
-print("coefficients:", dict(zip(FEATURES, clf.coef_[0].round(2))))
+show_baseline_accuracy(model)
 
 # %% [markdown]
 # ## Step 3 — The smallest change that flips one prediction
@@ -80,24 +60,8 @@ print("coefficients:", dict(zip(FEATURES, clf.coef_[0].round(2))))
 # that is the lesson.
 
 # %%
-def predict_raw(row):
-    return clf.predict(scaler.transform([row]))[0]
-
-correct = np.where(clf.predict(scaler.transform(X_test)) == y_test)[0]
-sample = X_test[correct[5]].copy()
-print("sample county:", dict(zip(FEATURES, sample)), "| true label:", y_test[correct[5]])
-
-smallest_flip = None
-for jj, f in enumerate(FEATURES):
-    for eps in range(1, 400):
-        x = sample.copy()
-        x[jj] += eps
-        if predict_raw(x) != y_test[correct[5]]:
-            smallest_flip = (f, eps)
-            break
-    if smallest_flip:
-        break
-print(f"smallest flip found: {smallest_flip[0]} +{smallest_flip[1]} days")
+SAMPLE_ROW = 5   # the reference sample
+find_smallest_flip(model, SAMPLE_ROW)
 
 # %% [markdown]
 # ## Step 4 — Flip rate vs. perturbation size
@@ -108,28 +72,7 @@ print(f"smallest flip found: {smallest_flip[0]} +{smallest_flip[1]} days")
 # of six predictions while baseline accuracy stays a marketing number.
 
 # %%
-SENSITIVE = "Unhealthy for Sensitive Groups Days"
-j = FEATURES.index(SENSITIVE)
-
-def flip_rate(model, sc, eps):
-    Xp = X_test.copy().astype(float)
-    Xp[:, j] = np.clip(Xp[:, j] + np.where(y_test == 1, -eps, eps), 0, None)
-    flipped = (model.predict(sc.transform(Xp)) != y_test)
-    was_correct = model.predict(sc.transform(X_test)) == y_test
-    return float((flipped & was_correct).mean())
-
-EPSILONS = [1, 2, 5, 10, 20, 40]
-rates = [flip_rate(clf, scaler, e) for e in EPSILONS]
-for e, r in zip(EPSILONS, rates):
-    print(f"eps={e:>3} days -> flip rate {r:.0%}")
-
-plt.figure(figsize=(6, 3.5))
-plt.plot(EPSILONS, rates, marker="o")
-plt.xlabel(f"perturbation (days added to {SENSITIVE})")
-plt.ylabel("flip rate")
-plt.title("How much does it take to break the model?")
-plt.ylim(0, 1)
-plt.show()
+rates = attack_strength_sweep(model)
 
 # %% [markdown]
 # ## Step 5 — Defence: adversarial retraining
@@ -145,23 +88,7 @@ plt.show()
 # application layer should reject them before the model ever sees them.)
 
 # %%
-rng = np.random.default_rng(0)
-aug_X, aug_y = [X_train], [y_train]
-for eps in (5, 10, 20, 40):
-    Xa = X_train.copy().astype(float)
-    Xa[:, j] = np.clip(Xa[:, j] + np.where(y_train == 1, -eps, eps)
-                       * rng.uniform(0.5, 1.0, len(y_train)), 0, None)
-    aug_X.append(Xa)
-    aug_y.append(y_train)
-X_aug, y_aug = np.vstack(aug_X), np.concatenate(aug_y)
-scaler2 = StandardScaler().fit(X_aug)
-clf2 = LogisticRegression(max_iter=1000).fit(scaler2.transform(X_aug), y_aug)
-
-print(f"retrained accuracy: {clf2.score(scaler2.transform(X_test), y_test):.1%}")
-defended_rates = [flip_rate(clf2, scaler2, e) for e in EPSILONS]
-print("eps   before -> after defence")
-for e, b, a in zip(EPSILONS, rates, defended_rates):
-    print(f"{e:>3}   {b:5.0%}  ->  {a:.0%}")
+retrain_with_defence(model, rates)
 
 # %% [markdown]
 # ### Three sentences to the system owner (worked)

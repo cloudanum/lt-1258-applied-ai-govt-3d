@@ -15,7 +15,7 @@
 #
 # *Course 1258 — Applied AI for Government IT Professionals · Ch00 Course
 # Launch and Lab Environment · 20 minutes · CloudShare VM (JupyterLab) ·
-# OpenAI API via `lab_common` (canned fallback when no key)*
+# OpenAI API via the course helpers (canned fallback when no key)*
 
 # %% [markdown]
 # ## Objectives
@@ -32,15 +32,15 @@
 # - **Datasets:** all six course datasets in `data/` (provenance in
 #   `data/MANIFEST.json`); this lab touches `federal_ai_use_cases.csv` and
 #   `chicago_311.csv` directly.
-# - **API key:** `import lab_common` loads `OPENAI_API_KEY` from the
+# - **API key:** the course helpers load `OPENAI_API_KEY` from the
 #   environment or the course `.env` — never printed. No key → canned reply.
 # - Instructor copies live in `solutions/`, one level below `labs/` — the
-#   first cell finds `labs/` (where `lab_common.py` and `data/` are) and runs
-#   from there.
+#   first cell finds `labs/` (where `lab_common.py` / `lab_helpers.py` and
+#   `data/` are) and runs from there.
 
 # %%
 # Instructor copies live in solutions/, one level below labs/ — find labs/
-# (where lab_common.py and data/ are) and run from there.
+# (where lab_common.py, lab_helpers.py and data/ are) and run from there.
 import os, sys
 from pathlib import Path
 
@@ -51,6 +51,8 @@ for _cand in (Path.cwd(), *Path.cwd().parents):
             sys.path.insert(0, str(_cand))
         break
 
+from lab_helpers import *
+
 # %% [markdown]
 # ## Steps
 #
@@ -59,10 +61,9 @@ for _cand in (Path.cwd(), *Path.cwd().parents):
 #    model alias, never the key.
 # 3. **(3 min)** Run the **data inventory** cell — each dataset with row
 #    count and description.
-# 4. **(3 min)** Load `federal_ai_use_cases.csv`; print `.shape` and
-#    `.columns`.
+# 4. **(3 min)** Load the federal AI use case inventory; shape and columns.
 # 5. **(2 min)** Count the `is_high_impact` use cases.
-# 6. **(3 min)** Load `chicago_311.csv`; five most common `sr_type` values.
+# 6. **(3 min)** Five most common `sr_type` values in `chicago_311.csv`.
 # 7. **(3 min)** First API call: reply + token counts.
 # 8. **(2 min)** Break it on purpose: restart kernel, re-run the last cell,
 #    read the error, Run All to recover.
@@ -71,34 +72,19 @@ for _cand in (Path.cwd(), *Path.cwd().parents):
 # ### Step 2 — The environment cell
 
 # %%
-import lab_common as lc
-
-print(".env loaded from:", lc.DOTENV_PATH or "(none — relying on environment variables)")
-print("chat model alias  :", lc.CHAT_MODEL)
-print("embedding model   :", lc.EMBED_MODEL)
-print("API key configured:", bool(lc.get_client()))
-print("data directory    :", lc.DATA_DIR)
+tour_environment()
 
 # %% [markdown]
 # ### Step 3 — Data inventory
 
 # %%
-import json
-import pandas as pd
-
-manifest = json.loads((lc.DATA_DIR / "MANIFEST.json").read_text())
-print(f"data pack retrieved: {manifest['retrieved']}\n")
-for ds in manifest["datasets"]:
-    n = len(pd.read_csv(lc.DATA_DIR / ds["file"], low_memory=False))
-    print(f"{ds['file']:28s} {n:>6,} rows — {ds['description']}")
+tour_data_inventory()
 
 # %% [markdown]
 # ### Step 4 — Load the federal AI use case inventory
 
 # %%
-uc = pd.read_csv(lc.DATA_DIR / "federal_ai_use_cases.csv", encoding="utf-8-sig")
-print("shape:", uc.shape)
-print("columns:", list(uc.columns))
+uc = load_use_cases()
 
 # %% [markdown]
 # ### Step 5 — How many use cases are flagged high-impact?
@@ -110,9 +96,7 @@ print("columns:", list(uc.columns))
 # actually high-impact. And 223 rows leave the question blank.
 
 # %%
-high_impact_count = int((uc["is_high_impact"] == "High-impact").sum())
-print(uc["is_high_impact"].value_counts(dropna=False).to_string())
-print(f"\nflagged High-impact: {high_impact_count} of {len(uc)}")
+count_high_impact(uc)
 
 # %% [markdown]
 # ### Step 6 — Chicago 311: the five most common request types
@@ -122,60 +106,27 @@ print(f"\nflagged High-impact: {high_impact_count} of {len(uc)}")
 # previews Lab 1.2's clustering story.
 
 # %%
-c311 = pd.read_csv(lc.DATA_DIR / "chicago_311.csv", low_memory=False)
-top5 = c311["sr_type"].value_counts().head(5)
-print(top5.to_string())
+top_311_requests()
 
 # %% [markdown]
 # ### Step 7 — Your first API call
 
 # %%
-CANNED_REPLY = (
-    "The OMB AI use case inventory tracks how federal agencies are using "
-    "artificial intelligence — each reported system's purpose, development "
-    "stage, and whether it is high-impact."
-)
-
-def print_canned_reply():
-    print(lc.chat([{"role": "user", "content": "..."}], offline=CANNED_REPLY))
-    print("\n(offline canned reply — token counts need a live call; "
-          "a call this size is typically ~40 tokens total)")
-
-client = lc.get_client()
-if client is None:
-    print_canned_reply()
-else:
-    # A key can be configured and still fail here — an exhausted classroom
-    # account returns 429 at call time. Fall back to the same canned reply
-    # rather than ending the tour on a traceback.
-    try:
-        resp = client.chat.completions.create(
-            model=lc.CHAT_MODEL,
-            messages=[{"role": "user", "content":
-                       "In one sentence, what does the OMB federal AI use case "
-                       "inventory track?"}],
-        )
-        print(resp.choices[0].message.content)
-        print(f"\ntokens — prompt: {resp.usage.prompt_tokens}, "
-              f"completion: {resp.usage.completion_tokens}, "
-              f"total: {resp.usage.total_tokens}")
-    except Exception as e:
-        lc.note_api_failure(e)
-        print_canned_reply()
+first_api_call()
 
 # %% [markdown]
 # ### Step 8 — Break it on purpose
 #
 # Instructor notes for the restart exercise:
-# - The `NameError: name 'lc' is not defined` is the *point*: kernel state is
-#   not saved with the notebook, only code and outputs are.
+# - The `NameError: name 'kernel_state_check' is not defined` is the *point*:
+#   kernel state is not saved with the notebook, only code and outputs are.
 # - If a student's Run All fails partway, it is almost always a cell they
 #   edited out of order — re-run from the top.
 # - Worth saying aloud: "Restart & Run All" is the notebook equivalent of
 #   a clean build. Do it before you trust any output.
 
 # %%
-print("lc is still defined:", "lc" in dir(), "| uc rows:", len(uc))
+kernel_state_check(uc)
 
 # %% [markdown]
 # ## Deliverable
@@ -187,8 +138,8 @@ print("lc is still defined:", "lc" in dir(), "| uc rows:", len(uc))
 # %% [markdown]
 # ## Reflection (expected answers)
 #
-# 1. Kernel restart wipes all variables; the last cell referenced `lc`/`uc`
-#    defined in earlier cells that had not re-run yet.
+# 1. Kernel restart wipes all variables and loaded helpers; the last cell
+#    referenced names defined by earlier cells that had not re-run yet.
 # 2. `federal_ai_use_cases.csv` — filter `topic_area` / search `use_case_name`
 #    and `problem_solved` for document processing (Lab 1.1 does exactly this).
 # 3. A one-sentence exchange is ~40 tokens; at published per-1K-token prices
@@ -208,12 +159,8 @@ print("lc is still defined:", "lc" in dir(), "| uc rows:", len(uc))
 # %% [markdown]
 # ## Troubleshooting
 #
-# - **`NameError: name 'lc' is not defined`.** Kernel restart / out-of-order
-#   run — Run All.
-# - **`FileNotFoundError: data/...`.** Not running from `labs/`; re-run the
-#   first cell (it locates `labs/`) then Run All.
-# - **BOM in the header (`\ufeffagency_name`).** Reload with
-#   `encoding="utf-8-sig"`.
+# - **`NameError: name 'kernel_state_check' is not defined`.** Kernel restart /
+#   out-of-order run — Run All.
 # - **Canned reply in Step 7.** No key configured — expected off the VM; on
 #   the VM, have the student tell you so the key injection can be fixed.
 # - **Slow inventory cell.** It reads all six CSVs end to end — 20–30 seconds

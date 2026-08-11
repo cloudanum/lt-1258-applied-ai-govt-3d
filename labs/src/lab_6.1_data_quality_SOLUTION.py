@@ -22,29 +22,24 @@
 
 # %%
 # Instructor copies live in solutions/, one level below labs/ — find labs/
-# (where lab_common.py and data/ are) and run from there.
+# (where lab_common.py, lab_helpers.py and data/ are) and run from there.
 import os, sys
 from pathlib import Path
 
-for _cand in (Path.cwd(), Path.cwd().parent):
+for _cand in (Path.cwd(), *Path.cwd().parents):
     if (_cand / "lab_common.py").is_file():
         os.chdir(_cand)
         if str(_cand) not in sys.path:
             sys.path.insert(0, str(_cand))
         break
 
+from lab_helpers import *
+
 # %% [markdown]
 # ## Step 1 — Load
 
 # %%
-import pandas as pd
-
-pd.set_option("display.width", 220)
-pd.set_option("display.max_columns", 45)
-
-df = pd.read_csv("data/chicago_311.csv", low_memory=False)
-print("shape:", df.shape)
-print("columns:", list(df.columns))
+df = load_311_data()
 
 # %% [markdown]
 # ## Step 2 — Completeness
@@ -56,13 +51,8 @@ print("columns:", list(df.columns))
 # "not applicable".
 
 # %%
-completeness = (df.isna().mean() * 100).round(1).sort_values(ascending=False)
-print(completeness[completeness > 0].to_string())
-flagged = completeness[completeness > 20]
-print(f"\ncolumns above 20% null: {len(flagged)}")
-print("closed_date null == open requests?",
-      int(df["closed_date"].isna().sum()), "==",
-      int((df["status"] == "Open").sum()))
+NULL_LIMIT = 20   # the shipped threshold
+completeness = completeness_report(df, NULL_LIMIT)
 
 # %% [markdown]
 # ## Step 3 — Uniqueness
@@ -74,16 +64,7 @@ print("closed_date null == open requests?",
 # the key.
 
 # %%
-dup_sr = int(df["sr_number"].duplicated().sum())
-flagged_dups = int(df["duplicate"].sum())
-print(f"duplicated sr_number values: {dup_sr}")
-print(f"rows flagged duplicate=True by the city: {flagged_dups}")
-
-key_dups = int(df.duplicated(subset=["sr_type", "street_address", "created_date"]).sum())
-print(f"same type + address + timestamp (likely double submissions): {key_dups}")
-print(df[df.duplicated(subset=["sr_type", "street_address", "created_date"], keep=False)]
-      [["sr_number", "sr_type", "street_address", "created_date"]]
-      .sort_values(["street_address", "created_date"]).head(4).to_string(index=False))
+uniqueness = uniqueness_report(df)
 
 # %% [markdown]
 # ## Step 4 — Consistency
@@ -94,14 +75,7 @@ print(df[df.duplicated(subset=["sr_type", "street_address", "created_date"], kee
 # each one breaks a naive `GROUP BY`.
 
 # %%
-consistency = {
-    "city": df["city"].value_counts(dropna=False).head(5).to_dict(),
-    "state": df["state"].value_counts(dropna=False).head(5).to_dict(),
-    "zip_dtype": str(df["zip_code"].dtype),
-    "zip_sample": df["zip_code"].dropna().head(3).tolist(),
-}
-for k, v in consistency.items():
-    print(f"{k}: {v}")
+consistency_report(df)
 
 # %% [markdown]
 # ## Step 5 — Validity
@@ -111,15 +85,7 @@ for k, v in consistency.items():
 # "we checked and it passed" is evidence; "looks fine" is not.
 
 # %%
-created = pd.to_datetime(df["created_date"], errors="coerce")
-closed = pd.to_datetime(df["closed_date"], errors="coerce")
-
-validity = {
-    "created_unparseable": int(created.isna().sum()),
-    "closed_before_created": int((closed < created).sum()),
-    "range": f"{created.min()} -> {created.max()}",
-}
-print(validity)
+validity = validity_report(df)
 
 # %% [markdown]
 # ## Step 6 — Timeliness
@@ -130,13 +96,7 @@ print(validity)
 # plan needs a longer pull.
 
 # %%
-timeliness = {
-    "newest": str(created.max()),
-    "oldest": str(created.min()),
-    "calendar_days": int(created.dt.date.nunique()),
-    "window_hours": round((created.max() - created.min()).total_seconds() / 3600, 1),
-}
-print(timeliness)
+timeliness = timeliness_report(df)
 
 # %% [markdown]
 # ## Step 7 — Accuracy (expected answer)
@@ -154,24 +114,7 @@ print(timeliness)
 # ## Step 8 — The scorecard (worked)
 
 # %%
-scorecard = pd.DataFrame([
-    {"dimension": "Completeness", "metric": "columns >20% null",
-     "value": f"{len(flagged)} of {df.shape[1]} (2 entirely empty)", "passes": False},
-    {"dimension": "Uniqueness", "metric": "duplicate sr_number",
-     "value": dup_sr, "passes": True},
-    {"dimension": "Uniqueness", "metric": "city-flagged duplicates",
-     "value": f"{flagged_dups} (5.5%)", "passes": False},
-    {"dimension": "Consistency", "metric": "city/state variants + zip dtype",
-     "value": "Chicago/CHICAGO, Illinois/IL, zip as float64", "passes": False},
-    {"dimension": "Validity", "metric": "closed-before-created / bad dates",
-     "value": "0 / 0", "passes": True},
-    {"dimension": "Timeliness", "metric": "window covered",
-     "value": f"{timeliness['window_hours']}h, {timeliness['calendar_days']} calendar days",
-     "passes": False},
-    {"dimension": "Accuracy", "metric": "testable from data alone?",
-     "value": "no — needs address-master audit", "passes": None},
-])
-print(scorecard.to_string(index=False))
+scorecard = quality_scorecard(df, completeness, uniqueness, validity, timeliness)
 
 # %% [markdown]
 # ### Go / no-go recommendation (worked)

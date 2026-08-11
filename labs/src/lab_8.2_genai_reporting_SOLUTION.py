@@ -22,35 +22,27 @@
 
 # %%
 # Instructor copies live in solutions/, one level below labs/ — find labs/
-# (where lab_common.py and data/ are) and run from there.
+# (where lab_common.py, lab_helpers.py and data/ are) and run from there.
 import os, sys
 from pathlib import Path
 
-for _cand in (Path.cwd(), Path.cwd().parent):
+for _cand in (Path.cwd(), *Path.cwd().parents):
     if (_cand / "lab_common.py").is_file():
         os.chdir(_cand)
         if str(_cand) not in sys.path:
             sys.path.insert(0, str(_cand))
         break
 
+from lab_helpers import *
+
 # %% [markdown]
 # ## Step 1 — Profile, then five candidate findings
 
 # %%
-import pandas as pd
-from lab_common import chat, chat_json
+epa = load_epa_for_briefing()
 
-epa = pd.read_csv("data/epa_aqi_by_county.csv")
-epa["unhealthy_total"] = (epa["Unhealthy Days"] + epa["Very Unhealthy Days"]
-                          + epa["Hazardous Days"])
-
-profile_txt = f"""EPA Annual AQI by county, 2024. {len(epa)} counties, {epa['State'].nunique()} states/territories.
-Columns: State, County, Year, Days with AQI, Good/Moderate/USG/Unhealthy/Very Unhealthy/Hazardous Days,
-Max AQI, 90th Percentile AQI, Median AQI, pollutant day counts (CO, NO2, Ozone, PM2.5, PM10).
-Median of county Median AQI: {epa['Median AQI'].median()}.
-Single year only: 2024."""
-
-print(profile_txt)
+# %%
+profile_txt = show_epa_profile(epa)
 
 # %% [markdown]
 # **Worked prompt + the canned findings.** Note the profile explicitly says
@@ -58,14 +50,6 @@ print(profile_txt)
 # claim. (The canned set does, deliberately: finding 5.)
 
 # %%
-CANNED_FINDINGS = {"findings": [
-    "838 of 997 counties (84%) recorded zero days at Unhealthy or worse in 2024.",
-    "California accounts for 317 unhealthy-or-worse county-days — more than the next four states combined.",
-    "Hazardous-level air days were recorded in 15 states in 2024.",
-    "Three Southern California counties (San Bernardino, Riverside, Los Angeles) each logged more than 45 Unhealthy days.",
-    "Air quality improved in most counties relative to 2023.",
-]}
-
 FINDINGS_PROMPT = (
     "You are an analyst's assistant. From the dataset profile below, propose "
     "five candidate findings for a briefing on U.S. county air quality. "
@@ -73,11 +57,7 @@ FINDINGS_PROMPT = (
     "checkable against the dataset described — no external knowledge."
 )
 
-findings = chat_json([{"role": "user", "content":
-                       FINDINGS_PROMPT + "\n\nPROFILE:\n" + profile_txt}],
-                     offline=CANNED_FINDINGS)
-for i, f in enumerate(findings["findings"], 1):
-    print(f"{i}. {f}")
+findings = propose_findings(profile_txt, FINDINGS_PROMPT)
 
 # %% [markdown]
 # ## Step 2 — Pick the three most decision-relevant
@@ -87,7 +67,7 @@ for i, f in enumerate(findings["findings"], 1):
 # file — discard on sight.
 
 # %%
-my_three = [1, 2, 4]
+MY_THREE = [1, 2, 4]
 
 # %% [markdown]
 # ## Step 3 — Recompute every finding in pandas
@@ -98,29 +78,12 @@ my_three = [1, 2, 4]
 # rate in this exercise: 3 of 5. That is why the recompute step exists.
 
 # %%
-zero_unhealthy = int((epa["unhealthy_total"] == 0).sum())
-print(f"[1] counties with zero unhealthy-or-worse days: {zero_unhealthy} of {len(epa)}")
-
-ca_days = int(epa.loc[epa["State"] == "California", "unhealthy_total"].sum())
-by_state = (epa.groupby("State")["unhealthy_total"].sum()
-            .sort_values(ascending=False))
-next4 = int(by_state.iloc[1:5].sum())
-print(f"[2] California: {ca_days} | next four states combined: {next4}")
-
-hz_states = int(epa.loc[epa["Hazardous Days"] > 0, "State"].nunique())
-print(f"[3] states with any Hazardous days: {hz_states}")
-
-socal = epa[epa["County"].isin(["San Bernardino", "Riverside", "Los Angeles"])
-            & (epa["State"] == "California")]
-print("[4] SoCal Unhealthy days:", socal.set_index("County")["Unhealthy Days"].to_dict())
-
-print(f"[5] years present in file: {sorted(epa['Year'].unique())}")
+verify_findings(epa)
 
 # %%
-verdicts = {1: "confirmed", 2: "confirmed", 3: "wrong",
+VERDICTS = {1: "confirmed", 2: "confirmed", 3: "wrong",
             4: "confirmed", 5: "unverifiable"}
-for i, v in verdicts.items():
-    print(f"finding {i}: {v}")
+show_verdicts(VERDICTS)
 
 # %% [markdown]
 # ## Step 4 — Draft the briefing from confirmed findings only
@@ -131,30 +94,14 @@ for i, v in verdicts.items():
 # paste the whole file instead of findings, it drafts from unverified numbers.
 
 # %%
-confirmed = [findings["findings"][i - 1] for i, v in verdicts.items() if v == "confirmed"]
-
-CANNED_BRIEFING = (
-    "COUNTY AIR QUALITY, 2024 — BRIEFING FOR THE DEPUTY DIRECTOR\n\n"
-    "Bad air in 2024 was a local, not national, condition: 84% of U.S. "
-    "counties (838 of 997) recorded zero days at Unhealthy or worse. "
-    "California is the outlier, accounting for 317 unhealthy-or-worse "
-    "county-days — more than the next four states combined. The exposure is "
-    "concentrated further still: San Bernardino, Riverside, and Los Angeles "
-    "counties each logged more than 45 Unhealthy days.\n\n"
-    "RECOMMENDATION: focus chronic-exposure outreach on the three Southern "
-    "California counties; treat remaining hotspots as event-driven."
-)
-
 BRIEFING_PROMPT = (
     "Draft a one-page briefing for a deputy director using ONLY the verified "
     "findings below. Do not add any number, claim, or comparison that is not "
     "in this list. Structure: headline, three short paragraphs, one-line "
-    "recommendation.\n\nVERIFIED FINDINGS:\n- " + "\n- ".join(confirmed)
+    "recommendation."
 )
 
-briefing = chat([{"role": "user", "content": BRIEFING_PROMPT}],
-                offline=CANNED_BRIEFING)
-print(briefing)
+briefing = draft_briefing(findings, VERDICTS, BRIEFING_PROMPT)
 
 # %% [markdown]
 # ## Step 5 — Edit log (worked)

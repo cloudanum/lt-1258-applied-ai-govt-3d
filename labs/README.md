@@ -2,8 +2,24 @@
 
 New and rewritten technical labs for the a4 roster, plus the Day-0
 healthcheck. All notebooks read the OpenAI key from the `OPENAI_API_KEY`
-environment variable (injected on the CloudShare VM) and pin the model via
-`OPENAI_MODEL` — **no key is ever written in a notebook**.
+environment variable — on the CloudShare VM it comes from the class key file
+`/home/student/Keys/keys.txt`, copied into the course `.env` by `sync_key.sh`
+— and pin the model via `OPENAI_MODEL`: **no key is ever written in a
+notebook**.
+
+**Written for non-programmers.** Every step in a student notebook is a single
+plain-English call into `lab_helpers.py` (e.g. `epa = load_epa_data()`,
+`elbow_plot(X)`); the only things students type are simple values — prompt
+text, a number, a keyword — in cells marked `# YOUR TURN`, each pre-filled
+with a working reference value so the notebook always runs as shipped. The
+pandas / scikit-learn / OpenAI SDK machinery lives in `lab_helpers.py` (and
+`lab_common.py` below it), not in the notebooks. The original code-forward
+versions — same labs, full Python written by the participant — are preserved
+in `For_Python_Programmers/` for rooms with programming experience; each
+student notebook ends with a pointer to it for the curious.
+`../tools/check_friendly.py` enforces the contract (no scary constructs in
+student cells; every `# YOUR TURN` cell pre-filled) and reports the
+before/after visible-lines-of-code table.
 
 ## Contents
 | File | Lab | Needs key? | Offline behavior |
@@ -24,13 +40,15 @@ environment variable (injected on the CloudShare VM) and pin the model via
 | `lab_7.3_agent.ipynb` | Lab 7.3 capstone (new) | agent loop | tools run offline; loop shows canned trace |
 | `lab_8.1_visualization.ipynb` | Lab 8.1 EPA charts & briefing | no | fully self-contained (matplotlib) |
 | `lab_8.2_genai_reporting.ipynb` | Lab 8.2 GenAI-assisted briefing | yes | canned findings + briefing |
+| `lab_helpers.py` | friendly step functions | — | one plain-English call per notebook step; wraps `lab_common` |
 | `lab_common.py` | shared helpers | — | OpenAI + offline fallbacks for chat/JSON, embeddings, data.gov, PII |
+| `For_Python_Programmers/` | code-forward originals | — | frozen snapshot of the pre-rewrite labs + solutions + sources |
 | `data/` | lab data | — | six public datasets + the synthetic half (records, RAG corpus, memo, constituent feedback, Lab 3.1 and Ex 6.1 packs) — all declared in `MANIFEST.json` |
 | `solutions/` | instructor copies | — | fully-worked `_solutions.ipynb` |
 | `solutions/transcripts/` | expected outputs | — | read-along fallback if the API is down in class |
 
-Student notebooks have `# YOUR CODE` cells; instructor copies in `solutions/` are
-complete.
+Student notebooks have `# YOUR TURN` value cells (pre-filled); instructor
+copies in `solutions/` are complete.
 
 ## Build & validate
 ```bash

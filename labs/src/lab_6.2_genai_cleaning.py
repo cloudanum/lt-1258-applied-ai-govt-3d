@@ -14,14 +14,15 @@
 # # Lab 6.2 — GenAI-Assisted Cleaning with Structured Outputs
 #
 # *Chapter 6 — Data for AI: Collection, Quality, and Governance · 35 minutes
-# · JupyterLab with pandas and the OpenAI API via `lab_common` (canned
+# · JupyterLab with pandas and the OpenAI API via the course helpers (canned
 # offline fallback)*
 #
 # Lab 6.1 found the defects. Now fix a class of them with GenAI — and then
 # check the fixer, because schema-correct is not the same as correct.
 #
-# Cells marked `# YOUR CODE` are for you. Offline, `chat_json` returns a
-# realistic canned mapping so every step still runs.
+# Cells marked `# YOUR TURN` ask you to edit the prompt text (or a count) and
+# re-run. Offline, a realistic canned mapping stands in for the model so every
+# step still runs.
 
 # %% [markdown]
 # ## Objectives
@@ -41,31 +42,29 @@
 #   Lab 6.1 (real, public; see `data/MANIFEST.json`). Target column:
 #   `sr_type`, 68 free-typed request labels.
 #
-# **Tools:** pandas, plus the OpenAI chat API through
-# `lab_common.chat_json()` (JSON mode). Offline, a keyword-rule canned
-# mapping stands in for the model so every step still runs.
+# **Tools:** pandas, plus the OpenAI chat API in JSON mode through the course
+# helpers. Offline, a keyword-rule canned mapping stands in for the model so
+# every step still runs.
 #
 # **Data rule:** the extract is genuinely public data. The values sent to
 #   the model are service-request labels only — never send resident-level
 #   fields (addresses, names) to an external API.
+#
+# **How this notebook works:** every step is one provided cell — run it with
+# Shift+Enter and read what it prints. Cells marked `# YOUR TURN` ask you to
+# edit the prompt text (ordinary quoted text — no code) or a count, and
+# re-run the cell. Everything runs as shipped, so you can never get stuck.
 
 # %%
-# API key status — lab_common loads OPENAI_API_KEY from the environment
-# (classroom VM) or the course .env file at import. The key is never printed.
-# With no key, every AI call below falls back to a realistic canned mapping.
-import lab_common as lc
-
-if lc.online():
-    print(f"OpenAI API key found — live mode (model: {lc.CHAT_MODEL}).")
-else:
-    print("No API key found — offline mode: AI calls return realistic canned "
-          "mappings, so every step still runs.\nAsk your instructor if you "
-          "expected a key on this machine.")
+# ▶ Setup — run this cell first (click it, then Shift+Enter).
+# It loads the course helper functions used by every step below.
+from lab_helpers import *
+lab_status()
 
 # %% [markdown]
 # ## Steps
 #
-# 1. Open `lab_6.2_genai_cleaning.ipynb` and run the Setup cells.
+# 1. Run the Setup cell. (1 min)
 # 2. Extract 60 raw values from a messy categorical column. (4 min)
 # 3. Call the model with a **strict JSON schema**:
 #    `{raw, canonical, confidence}`. (6 min)
@@ -78,33 +77,14 @@ else:
 # 8. State the human-review rate you would require in production. (3 min)
 
 # %% [markdown]
-# ### Step 2 — Extract 60 raw values (4 min)
+# ### Step 2 — Extract 60 raw values (4 min, provided)
 #
 # The target: `sr_type` in the 311 extract — 68 free-typed request labels.
 # The goal: map each to a **controlled vocabulary** of service categories a
 # dashboard can group by.
 
 # %%
-import pandas as pd
-from lab_common import chat_json
-
-df = pd.read_csv("data/chicago_311.csv", low_memory=False)
-
-raw_values = None
-# YOUR CODE: the 60 most frequent distinct sr_type values, as a list.
-
-if raw_values is None:
-    raw_values = df["sr_type"].value_counts().head(60).index.tolist()
-    print("(reference extraction applied)\n")
-print(f"{len(raw_values)} raw values, e.g.: {raw_values[:6]}")
-
-CANONICAL = [
-    "Noise", "Information & 311 Services", "Water & Drainage",
-    "Urban Forestry", "Graffiti & Property Damage",
-    "Streets & Transportation", "Sanitation & Waste",
-    "Pest & Animal Control", "Buildings & Housing",
-    "Code Enforcement & Violations", "Other",
-]
+raw_values = extract_messy_labels()
 
 # %% [markdown]
 # ### Step 3 — Call the model with a strict JSON schema (6 min)
@@ -112,97 +92,43 @@ CANONICAL = [
 # Ask for one object per raw value: `{raw, canonical, confidence}` —
 # `canonical` restricted to the controlled vocabulary, `confidence` 0–1.
 # JSON mode makes the answer machine-usable; the schema makes it *checkable*.
+#
+# The prompt below is a working version — it (a) gives the controlled
+# vocabulary, (b) demands JSON `{"mappings": [{raw, canonical, confidence},
+# ...]}` with one object per input value, and (c) tells the model to use
+# "Other" with low confidence rather than force a fit. **Edit the text** and
+# re-run to see the mapping change.
 
 # %%
-def canned_mapping(values):
-    """Offline stand-in for the model's mapping (keyword rules, as a real
-    model would infer from the label text)."""
-    RULES = [
-        (("aircraft noise",), ("Noise", 0.98)),
-        (("information only",), ("Information & 311 Services", 0.97)),
-        (("graffiti",), ("Graffiti & Property Damage", 0.95)),
-        (("tree", "weed"), ("Urban Forestry", 0.92)),
-        (("water", "sewer", "leak"), ("Water & Drainage", 0.9)),
-        (("rodent", "rat", "animal", "pet "), ("Pest & Animal Control", 0.9)),
-        (("sanitation", "garbage", "recycling", "yard waste", "dumping",
-          "vacant lot", "dead animal"), ("Sanitation & Waste", 0.9)),
-        (("building", "plumbing", "porch", "restaurant", "business",
-          "housing", "café", "wage", "cab "), ("Buildings & Housing", 0.85)),
-        (("vehicle", "parking", "sticker"), ("Streets & Transportation", 0.85)),
-        (("street", "traffic", "pothole", "sidewalk", "sign", "alley",
-          "scooter", "divvy"), ("Streets & Transportation", 0.88)),
-    ]
-    out = []
-    for v in values:
-        low = v.lower()
-        canonical, conf = next((c for keys, c in RULES
-                                if any(k in low for k in keys)), ("Other", 0.5))
-        out.append({"raw": v, "canonical": canonical, "confidence": conf})
-    return {"mappings": out}
+MAPPING_PROMPT = """You are normalizing Chicago 311 request-type labels into a controlled vocabulary for a city dashboard.
+VOCABULARY: Noise, Information & 311 Services, Water & Drainage, Urban Forestry, Graffiti & Property Damage, Streets & Transportation, Sanitation & Waste, Pest & Animal Control, Buildings & Housing, Code Enforcement & Violations, Other.
+Return JSON only: {"mappings": [{"raw": ..., "canonical": ..., "confidence": 0-1}, ...]} with exactly one object per input value. If no category fits well, use "Other" with confidence <= 0.5 rather than forcing a fit."""   # ← YOUR TURN: edit the mapping prompt, then re-run this cell
 
-MAPPING_PROMPT = None
-# YOUR CODE: the prompt. It must (a) give the controlled vocabulary, (b)
-# demand JSON {"mappings": [{raw, canonical, confidence}, ...]} with one
-# object per input value, (c) tell the model to use "Other" with low
-# confidence rather than force a fit.
-
-mappings = None
-if MAPPING_PROMPT:
-    mappings = chat_json(
-        [{"role": "user", "content":
-          MAPPING_PROMPT + "\n\nVALUES:\n" + "\n".join(raw_values)}],
-        offline=canned_mapping(raw_values))
-if mappings is None:
-    mappings = canned_mapping(raw_values)
-    print("(canned mapping applied — write MAPPING_PROMPT above to run your own)\n")
-
-mapped = pd.DataFrame(mappings["mappings"])
-print(mapped.head(10).to_string(index=False))
+mapped = clean_labels_with_ai(raw_values, MAPPING_PROMPT)
 
 # %% [markdown]
-# ### Step 4 — Fail loudly if it does not validate (5 min)
+# ### Step 4 — Fail loudly if it does not validate (5 min, provided)
 #
-# A schema you never check is a hope, not a contract. Validate every item;
-# raise on the first violation. The demo at the bottom proves the check bites.
+# A schema you never check is a hope, not a contract. This cell validates
+# every item and stops at the first violation — then corrupts one entry on
+# purpose to prove the check bites.
 
 # %%
-def validate(items, vocab):
-    for i, m in enumerate(items):
-        assert set(m) >= {"raw", "canonical", "confidence"}, f"item {i}: missing keys"
-        assert m["canonical"] in vocab, f"item {i}: '{m['canonical']}' not in vocabulary"
-        assert 0.0 <= m["confidence"] <= 1.0, f"item {i}: confidence out of range"
-    return True
-
-print("valid:", validate(mappings["mappings"], CANONICAL))
-
-# prove it fails loudly: corrupt one entry on purpose
-bad = [dict(m) for m in mappings["mappings"]]
-bad[3]["canonical"] = "Stuff"
-try:
-    validate(bad, CANONICAL)
-    print("PROBLEM: validator accepted a bad value")
-except AssertionError as e:
-    print(f"validator correctly rejected the corrupt item ({e})")
+validate_cleaning(mapped)
 
 # %% [markdown]
 # ### Step 5 — Audit: sample 20 and check by hand (7 min)
 #
-# The model's schema passed; now grade its *judgement*. Read the 20 sampled
-# mappings below, mark the wrong ones in the markdown cell, and compute the
-# error rate.
+# The model's schema passed; now grade its *judgement*. Run the first cell to
+# draw 20 sampled mappings, read each one, decide how many are wrong, put
+# your count in the second cell, and re-run it.
 
 # %%
-audit_sample = mapped.sample(20, random_state=7).sort_index()
-print(audit_sample.to_string())
+audit_sample = show_cleaning_sample(mapped)
 
-errors_found = None
-# YOUR CODE: how many of the 20 are wrong? (Read each one. Set errors_found
-# to your count so the error rate prints.)
-
-if errors_found is None:
-    errors_found = 1  # placeholder — replace with YOUR count from reading
-    print("(placeholder count of 1 applied — set your own)\n")
-print(f"error rate: {errors_found / 20:.0%} of the audited sample")
+# %%
+ERRORS_FOUND = 1   # ← YOUR TURN: read the 20 rows above, then replace 1 with YOUR count of wrong mappings and re-run this cell
+show_error_rate(ERRORS_FOUND)
 
 # %% [markdown]
 # #### Which were wrong, and why (write here)
@@ -211,14 +137,13 @@ print(f"error rate: {errors_found / 20:.0%} of the audited sample")
 # -
 
 # %% [markdown]
-# ### Step 6 — The high-confidence wrong mapping (5 min)
+# ### Step 6 — The high-confidence wrong mapping (5 min, provided)
 #
-# Filter to confidence ≥ 0.85 and find one mapping that is *confidently*
-# wrong. What in the label text misled the model?
+# This cell filters to confidence ≥ 0.85 — find one mapping that is
+# *confidently* wrong. What in the label text misled the model?
 
 # %%
-confident = mapped[mapped["confidence"] >= 0.85]
-print(confident.to_string(index=False))
+show_confident_mappings(mapped)
 
 # %% [markdown]
 # #### Your pick and explanation (write here)
@@ -231,35 +156,16 @@ print(confident.to_string(index=False))
 # ### Step 7 — Tighten the prompt, re-run the failures (5 min)
 #
 # One sentence of domain knowledge in the prompt fixes a whole error class.
-# Tighten, re-run only the failures, and compare.
+# The cell below carries a working tightening sentence — edit it (or write
+# your own), then re-run: only the failures go back to the model, with your
+# prompt plus the tightening sentence. Compare the new mappings with what
+# Step 5 showed.
 
 # %%
-TIGHTENER = ("\nIMPORTANT: distinguish service delivery from enforcement — "
-             "labels containing 'Violation' are code-enforcement actions "
-             "(Code Enforcement & Violations), not service requests, even "
-             "when the enforcing department sounds like a service (e.g. "
-             "Sanitation).")
+TIGHTENER = """
+IMPORTANT: distinguish service delivery from enforcement — labels containing 'Violation' are code-enforcement actions (Code Enforcement & Violations), not service requests, even when the enforcing department sounds like a service (e.g. Sanitation)."""   # ← YOUR TURN: edit the tightening sentence, then re-run this cell
 
-def canned_mapping_v2(values):
-    base = canned_mapping(values)["mappings"]
-    for m in base:
-        if "violation" in m["raw"].lower():
-            m.update(canonical="Code Enforcement & Violations", confidence=0.9)
-    return {"mappings": base}
-
-failures = mapped[mapped["raw"].str.contains("Violation", case=False)]["raw"].tolist()
-print("re-running failures:", failures)
-
-remapped = None
-if MAPPING_PROMPT:
-    remapped = chat_json(
-        [{"role": "user", "content": MAPPING_PROMPT + TIGHTENER
-          + "\n\nVALUES:\n" + "\n".join(failures)}],
-        offline=canned_mapping_v2(failures))
-if remapped is None:
-    remapped = canned_mapping_v2(failures)
-    print("(canned re-mapping applied)\n")
-print(pd.DataFrame(remapped["mappings"]).to_string(index=False))
+rerun_with_tighter_prompt(mapped, MAPPING_PROMPT, TIGHTENER)
 
 # %% [markdown]
 # ### Step 8 — State the human-review rate (3 min)
@@ -300,18 +206,21 @@ print(pd.DataFrame(remapped["mappings"]).to_string(index=False))
 # %% [markdown]
 # ## Troubleshooting
 #
-# - **`FileNotFoundError: data/chicago_311.csv`** — the kernel's working
-#   directory is not `labs/`. Restart the kernel from the `labs/` folder and
-#   Run All.
-# - **The canned mapping prints even with a key set** — `MAPPING_PROMPT` is
-#   still `None`. Write the prompt string (the YOUR CODE comment lists its
-#   three requirements) and re-run from that cell down.
-# - **`json.JSONDecodeError` on a live call** — `chat_json` already forces
-#   JSON mode; a parse failure usually means the prompt asked for prose
-#   around the JSON. Demand "JSON only" and re-run.
-# - **`AssertionError` from `validate`** — if it comes from the corruption
-#   demo, the validator is working (read the printed message). If it comes
-#   from your own mapping, the model broke the schema contract: fail loudly
-#   is the correct behavior, not a bug.
-# - **`errors_found` prints as a placeholder** — that is deliberate: the
-#   audit only counts if *you* read the 20 rows and set the number.
+# - **`ModuleNotFoundError: lab_helpers`** — the kernel's working directory is
+#   not `labs/`. Restart the kernel from the `labs/` folder and Run All.
+# - **The mapping step prints "(offline canned mapping ...)"** — no API key is
+#   visible on this machine; keyword rules stand in for the model. The lab is
+#   fully usable either way.
+# - **The model's answer is not usable JSON (live run)** — your prompt asked
+#   for prose around the JSON. Demand "JSON only" and re-run the cell.
+# - **The validator rejects a mapping** — if it comes from the corruption
+#   demo in Step 4, the validator is working (read the printed message). If
+#   it comes from your own prompt's output, the model broke the schema
+#   contract: fail loudly is the correct behavior, not a bug.
+# - **Your error rate looks like a guess** — it is, until you read the 20
+#   sampled rows. The audit only counts if *you* set `ERRORS_FOUND` yourself.
+
+# %% [markdown]
+# ---
+# *Curious about the Python behind these steps? The full code-forward version
+# of this lab lives in the `For_Python_Programmers/` folder.*

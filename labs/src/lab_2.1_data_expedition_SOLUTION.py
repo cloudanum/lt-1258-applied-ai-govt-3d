@@ -32,15 +32,15 @@
 #
 # - **Datasets:** `data/cdc_flu_wastewater.csv`, `data/nyc_air_quality.csv`,
 #   `data/chicago_311.csv` — provenance in `data/MANIFEST.json`.
-# - **Tools:** pandas + `lab_common.search_datasets` (cached snapshot
+# - **Tools:** pandas + the course data.gov search helper (cached snapshot
 #   fallback) — no API key needed.
 # - Instructor copies live in `solutions/`, one level below `labs/` — the
-#   first cell finds `labs/` (where `lab_common.py` and `data/` are) and runs
-#   from there.
+#   first cell finds `labs/` (where `lab_common.py` / `lab_helpers.py` and
+#   `data/` are) and runs from there.
 
 # %%
 # Instructor copies live in solutions/, one level below labs/ — find labs/
-# (where lab_common.py and data/ are) and run from there.
+# (where lab_common.py, lab_helpers.py and data/ are) and run from there.
 import os, sys
 from pathlib import Path
 
@@ -51,13 +51,15 @@ for _cand in (Path.cwd(), *Path.cwd().parents):
             sys.path.insert(0, str(_cand))
         break
 
+from lab_helpers import *
+
 # %% [markdown]
 # ## Steps
 #
-# 1. **(4 min)** Open the notebook; run the finding-data warm-up.
+# 1. **(4 min)** Run the finding-data warm-up.
 # 2. **(4 min)** Load each of the three datasets; print shape, columns,
-#    dtypes.
-# 3. **(6 min)** Per column: null count, distinct count, an example value.
+#    column types.
+# 3. **(6 min)** Per column: blank count, distinct count, an example value.
 # 4. **(4 min)** Identify the grain of each dataset.
 # 5. **(4 min)** Identify the time column; print the date range.
 # 6. **(4 min)** One question each dataset answers well; one it cannot.
@@ -67,53 +69,20 @@ for _cand in (Path.cwd(), *Path.cwd().parents):
 # ### Step 1 — Warm-up: finding the data in the first place
 
 # %%
-import pandas as pd
-from lab_common import search_datasets
-
-pd.set_option("display.width", 200)
-
-hits = search_datasets("air quality", rows=3)
-print(f"source: {hits['source']}\n")
-for h in hits["results"]:
-    print(f"- {h['title']}  ({h['organization']})")
-    print(f"  tags: {', '.join(h['tags'])}\n")
+KEYWORD = "air quality"   # the reference search topic
+search_gov_datasets(KEYWORD)
 
 # %% [markdown]
 # ### Step 2 — Load all three datasets
 
 # %%
-DATASETS = {
-    "cdc_flu_wastewater": "data/cdc_flu_wastewater.csv",
-    "nyc_air_quality": "data/nyc_air_quality.csv",
-    "chicago_311": "data/chicago_311.csv",
-}
-frames = {name: pd.read_csv(path, low_memory=False)
-          for name, path in DATASETS.items()}
-
-for name, frame in frames.items():
-    print(f"=== {name}: {frame.shape[0]:,} rows x {frame.shape[1]} columns ===")
-    print("columns:", list(frame.columns))
-    print(frame.dtypes.value_counts().to_string(), "\n")
+frames = load_expedition_datasets()
 
 # %% [markdown]
-# ### Step 3 — A profiler you can reuse
+# ### Step 3 — A profile of each dataset
 
 # %%
-def profile(df, name):
-    print(f"=== {name}: {df.shape[0]:,} rows x {df.shape[1]} columns ===")
-    rows = []
-    for col in df.columns:
-        example = df[col].dropna().iloc[0] if df[col].notna().any() else None
-        rows.append({"column": col, "dtype": str(df[col].dtype),
-                     "nulls": int(df[col].isna().sum()),
-                     "distinct": int(df[col].nunique()),
-                     "example": str(example)[:40]})
-    print(pd.DataFrame(rows).to_string(index=False))
-    print()
-
-
-for name, frame in frames.items():
-    profile(frame, name)
+profile_datasets(frames)
 
 # %% [markdown]
 # ### Step 4 — The grain: what is one row? (expected answers)
@@ -138,18 +107,7 @@ for name, frame in frames.items():
 # should notice how *thin* that window is before anyone trends it.
 
 # %%
-cdc_dates = pd.to_datetime(frames["cdc_flu_wastewater"]["sample_collect_date"],
-                           errors="coerce")
-nyc_dates = pd.to_datetime(frames["nyc_air_quality"]["start_date"], errors="coerce")
-c311_dates = pd.to_datetime(frames["chicago_311"]["created_date"], errors="coerce")
-time_ranges = {
-    "cdc_flu_wastewater": (cdc_dates.min(), cdc_dates.max()),
-    "nyc_air_quality": (nyc_dates.min(), nyc_dates.max()),
-    "chicago_311": (c311_dates.min(), c311_dates.max()),
-}
-for name, (lo, hi) in time_ranges.items():
-    print(f"{name:22s} {lo}  ->  {hi}")
-print("\nNYC time_period values:", frames["nyc_air_quality"]["time_period"].unique()[:8])
+show_time_ranges(frames)
 
 # %% [markdown]
 # ### Step 6 — What each dataset can and cannot answer (expected examples)
@@ -210,10 +168,10 @@ print("\nNYC time_period values:", frames["nyc_air_quality"]["time_period"].uniq
 # ## Troubleshooting
 #
 # - **`source: cached` in Step 1.** Expected — the snapshot is the lesson.
-# - **`DtypeWarning: mixed types`.** Real CSVs do this; `low_memory=False`
-#   handles it.
-# - **`NaT` after `pd.to_datetime`.** Unparseable/blank dates —
-#   `errors="coerce"`; count the cost before quoting a range.
+# - **A mixed-types warning.** Real CSVs do this; the provided load handles
+#   it.
+# - **Blank dates / a surprising range.** Unparseable or blank dates are
+#   skipped honestly — count the cost before quoting a range.
 # - **NYC grain confusion.** Read `name`, `geo_type_name`, `time_period`
 #   together — it is long/tidy, not one row per neighbourhood.
 # - **Out-of-order errors.** Kernel → Restart & Run All.

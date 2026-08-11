@@ -15,8 +15,7 @@
 #
 # *Course 1258 — Applied AI for Government IT Professionals · Ch01 AI and ML
 # Foundations for Government · 30 minutes (flex — your instructor may skip
-# this) · CloudShare VM (JupyterLab) · pandas + scikit-learn — no API key
-# needed*
+# this) · CloudShare VM (JupyterLab) · no API key needed*
 
 # %% [markdown]
 # ## Objectives
@@ -32,14 +31,14 @@
 #
 # - **Dataset:** `data/epa_aqi_by_county.csv` — EPA annual AQI by county,
 #   2024. Provenance in `data/MANIFEST.json`.
-# - **Tools:** pandas, scikit-learn, matplotlib — no API key needed.
+# - **No API key needed** — this lab never calls a model.
 # - Instructor copies live in `solutions/`, one level below `labs/` — the
-#   first cell finds `labs/` (where `lab_common.py` and `data/` are) and runs
-#   from there.
+#   first cell finds `labs/` (where `lab_common.py` / `lab_helpers.py` and
+#   `data/` are) and runs from there.
 
 # %%
 # Instructor copies live in solutions/, one level below labs/ — find labs/
-# (where lab_common.py and data/ are) and run from there.
+# (where lab_common.py, lab_helpers.py and data/ are) and run from there.
 import os, sys
 from pathlib import Path
 
@@ -50,14 +49,16 @@ for _cand in (Path.cwd(), *Path.cwd().parents):
             sys.path.insert(0, str(_cand))
         break
 
+from lab_helpers import *
+
 # %% [markdown]
 # ## Steps
 #
 # 1. **(3 min)** Load `epa_aqi_by_county.csv`.
-# 2. **(4 min)** Select the numeric day-count columns and scale them.
-# 3. **(5 min)** Fit K-Means k=3; print each cluster's size and column means.
+# 2. **(4 min)** Scale the numeric day-count columns.
+# 3. **(5 min)** Group into 3 clusters; read each cluster's size and averages.
 # 4. **(3 min)** Name each cluster in plain English.
-# 5. **(6 min)** Sweep k from 2 to 8, plot inertia, choose a defensible k.
+# 5. **(6 min)** Try 2–8 clusters, plot the elbow, choose a defensible k.
 # 6. **(5 min)** List the worst-cluster counties; sanity-check raw rows.
 # 7. **(4 min)** Two sentences a programme director could act on.
 
@@ -65,42 +66,25 @@ for _cand in (Path.cwd(), *Path.cwd().parents):
 # ### Step 1 — Load the EPA annual summary
 
 # %%
-import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
-
-epa = pd.read_csv("data/epa_aqi_by_county.csv")
-print("shape:", epa.shape, "| states/territories:", epa["State"].nunique())
-print("columns:", list(epa.columns))
-epa.head(3)
+epa = load_epa_data()
 
 # %% [markdown]
-# ### Step 2 — Select and scale the features
+# ### Step 2 — Scale the features
 #
 # **Why scaling matters (expected checkpoint answer):** `Good Days` runs
-# 0–360; `Hazardous Days` runs 0–4. Unscaled, Euclidean distance is dominated
-# by whichever feature has the biggest numbers, so "a county with four
-# hazardous days" would look almost identical to "a county with none" as long
-# as their good-day counts matched. Scaling gives every feature equal weight.
+# 0–360; `Hazardous Days` runs 0–4. Unscaled, distance is dominated by
+# whichever feature has the biggest numbers, so "a county with four hazardous
+# days" would look almost identical to "a county with none" as long as their
+# good-day counts matched. Scaling gives every feature equal weight.
 
 # %%
-FEATURES = ["Good Days", "Moderate Days", "Unhealthy for Sensitive Groups Days",
-            "Unhealthy Days", "Very Unhealthy Days", "Hazardous Days"]
-
-X = StandardScaler().fit_transform(epa[FEATURES])
-print("scaled feature matrix:", X.shape)
+X = scale_day_counts(epa)
 
 # %% [markdown]
-# ### Step 3 — Fit k=3 and read the clusters
+# ### Step 3 — Group into 3 clusters and read them
 
 # %%
-km3 = KMeans(n_clusters=3, n_init=10, random_state=42).fit(X)
-epa["cluster_k3"] = km3.labels_
-
-means = epa.groupby("cluster_k3")[FEATURES + ["Median AQI"]].mean().round(1)
-means["counties"] = epa["cluster_k3"].value_counts()
-print(means.to_string())
+show_clusters(epa, X, k=3)
 
 # %% [markdown]
 # ### Step 4 — Name each cluster in plain English
@@ -115,7 +99,7 @@ print(means.to_string())
 #   extreme outliers; with k=3 they get a cluster to themselves.
 
 # %% [markdown]
-# ### Step 5 — Choose k deliberately: the elbow method
+# ### Step 5 — Choose the number of clusters deliberately: the elbow method
 #
 # **Expected:** the drops shrink steadily (4,338 → 3,375 → 2,603 → 2,038 → …)
 # with the biggest single improvement at k=4, which also splits the "moderate
@@ -123,18 +107,7 @@ print(means.to_string())
 # k = 3 is defensible too if the student prioritizes simplicity.
 
 # %%
-inertias = []
-for k in range(2, 9):
-    inertias.append(KMeans(n_clusters=k, n_init=10, random_state=42).fit(X).inertia_)
-for k, i in zip(range(2, 9), inertias):
-    print(f"k={k}  inertia={i:,.0f}")
-
-plt.figure(figsize=(6, 3.5))
-plt.plot(range(2, 9), inertias, marker="o")
-plt.xlabel("k (number of clusters)")
-plt.ylabel("inertia")
-plt.title("Elbow method — where does the curve stop paying off?")
-plt.show()
+elbow_plot(X)
 
 # %% [markdown]
 # ### Step 6 — Fit k=4 and find the worst cluster
@@ -154,22 +127,8 @@ plt.show()
 # would have missed.
 
 # %%
-K = 4
-km = KMeans(n_clusters=K, n_init=10, random_state=42).fit(X)
-epa["cluster"] = km.labels_
-epa["unhealthy_total"] = (epa["Unhealthy Days"] + epa["Very Unhealthy Days"]
-                          + epa["Hazardous Days"])
-
-summary = epa.groupby("cluster")[FEATURES + ["Median AQI"]].mean().round(1)
-summary["counties"] = epa["cluster"].value_counts()
-print(summary.to_string())
-
-worst = epa.groupby("cluster")["unhealthy_total"].mean().idxmax()
-print(f"\nworst cluster: {worst}")
-print(epa[epa["cluster"] == worst]
-      .sort_values("unhealthy_total", ascending=False)
-      [["State", "County", "unhealthy_total", "Max AQI", "Median AQI"]]
-      .head(15).to_string(index=False))
+K = 4   # the k chosen from the elbow plot
+show_worst_counties(epa, X, k=K)
 
 # %% [markdown]
 # ### Step 7 — Two sentences for the programme director (worked)
@@ -202,27 +161,27 @@ print(epa[epa["cluster"] == worst]
 #    "many good days vs few".
 # 3. There is no label to be correct against — that is what unsupervised
 #    means. The right test is whether the grouping is *useful and stable*:
-#    does it survive a different random seed, and does it change a decision?
+#    does it survive a re-run, and does it change a decision?
 
 # %% [markdown]
 # ## Debrief (instructor-led)
 #
 # - Collect the room's cluster names from Step 4; push for names derived from
-#   the means, not from one famous county.
+#   the averages, not from one famous county.
 # - Compare chosen k values — k=3 and k=4 are both defensible; ask a defender
 #   of each what they optimized for.
 # - Land the unsupervised punchline: no "correct" to check against — useful
-#   and stable is the test (does it survive a different `random_state`?).
+#   and stable is the test (does it survive a re-run of the steps?).
 
 # %% [markdown]
 # ## Troubleshooting
 #
-# - **`ModuleNotFoundError: sklearn`.** Image problem — have the student run
+# - **A red error mentioning `sklearn`.** Image problem — have the student run
 #   the Day-0 healthcheck and flag it to you.
 # - **Cluster numbers differ across notebooks.** Labels are arbitrary;
-#   compare means and county lists, not label numbers.
-# - **`ConvergenceWarning`.** Harmless; `n_init=10` keeps the best of ten
-#   fits.
+#   compare averages and county lists, not label numbers.
+# - **A `ConvergenceWarning`.** Harmless; the fit re-runs ten times and keeps
+#   the best.
 # - **No plot.** Re-run the cell; then Kernel → Restart & Run All.
-# - **Results changed after restart.** `random_state` or the feature list was
-#   edited — restore the provided values.
+# - **Results changed after restart.** `K` was edited — restore the chosen
+#   value and re-run the cell.

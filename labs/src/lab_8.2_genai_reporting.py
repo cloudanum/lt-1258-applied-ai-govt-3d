@@ -18,9 +18,9 @@
 # Same deliverable as Lab 8.1, but with an assistant. The difference is the
 # verification step, which is now yours.
 #
-# Cells marked `# YOUR CODE` are for you. Offline — or until you write your own
-# prompt — every call returns a labelled canned answer, so the whole notebook
-# always runs.
+# Cells marked `# YOUR TURN` ask you to edit the prompt text (or a pick) and
+# re-run. Offline, every call returns a labelled canned answer, so the whole
+# notebook always runs.
 
 # %% [markdown]
 # ## Objectives
@@ -42,79 +42,45 @@
 # - **Key:** `OPENAI_API_KEY` from the environment / course `.env`, never printed.
 # - **Boundary:** the model only ever sees the *profile* you send — never the raw
 #   CSV. That is the pattern to copy when the data is not public.
+# - **How this notebook works:** every step is one provided cell — run it with
+#   Shift+Enter and read what it prints. Cells marked `# YOUR TURN` ask you to
+#   edit the prompt text (ordinary quoted text — no code) or a pick from a
+#   list, and re-run the cell. Everything runs as shipped, so you can never
+#   get stuck.
 
 # %%
-# API key: uses OPENAI_API_KEY from the environment (classroom VM); when run on
-# the author's machine it falls back to the course .env file found by walking up
-# from the notebook directory. The key is never printed.
-import os, pathlib
-def _load_api_key():
-    if os.getenv("OPENAI_API_KEY") is not None:
-        return  # environment wins — an explicitly empty value forces offline mode
-    for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents]:
-        env = p / ".env"
-        if env.is_file():
-            for line in env.read_text().splitlines():
-                k, _, v = line.partition("=")
-                if k.strip() == "OPENAI_API_KEY" and v.strip():
-                    os.environ["OPENAI_API_KEY"] = v.strip()
-                    return
-_load_api_key()
-if not os.getenv("OPENAI_API_KEY"):
-    print("OPENAI_API_KEY not set - ask your instructor, or the AI steps will be skipped/mocked.")
+# ▶ Setup — run this cell first (click it, then Shift+Enter).
+# It loads the course helper functions used by every step below.
+from lab_helpers import *
+lab_status()
 
 # %% [markdown]
 # ## Steps
 #
 # ### Step 1 — Open the notebook
 #
-# You are here. Run the Setup loader cell above first.
+# You are here. Run the Setup cell above first.
 #
 # ### Step 2 — Profile, then five candidate findings (6 min)
 #
 # Send the model a *profile* of the EPA data (not the whole file) and ask for
-# five candidate findings. The profile is provided — read it; it is all the
-# model ever sees.
+# five candidate findings. The profile is provided — run the next cell and
+# read it; it is all the model ever sees.
 
 # %%
-import pandas as pd
-from lab_common import chat, chat_json
-
-epa = pd.read_csv("data/epa_aqi_by_county.csv")
-epa["unhealthy_total"] = (epa["Unhealthy Days"] + epa["Very Unhealthy Days"]
-                          + epa["Hazardous Days"])
-
-profile_txt = f"""EPA Annual AQI by county, 2024. {len(epa)} counties, {epa['State'].nunique()} states/territories.
-Columns: State, County, Year, Days with AQI, Good/Moderate/USG/Unhealthy/Very Unhealthy/Hazardous Days,
-Max AQI, 90th Percentile AQI, Median AQI, pollutant day counts (CO, NO2, Ozone, PM2.5, PM10).
-Median of county Median AQI: {epa['Median AQI'].median()}.
-Single year only: 2024."""
-
-print(profile_txt)
+epa = load_epa_for_briefing()
 
 # %%
-CANNED_FINDINGS = {"findings": [
-    "838 of 997 counties (84%) recorded zero days at Unhealthy or worse in 2024.",
-    "California accounts for 317 unhealthy-or-worse county-days — more than the next four states combined.",
-    "Hazardous-level air days were recorded in 15 states in 2024.",
-    "Three Southern California counties (San Bernardino, Riverside, Los Angeles) each logged more than 45 Unhealthy days.",
-    "Air quality improved in most counties relative to 2023.",
-]}
+profile = show_epa_profile(epa)
 
-FINDINGS_PROMPT = None
-# YOUR CODE: prompt for five candidate findings from profile_txt as JSON
-# under key "findings". Pass offline=CANNED_FINDINGS.
+# %% [markdown]
+# Now ask for the five candidate findings. The prompt below is a working
+# version — **edit the text** and re-run to ask for different findings.
 
-findings = None
-if FINDINGS_PROMPT:
-    findings = chat_json([{"role": "user", "content":
-                           FINDINGS_PROMPT + "\n\nPROFILE:\n" + profile_txt}],
-                         offline=CANNED_FINDINGS)
-if findings is None:
-    findings = CANNED_FINDINGS
-    print("(canned findings applied — write FINDINGS_PROMPT above to run your own)\n")
-for i, f in enumerate(findings["findings"], 1):
-    print(f"{i}. {f}")
+# %%
+FINDINGS_PROMPT = """You are an analyst's assistant. From the dataset profile below, propose five candidate findings for a briefing on U.S. county air quality. Return JSON under key "findings" (five strings). Each finding must be checkable against the dataset described — no external knowledge."""   # ← YOUR TURN: edit the findings prompt, then re-run this cell
+
+findings = propose_findings(profile, FINDINGS_PROMPT)
 
 # %% [markdown]
 # ### Step 3 — Pick the three most decision-relevant (3 min)
@@ -124,83 +90,36 @@ for i, f in enumerate(findings["findings"], 1):
 # you about the model's error pattern.
 
 # %%
-my_three = [1, 2, 4]  # YOUR CODE: your three picks by finding number
+MY_THREE = [1, 2, 4]   # ← YOUR TURN: your three picks by finding number, then re-run this cell
 
 # %% [markdown]
-# ### Step 4 — Recompute every finding in pandas (8 min)
+# ### Step 4 — Recompute every finding (8 min)
 #
-# The cell below recomputes all five. Run it, then mark each finding
-# **confirmed / wrong / unverifiable** in the verdicts dict. A finding is
-# unverifiable when the *file itself* cannot answer it — that is a different
-# failure from being wrong.
+# The first cell below recomputes all five findings from the file itself.
+# Run it, then mark each finding **confirmed / wrong / unverifiable** in the
+# second cell. A finding is unverifiable when the *file itself* cannot answer
+# it — that is a different failure from being wrong.
 
 # %%
-# verification code (provided — read it; this is the skill the lab exists to teach)
-zero_unhealthy = int((epa["unhealthy_total"] == 0).sum())
-print(f"[1] counties with zero unhealthy-or-worse days: {zero_unhealthy} of {len(epa)}")
-
-ca_days = int(epa.loc[epa["State"] == "California", "unhealthy_total"].sum())
-by_state = (epa.groupby("State")["unhealthy_total"].sum()
-            .sort_values(ascending=False))
-next4 = int(by_state.iloc[1:5].sum())
-print(f"[2] California: {ca_days} | next four states combined: {next4}")
-
-hz_states = int(epa.loc[epa["Hazardous Days"] > 0, "State"].nunique())
-print(f"[3] states with any Hazardous days: {hz_states}")
-
-socal = epa[epa["County"].isin(["San Bernardino", "Riverside", "Los Angeles"])
-            & (epa["State"] == "California")]
-print("[4] SoCal Unhealthy days:", socal.set_index("County")["Unhealthy Days"].to_dict())
-
-print(f"[5] years present in file: {sorted(epa['Year'].unique())}")
+verify_findings(epa)
 
 # %%
-verdicts = {}
-# YOUR CODE: {1: "confirmed"|"wrong"|"unverifiable", ...} for all five,
-# from the recomputed numbers above.
+MY_VERDICTS = {1: "confirmed", 2: "confirmed", 3: "wrong", 4: "confirmed", 5: "unverifiable"}   # ← YOUR TURN: your verdict for each finding ("confirmed" / "wrong" / "unverifiable"), from the recomputed numbers above
 
-if not verdicts:
-    verdicts = {1: "confirmed", 2: "confirmed", 3: "wrong",
-                4: "confirmed", 5: "unverifiable"}
-    print("(reference verdicts applied — check them against the numbers above)\n")
-for i, v in verdicts.items():
-    print(f"finding {i}: {v}")
+show_verdicts(MY_VERDICTS)
 
 # %% [markdown]
 # ### Step 5 — Draft the briefing from confirmed findings only (5 min)
 #
 # Now the assistant earns its keep: draft the one-page briefing using **only
 # the confirmed findings**. Feeding it verified facts, not its own claims,
-# is the whole workflow in one line.
+# is the whole workflow in one line. The prompt below is a working version —
+# note how it forbids any claim not in the verified list.
 
 # %%
-confirmed = [findings["findings"][i - 1] for i, v in verdicts.items() if v == "confirmed"]
+BRIEFING_PROMPT = """Draft a one-page briefing for a deputy director using ONLY the verified findings below. Do not add any number, claim, or comparison that is not in this list. Structure: headline, three short paragraphs, one-line recommendation."""   # ← YOUR TURN: edit the briefing prompt, then re-run this cell
 
-CANNED_BRIEFING = (
-    "COUNTY AIR QUALITY, 2024 — BRIEFING FOR THE DEPUTY DIRECTOR\n\n"
-    "Bad air in 2024 was a local, not national, condition: 84% of U.S. "
-    "counties (838 of 997) recorded zero days at Unhealthy or worse. "
-    "California is the outlier, accounting for 317 unhealthy-or-worse "
-    "county-days — more than the next four states combined. The exposure is "
-    "concentrated further still: San Bernardino, Riverside, and Los Angeles "
-    "counties each logged more than 45 Unhealthy days.\n\n"
-    "RECOMMENDATION: focus chronic-exposure outreach on the three Southern "
-    "California counties; treat remaining hotspots as event-driven."
-)
-
-BRIEFING_PROMPT = None
-# YOUR CODE: prompt for a one-page briefing using ONLY the confirmed findings
-# (join `confirmed` into the prompt). Forbid any claim not in the list.
-# Pass offline=CANNED_BRIEFING.
-
-briefing = None
-if BRIEFING_PROMPT:
-    briefing = chat([{"role": "user", "content": BRIEFING_PROMPT}],
-                    offline=CANNED_BRIEFING)
-if briefing is None:
-    briefing = CANNED_BRIEFING
-    print("(canned briefing applied — write BRIEFING_PROMPT above to run your own)\n")
-print(briefing)
+briefing = draft_briefing(findings, MY_VERDICTS, BRIEFING_PROMPT)
 
 # %% [markdown]
 # ### Step 6 — Edit like you mean it (5 min)
@@ -219,18 +138,13 @@ print(briefing)
 # ## Stretch — same game, harder file (optional)
 #
 # The workbook also lists `data/cdc_flu_wastewater.csv`: 3,000 rows of CDC
-# influenza wastewater surveillance — messier and time-based. Build a profile
-# below, then repeat Steps 2–7 on it. Notice how much more can go wrong when
-# the file has dates, sites and text fields.
+# influenza wastewater surveillance — messier and time-based. Run the cell
+# below for a first look, then repeat Steps 2–7 on it (build a profile, ask
+# for findings, verify, brief). Notice how much more can go wrong when the
+# file has dates, sites and text fields.
 
 # %%
-cdc = pd.read_csv("data/cdc_flu_wastewater.csv")
-print("shape:", cdc.shape)
-print("columns:", ", ".join(cdc.columns[:12]), "...")
-print("states/territories:", cdc["state_territory"].nunique())
-print("sample dates:", cdc["sample_collect_date"].min(), "->", cdc["sample_collect_date"].max())
-# YOUR CODE: profile it properly (per-site counts, missing values, date spans),
-# then run the five-findings -> verify -> briefing workflow on that profile.
+profile_cdc_wastewater()
 
 # %% [markdown]
 # ## Deliverable
@@ -259,16 +173,20 @@ print("sample dates:", cdc["sample_collect_date"].min(), "->", cdc["sample_colle
 # %% [markdown]
 # ## Troubleshooting
 #
-# - **"(canned findings applied...)" prints** — expected until you write
-#   `FINDINGS_PROMPT` (or when running without a key). The canned set is
-#   deliberate: two of its five findings fail verification.
-# - **`chat_json` returns `None` or your prompt errors** — ask explicitly for a
-#   JSON object with the key `"findings"`; the helper already sets
-#   `response_format={"type": "json_object"}`.
+# - **Every AI cell prints "(offline canned ...)"** — no API key is visible on
+#   this machine. The canned set is deliberate: two of its five findings fail
+#   verification. The lab is fully usable either way.
+# - **The findings step returns prose, not a list (live run)** — ask
+#   explicitly for a JSON object with the key `"findings"`; the helper already
+#   forces JSON mode.
 # - **Your recomputed number differs from a finding** — that IS the exercise,
-#   not a bug in the data. Mark the verdict and keep the receipt (the code).
-# - **`KeyError` on a CDC column in the stretch** — you guessed a column name;
-#   print `cdc.columns` first. Never guess schema.
-# - **The briefing invents a number not in `confirmed`** — tighten
+#   not a bug in the data. Mark the verdict and keep the receipt (the
+#   recomputed numbers above it).
+# - **The briefing invents a number not in the confirmed list** — tighten
 #   `BRIEFING_PROMPT`: "use only the findings below; every number must appear
 #   in them".
+
+# %% [markdown]
+# ---
+# *Curious about the Python behind these steps? The full code-forward version
+# of this lab lives in the `For_Python_Programmers/` folder.*

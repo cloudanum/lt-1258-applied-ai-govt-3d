@@ -3,6 +3,7 @@ Captured by an offline run (OPENAI_API_KEY=""), so model cells show
 the canned fallbacks; live runs will differ in wording, not in the
 verified numbers. Use as the read-along fallback if the API is down.
 
+loaded federal_ai_use_cases.csv: 1,200 rows x 36 columns
 shape: (1200, 36) | agencies: 6
 columns: ['agency', 'agency_name', 'id', 'use_case_name', 'agency_bureau', 'contact_email', 'is_withheld', 'development_stage', 'is_high_impact', 'HI_justification', 'topic_area', 'classification', 'problem_solved', 'benefits', 'system_outputs', 'operational_date', 'contracting_usage', 'vendor_name', 'have_ato', 'system_name_ato', 'data_description', 'link_to_data', 'has_pii', 'pia_url', 'demographic_features', 'has_custom_code', 'code_url', 'hi_testing_conducted', 'hi_assessment_completed', 'hi_potential_impacts', 'hi_independent_review', 'hi_ongoing_monitoring', 'hi_training_established', 'hi_failsafe_presence', 'hi_appeal_process', 'hi_public_consultation']
 agency_name
@@ -25,6 +26,8 @@ agency_name
 Department of Justice              59
 Department of Homeland Security    55
 Department of Energy               29
+
+flagged High-impact: 143 of 1200
 development_stage             Deployed  Pilot  Pre-deployment
 topic_area                                                   
 Admin Functions                     53     16              69

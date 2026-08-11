@@ -37,23 +37,28 @@
 # - **Datasets:** `data/cdc_flu_wastewater.csv`, `data/nyc_air_quality.csv`,
 #   `data/chicago_311.csv` — all public US government data, downloaded ahead
 #   of class (provenance in `data/MANIFEST.json`).
-# - **Tools:** pandas, plus `lab_common.search_datasets` for the finding-data
-#   warm-up. **No API key is needed.** The data.gov search tries the live
+# - **No API key is needed.** The data.gov search in Step 1 tries the live
 #   catalogue and falls back to a cached snapshot, so it works offline.
 # - **The one rule that never changes:** public or synthetic data only. Never
 #   paste real agency, personal or sensitive data into any assistant.
-# - Cells marked `# YOUR CODE` are for you to complete. Each has a reference
-#   fallback that runs if you leave it blank — replace it with your own code
-#   when you can.
+# - **How this notebook works:** every step is one provided cell — run it with
+#   Shift+Enter and read what it prints. Cells marked `# YOUR TURN` ask you to
+#   change a simple value and re-run the cell. Everything runs as shipped, so
+#   you can never get stuck.
+
+# %%
+# ▶ Setup — run this cell first (click it, then Shift+Enter).
+# It loads the course helper functions used by every step below.
+from lab_helpers import *
 
 # %% [markdown]
 # ## Steps
 #
-# 1. **(4 min)** Open `lab_2.1_data_expedition.ipynb` and run the warm-up:
-#    how you would *find* a dataset like these before profiling it.
+# 1. **(4 min)** Run the warm-up: how you would *find* a dataset like these
+#    before profiling it.
 # 2. **(4 min)** For **each** of the three datasets: load it and print shape,
-#    columns, dtypes.
-# 3. **(6 min)** Report per column: null count, distinct count, and an
+#    columns, column types.
+# 3. **(6 min)** Report per column: blank count, distinct count, and an
 #    example value.
 # 4. **(4 min)** Identify the grain — what does one row actually represent?
 # 5. **(4 min)** Identify the time column and print the date range.
@@ -63,88 +68,37 @@
 #    including its grain, coverage, and one caveat.
 
 # %% [markdown]
-# ### Step 1 — Warm-up: finding the data in the first place (provided)
+# ### Step 1 — Warm-up: finding the data in the first place
 #
-# data.gov retired its JSON API, so `lab_common.search_datasets` tries the live
-# catalogue and falls back to a cached snapshot. Either way, this is how you
-# would *find* a dataset like the three below before profiling it. Watch which
-# source it reports.
+# data.gov retired its JSON API, so this search tries the live catalogue and
+# falls back to a cached snapshot. Either way, this is how you would *find* a
+# dataset like the three below before profiling it. Watch which source it
+# reports. Then change `KEYWORD` to a topic your agency cares about and
+# re-run.
 
 # %%
-# Locate the labs/ folder no matter where Jupyter was started from.
-import os, sys
-from pathlib import Path
-
-for _cand in (Path.cwd(), *Path.cwd().parents):
-    if (_cand / "lab_common.py").is_file():
-        os.chdir(_cand)
-        if str(_cand) not in sys.path:
-            sys.path.insert(0, str(_cand))
-        break
-
-import pandas as pd
-from lab_common import search_datasets
-
-pd.set_option("display.width", 200)
-
-hits = search_datasets("air quality", rows=3)
-print(f"source: {hits['source']}\n")
-for h in hits["results"]:
-    print(f"- {h['title']}  ({h['organization']})")
-    print(f"  tags: {', '.join(h['tags'])}\n")
+KEYWORD = "air quality"   # ← YOUR TURN: search for any topic, then re-run this cell
+search_gov_datasets(KEYWORD)
 
 # %% [markdown]
-# ### Step 2 — Load all three datasets
+# ### Step 2 — Load all three datasets (provided)
 #
-# Load each CSV and print its shape, columns, and dtypes. Just the first
-# look — the detailed per-column profile is Step 3.
+# Run this cell to load each CSV and print its shape, columns, and column
+# types. Just the first look — the detailed per-column profile is Step 3.
 
 # %%
-DATASETS = {
-    "cdc_flu_wastewater": "data/cdc_flu_wastewater.csv",
-    "nyc_air_quality": "data/nyc_air_quality.csv",
-    "chicago_311": "data/chicago_311.csv",
-}
-frames = {name: pd.read_csv(path, low_memory=False)
-          for name, path in DATASETS.items()}
-
-for name, frame in frames.items():
-    print(f"=== {name}: {frame.shape[0]:,} rows x {frame.shape[1]} columns ===")
-    print("columns:", list(frame.columns))
-    print(frame.dtypes.value_counts().to_string(), "\n")
+frames = load_expedition_datasets()
 
 # %% [markdown]
-# ### Step 3 — A profiler you can reuse
+# ### Step 3 — A profile of each dataset (provided)
 #
-# Write `profile(df, name)`: per column, print the null count, distinct
-# count, and one example value. You will run it on all three datasets, so
-# write it once.
+# Run this cell. For each of the three datasets it prints one row per column:
+# the column's type, how many values are blank, how many are distinct, and
+# one example value. This table is the reusable first look at any unfamiliar
+# dataset — read it the same way all three times.
 
 # %%
-def profile(df, name):
-    # YOUR CODE: print the dataset name and shape, then a table with one row
-    # per column: dtype, nulls, nunique, and an example non-null value.
-    return None
-
-
-def reference_profile(df, name):
-    """Provided fallback so later cells run. Peek only if stuck!"""
-    print(f"=== {name}: {df.shape[0]:,} rows x {df.shape[1]} columns ===")
-    rows = []
-    for col in df.columns:
-        example = df[col].dropna().iloc[0] if df[col].notna().any() else None
-        rows.append({"column": col, "dtype": str(df[col].dtype),
-                     "nulls": int(df[col].isna().sum()),
-                     "distinct": int(df[col].nunique()),
-                     "example": str(example)[:40]})
-    print(pd.DataFrame(rows).to_string(index=False))
-    print()
-
-
-for name, frame in frames.items():
-    fn = profile(frame, name)
-    if fn is None:
-        reference_profile(frame, name)
+profile_datasets(frames)
 
 # %% [markdown]
 # ### Step 4 — The grain: what is one row?
@@ -161,30 +115,15 @@ for name, frame in frames.items():
 # - chicago_311:
 
 # %% [markdown]
-# ### Step 5 — The time dimension
+# ### Step 5 — The time dimension (provided)
 #
-# Every dataset here has a time column (or something playing that role). Find
-# it and print the range it covers.
+# Every dataset here has a time column (or something playing that role). Run
+# this cell — it finds each one and prints the range it covers. (NYC's is not
+# a full date — compare the range with the `time_period` values it prints and
+# decide which is honest.)
 
 # %%
-time_ranges = {}
-# YOUR CODE: for each frame, identify the time column, parse it, and store
-# (min, max) in time_ranges[name]. (NYC's is not a full date — look at
-# time_period and start_date and decide which is honest.)
-
-if not time_ranges:
-    cdc_dates = pd.to_datetime(frames["cdc_flu_wastewater"]["sample_collect_date"],
-                               errors="coerce")
-    nyc_dates = pd.to_datetime(frames["nyc_air_quality"]["start_date"], errors="coerce")
-    c311_dates = pd.to_datetime(frames["chicago_311"]["created_date"], errors="coerce")
-    time_ranges = {
-        "cdc_flu_wastewater": (cdc_dates.min(), cdc_dates.max()),
-        "nyc_air_quality": (nyc_dates.min(), nyc_dates.max()),
-        "chicago_311": (c311_dates.min(), c311_dates.max()),
-    }
-    print("(reference answer applied — replace with your own code above)\n")
-for name, (lo, hi) in time_ranges.items():
-    print(f"{name:22s} {lo}  ->  {hi}")
+show_time_ranges(frames)
 
 # %% [markdown]
 # ### Step 6 — What each dataset can and cannot answer
@@ -245,13 +184,14 @@ for name, (lo, hi) in time_ranges.items():
 #
 # - **Step 1 prints `source: cached`.** Expected — data.gov's API is gone and
 #   the classroom network may be filtered. The snapshot is the lesson.
-# - **`DtypeWarning: Columns (n) have mixed types`.** Real government CSVs do
-#   this; `low_memory=False` in the provided load silences it by reading the
-#   file in one pass.
-# - **`pd.to_datetime` produced `NaT` values.** Some rows have unparseable or
-#   blank dates — `errors="coerce"` is the honest fix; note how many rows it
-#   cost before quoting a range.
-# - **The profiler cell prints the reference version, not yours.** Your
-#   `profile()` must *return something* (even `True`) once it prints — a bare
-#   `return None` keeps the fallback engaged.
+# - **A warning about mixed column types.** Real government CSVs do this; the
+#   provided load already handles it by reading each file in one pass.
+# - **A date range looks wrong or a date column shows blanks.** Some rows have
+#   unparseable or blank dates — the time-range step skips them honestly;
+#   note how many rows that costs before quoting a range.
 # - **Out-of-order errors after experimenting.** Kernel → Restart & Run All.
+
+# %% [markdown]
+# ---
+# *Curious about the Python behind these steps? The full code-forward version
+# of this lab lives in the `For_Python_Programmers/` folder.*

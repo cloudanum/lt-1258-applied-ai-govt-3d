@@ -7,6 +7,15 @@ LOG_FILE="${JUPYTER_1258_LOG:-/tmp/1258-jupyter-lab.log}"
 PORT="${JUPYTER_1258_PORT:-8888}"
 OPEN_BROWSER="${JUPYTER_1258_OPEN_BROWSER:-True}"
 
+# IT drops the class key in /home/student/Keys/keys.txt; copy it into .env
+# (what the notebooks read) before the server starts, so a key swapped in
+# before class needs no other step. Never fatal: with no key the labs run on
+# canned answers, and a failed sync must not keep the class out of JupyterLab.
+# Its output — masked to the key's last four characters — goes to $LOG_FILE.
+if [[ -x "$PROJECT_DIR/sync_key.sh" ]]; then
+  "$PROJECT_DIR/sync_key.sh" >> "$LOG_FILE" 2>&1 || true
+fi
+
 if [[ -x "$PROJECT_DIR/.venv/bin/jupyter-lab" ]]; then
   JUPYTER_BIN="$PROJECT_DIR/.venv/bin/jupyter-lab"
   JUPYTER_ARGS=()

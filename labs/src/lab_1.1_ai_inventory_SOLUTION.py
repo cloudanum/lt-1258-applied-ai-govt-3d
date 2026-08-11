@@ -22,7 +22,7 @@
 #
 # By the end of this lab, you will:
 #
-# - Load, filter, group and summarise a real federal dataset with pandas.
+# - Load, filter, group and summarise a real federal dataset.
 # - Answer substantive questions about federal AI adoption from evidence.
 # - Practise the analysis habits every later lab depends on.
 
@@ -32,15 +32,14 @@
 # - **Datasets:** `data/federal_ai_use_cases.csv` (capped extract of OMB's
 #   2025 inventory) and `data/federal_ai_cots.csv`. Provenance in
 #   `data/MANIFEST.json`.
-# - **Tools:** pandas only — no API key needed. Load both files with
-#   `encoding="utf-8-sig"`.
+# - **Tools:** pandas only — no API key needed.
 # - Instructor copies live in `solutions/`, one level below `labs/` — the
-#   first cell finds `labs/` (where `lab_common.py` and `data/` are) and runs
-#   from there.
+#   first cell finds `labs/` (where `lab_common.py` / `lab_helpers.py` and
+#   `data/` are) and runs from there.
 
 # %%
 # Instructor copies live in solutions/, one level below labs/ — find labs/
-# (where lab_common.py and data/ are) and run from there.
+# (where lab_common.py, lab_helpers.py and data/ are) and run from there.
 import os, sys
 from pathlib import Path
 
@@ -51,10 +50,12 @@ for _cand in (Path.cwd(), *Path.cwd().parents):
             sys.path.insert(0, str(_cand))
         break
 
+from lab_helpers import *
+
 # %% [markdown]
 # ## Steps
 #
-# 1. **(3 min)** Open the notebook and run the setup cell.
+# 1. **(3 min)** Run the setup cell, then load the inventory.
 # 2. **(3 min)** Shape and columns — how many use cases, how many agencies?
 # 3. **(4 min)** Top 10 agencies by use-case count.
 # 4. **(4 min)** Share actually in production (`development_stage`).
@@ -62,18 +63,13 @@ for _cand in (Path.cwd(), *Path.cwd().parents):
 # 6. **(4 min)** `topic_area` × `development_stage` cross-tab; read a row
 #    aloud.
 # 7. **(4 min)** COTS file — most common commercial tools.
-# 8. **(4 min)** Three findings, each with the code that produced it.
+# 8. **(4 min)** Three findings, each with the step that produced it.
 
 # %% [markdown]
-# ### Step 1 — Setup and load
+# ### Step 1 — Load the inventory
 
 # %%
-import pandas as pd
-
-pd.set_option("display.width", 200)
-pd.set_option("display.max_columns", 40)
-
-uc = pd.read_csv("data/federal_ai_use_cases.csv", encoding="utf-8-sig")
+uc = load_ai_inventory()
 
 # %% [markdown]
 # ### Step 2 — First look: shape, columns, agencies
@@ -83,8 +79,7 @@ uc = pd.read_csv("data/federal_ai_use_cases.csv", encoding="utf-8-sig")
 # worth saying so no one over-generalizes from six agencies.
 
 # %%
-print("shape:", uc.shape, "| agencies:", uc["agency_name"].nunique())
-print("columns:", list(uc.columns))
+inventory_overview(uc)
 
 # %% [markdown]
 # ### Step 3 — Top 10 agencies by use-case count
@@ -94,8 +89,8 @@ print("columns:", list(uc.columns))
 # is a top 6 — a good moment to ask what the file's cap does to any ranking.
 
 # %%
-top_agencies = uc["agency_name"].value_counts().head(10)
-print(top_agencies.to_string())
+TOP_N = 10   # how many agencies to show
+top_ai_agencies(uc, top_n=TOP_N)
 
 # %% [markdown]
 # ### Step 4 — What share is actually in production?
@@ -106,12 +101,7 @@ print(top_agencies.to_string())
 # completeness problem.
 
 # %%
-stage = uc["development_stage"]
-print(stage.value_counts(dropna=False).to_string())
-deployed_share = round((stage == "Deployed").sum() / stage.notna().sum() * 100, 1)
-print(f"\nDeployed share (of non-blank): {deployed_share}%")
-print(f"Deployed share (of all rows):  "
-      f"{round((stage == 'Deployed').mean() * 100, 1)}%")
+show_deployed_share(uc)
 
 # %% [markdown]
 # ### Step 5 — Who reports the most high-impact AI?
@@ -121,9 +111,7 @@ print(f"Deployed share (of all rows):  "
 # *consequential* AI. That contrast is the CIO headline.
 
 # %%
-high_impact_by_agency = (uc[uc["is_high_impact"] == "High-impact"]
-                         ["agency_name"].value_counts())
-print(high_impact_by_agency.to_string())
+high_impact_agencies(uc)
 
 # %% [markdown]
 # ### Step 6 — Topic area × development stage
@@ -133,8 +121,7 @@ print(high_impact_by_agency.to_string())
 # pre-deployment). Reading one row aloud forces the "so what".
 
 # %%
-xtab = pd.crosstab(uc["topic_area"], uc["development_stage"])
-print(xtab.to_string())
+topic_stage_crosstab(uc)
 
 # %% [markdown]
 # ### Step 7 — The commercial tools underneath
@@ -145,33 +132,27 @@ print(xtab.to_string())
 # the canonicalization problem Lab 6.2 fixes with GenAI.
 
 # %%
-cots = pd.read_csv("data/federal_ai_cots.csv", encoding="utf-8-sig")
-top_tools = (cots["Name of Commercial Product or Service Used"]
-             .value_counts().head(10))
-print(top_tools.to_string())
-copilot_variants = (cots["Name of Commercial Product or Service Used"]
-                    .str.contains("copilot", case=False, na=False).sum())
-print(f"\nrows mentioning a Copilot variant: {copilot_variants} of {len(cots)}")
+top_commercial_tools()
 
 # %% [markdown]
 # ### Step 8 — Three findings (worked examples)
 #
 # 1. **Only about a third of reported federal AI is actually deployed** —
 #    347 of 977 non-blank stage values say `Deployed`.
-#    `(uc["development_stage"] == "Deployed").sum() / uc["development_stage"].notna().sum()`
+#    (Step 4 — `show_deployed_share(uc)`)
 # 2. **The highest-volume agency is not the highest-stakes one** — DoE leads
 #    on count (340) but DoJ and DHS lead on high-impact systems (59 and 55).
-#    `uc[uc["is_high_impact"] == "High-impact"]["agency_name"].value_counts()`
+#    (Steps 3 and 5 — `top_ai_agencies(uc)` and `high_impact_agencies(uc)`)
 # 3. **One vendor's assistant dominates the commercial layer under three
 #    different names** — Copilot variants appear in 96 of 900 COTS rows.
-#    `cots["Name of Commercial Product or Service Used"].str.contains("copilot", case=False, na=False).sum()`
+#    (Step 7 — `top_commercial_tools()`)
 
 # %% [markdown]
 # ## Deliverable
 #
 # 1. The top-10 agency table, the deployed share, the high-impact ranking.
 # 2. The topic × stage cross-tab with one row read aloud.
-# 3. Three findings, each with its line of code.
+# 3. Three findings, each with the step that produced it.
 
 # %% [markdown]
 # ## Reflection (expected answers)
@@ -196,11 +177,10 @@ print(f"\nrows mentioning a Copilot variant: {copilot_variants} of {len(cots)}")
 # %% [markdown]
 # ## Troubleshooting
 #
-# - **`FileNotFoundError: data/...`.** Not running from `labs/`; re-run the
-#   first cell (it locates `labs/`) then Run All.
-# - **`KeyError: 'agency_name'` / BOM in the header.** Reload with
-#   `encoding="utf-8-sig"`.
-# - **Counts don't add to the row total.** Blanks are dropped by default —
-#   `value_counts(dropna=False)`.
+# - **A red error mentioning a data file.** The data pack is incomplete — have
+#   the student run the Day-0 healthcheck and flag it to you.
+# - **Counts don't add to the row total.** Blanks are left out of most counts
+#   by default — Step 4's table shows them as `NaN`.
 # - **Numbers differ from a neighbour's.** Same shipped extract? It is capped
 #   (see `data/MANIFEST.json`), not the full inventory.
+# - **Out-of-order errors.** Kernel → Restart & Run All.

@@ -1,0 +1,52 @@
+EXPECTED OUTPUT — lab_1.2_clustering (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+shape: (997, 18) | states/territories: 54
+columns: ['State', 'County', 'Year', 'Days with AQI', 'Good Days', 'Moderate Days', 'Unhealthy for Sensitive Groups Days', 'Unhealthy Days', 'Very Unhealthy Days', 'Hazardous Days', 'Max AQI', '90th Percentile AQI', 'Median AQI', 'Days CO', 'Days NO2', 'Days Ozone', 'Days PM2.5', 'Days PM10']
+     State   County  Year  Days with AQI  Good Days  Moderate Days  \
+0  Alabama  Baldwin  2024            355        278             77   
+1  Alabama     Clay  2024            354        307             47   
+2  Alabama   DeKalb  2024            366        277             89   
+
+   Unhealthy for Sensitive Groups Days  Unhealthy Days  Very Unhealthy Days  \
+0                                    0               0                    0   
+1                                    0               0                    0   
+2                                    0               0                    0   
+
+   Hazardous Days  Max AQI  90th Percentile AQI  Median AQI  Days CO  \
+0               0       90                   58          40        0   
+1               0       75                   52          29        0   
+2               0       87                   57          43        0   
+
+   Days NO2  Days Ozone  Days PM2.5  Days PM10  
+0         0         127         228          0  
+1         0           0         354          0  
+2         0         242         124          0
+scaled feature matrix: (997, 6)
+            Good Days  Moderate Days  Unhealthy for Sensitive Groups Days  Unhealthy Days  Very Unhealthy Days  Hazardous Days  Median AQI  counties
+cluster_k3                                                                                                                                          
+0               259.6           63.6                                  1.3             0.2                  0.0             0.0        36.6       842
+1                40.3          184.3                                 71.3            55.7                 14.0             0.3        84.7         3
+2               171.6          176.0                                 12.8             2.1                  0.2             0.1        51.4       152
+k=2  inertia=4,338
+k=3  inertia=3,375
+k=4  inertia=2,603
+k=5  inertia=2,038
+k=6  inertia=1,570
+k=7  inertia=1,304
+k=8  inertia=1,103
+<Figure size 600x350 with 1 Axes>
+         Good Days  Moderate Days  Unhealthy for Sensitive Groups Days  Unhealthy Days  Very Unhealthy Days  Hazardous Days  Median AQI  counties
+cluster                                                                                                                                          
+0            264.5           54.6                                  1.1             0.1                  0.0             0.0        35.5       735
+1            194.4          155.0                                  8.4             1.4                  0.1             0.0        48.3       254
+2             40.3          184.3                                 71.3            55.7                 14.0             0.3        84.7         3
+3            178.6          159.8                                 18.6             4.6                  1.2             3.2        49.2         5
+
+worst cluster: 2
+     State         County  unhealthy_total  Max AQI  Median AQI
+California San Bernardino               88      593          87
+California      Riverside               67      213          87
+California    Los Angeles               55      230          80

@@ -48,11 +48,11 @@ zip_dtype: float64
 zip_sample: [60666.0, 60614.0, 60618.0]
 {'created_unparseable': 0, 'closed_before_created': 0, 'range': '2026-07-31 19:03:57 -> 2026-08-01 14:14:53'}
 {'newest': '2026-08-01 14:14:53', 'oldest': '2026-07-31 19:03:57', 'calendar_days': 2, 'window_hours': 19.2}
-   dimension                            metric                                        value passes
-Completeness                 columns >20% null                   7 of 39 (2 entirely empty)  False
-  Uniqueness               duplicate sr_number                                            0   True
-  Uniqueness           city-flagged duplicates                                   220 (5.5%)  False
- Consistency   city/state variants + zip dtype Chicago/CHICAGO, Illinois/IL, zip as float64  False
-    Validity closed-before-created / bad dates                                        0 / 0   True
-  Timeliness                    window covered                       19.2h, 2 calendar days  False
-    Accuracy         testable from data alone?              no — needs address-master audit   None
+   dimension                               metric                                      value passes
+Completeness                    columns >20% null                                    7 of 39  False
+  Uniqueness                  duplicate sr_number                                          0   True
+  Uniqueness              city-flagged duplicates                                        220  False
+ Consistency city/state case variants + zip dtype Chicago/CHICAGO, Illinois/IL, zip as float  False
+    Validity                closed-before-created                                          0   True
+  Timeliness                       window covered                              19.2h, 2 days  False
+    Accuracy            testable from data alone?                                         no   None

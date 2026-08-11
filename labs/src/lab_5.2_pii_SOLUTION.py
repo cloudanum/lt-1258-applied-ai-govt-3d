@@ -22,16 +22,18 @@
 
 # %%
 # Instructor copies live in solutions/, one level below labs/ — find labs/
-# (where lab_common.py and data/ are) and run from there.
+# (where lab_common.py, lab_helpers.py and data/ are) and run from there.
 import os, sys
 from pathlib import Path
 
-for _cand in (Path.cwd(), Path.cwd().parent):
+for _cand in (Path.cwd(), *Path.cwd().parents):
     if (_cand / "lab_common.py").is_file():
         os.chdir(_cand)
         if str(_cand) not in sys.path:
             sys.path.insert(0, str(_cand))
         break
+
+from lab_helpers import *
 
 # %% [markdown]
 # ## Step 1 — The regex detector over citizen records
@@ -43,19 +45,10 @@ for _cand in (Path.cwd(), Path.cwd().parent):
 # constituent's contact details. Detection is not understanding.
 
 # %%
-import json
-import re
-import pandas as pd
-import lab_common as lc
+records = load_pii_records()
 
-records = lc.load_citizen_records()
-blob = json.dumps(records)
-
-hits = {"ssn": len(lc._SSN.findall(blob)),
-        "email": len(lc._EMAIL.findall(blob)),
-        "phone": len(lc._PHONE.findall(blob))}
-print(hits)
-print("\nrecord keys:", list(records[0].keys()))
+# %%
+scan_records_for_pii(records)
 
 # %% [markdown]
 # ## Step 2 — The same detector over Chicago 311 free text
@@ -66,14 +59,7 @@ print("\nrecord keys:", list(records[0].keys()))
 # household, and free-text fields can carry names a regex has no pattern for.
 
 # %%
-c311 = pd.read_csv("data/chicago_311.csv", low_memory=False)
-
-text = "\n".join(c311[["street_address", "city", "state"]]
-                 .fillna("").agg(" ".join, axis=1))
-hits_311 = {"ssn": len(lc._SSN.findall(text)),
-            "email": len(lc._EMAIL.findall(text)),
-            "phone": len(lc._PHONE.findall(text))}
-print(hits_311)
+scan_311_for_pii()
 
 # %% [markdown]
 # ## Step 3 — Three items the detector missed (expected)
@@ -89,10 +75,7 @@ print(hits_311)
 #    (Accept "the external email is a *different kind* of hit" as a variant.)
 
 # %%
-for r in records:
-    print(f"\n{r['case_id']} — {r['name']}")
-    print("  address:", r["address"])
-    print("  summary:", r["summary"][:110])
+show_records_for_review(records)
 
 # %% [markdown]
 # ## Step 4 — Improve one pattern
@@ -104,15 +87,8 @@ for r in records:
 # policy decision about what counts as PII in context, not just a pattern.
 
 # %%
-ADDRESS = re.compile(r"\b\d+\s+[\w ]+\s+"
-                     r"(Street|St|Avenue|Ave|Lane|Court|Way|Road|Rd|Boulevard|Blvd|Drive|Dr)\b")
-
-for r in records:
-    m = ADDRESS.search(r["address"])
-    print(f"{r['case_id']}: {'HIT -> ' + m.group(0) if m else 'miss'}")
-
-fp = [r["case_id"] for r in records if ADDRESS.search(r["summary"])]
-print("\nfalse positives on summaries:", fp or "none")
+ADDRESS_PATTERN = r"\b\d+\s+[\w ]+\s+(Street|St|Avenue|Ave|Lane|Court|Way|Road|Rd|Boulevard|Blvd|Drive|Dr)\b"   # the reference address pattern
+test_address_pattern(records, ADDRESS_PATTERN)
 
 # %% [markdown]
 # ## Step 5 — Mask, don't delete
@@ -123,15 +99,7 @@ print("\nfalse positives on summaries:", fp or "none")
 # catches names too; that gap *is* the teaching point.
 
 # %%
-def _mask_value(v):
-    return ADDRESS.sub("[REDACTED-ADDRESS]", lc.mask_pii(str(v)))
-
-masked_records = [{k: _mask_value(v) for k, v in r.items()} for r in records]
-print(json.dumps(masked_records[0], indent=2))
-
-mdf = pd.DataFrame(masked_records)
-print("\nstill analysable — open cases by topic:")
-print(mdf[mdf["status"] == "open"]["topic"].value_counts().to_string())
+masked_records = mask_records_pii(records, ADDRESS_PATTERN)
 
 # %% [markdown]
 # ## Step 6 — Residual risk (worked)

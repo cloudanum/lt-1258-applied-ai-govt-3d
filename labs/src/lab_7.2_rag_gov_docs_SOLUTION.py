@@ -33,112 +33,119 @@
 
 # %%
 # Instructor copies live in solutions/, one level below labs/ — find labs/
-# (where lab_common.py and data/ are) and run from there.
+# (where lab_common.py, lab_helpers.py and data/ are) and run from there.
 import os, sys
 from pathlib import Path
 
-for _cand in (Path.cwd(), Path.cwd().parent):
+for _cand in (Path.cwd(), *Path.cwd().parents):
     if (_cand / "lab_common.py").is_file():
         os.chdir(_cand)
         if str(_cand) not in sys.path:
             sys.path.insert(0, str(_cand))
         break
 
-# %%
-import textwrap
-from lab_common import (load_corpus, embed_texts, cosine_topk, get_client,
-                        CHAT_MODEL, note_api_failure)
+from lab_helpers import *
 
 # %% [markdown]
 # ## Step 1 — Load and chunk the corpus
 #
-# Long documents are split into overlapping chunks so retrieval can return just
-# the relevant passage. Here each paragraph is a chunk (our docs are short).
+# Long documents are split into chunks so retrieval can return just the
+# relevant passage. Here each paragraph is a chunk (our docs are short).
+#
+# **Expected:** 4 documents → 26 chunks (6 / 7 / 7 / 6 per file).
 
 # %%
-docs = load_corpus()
-chunks = []
-for d in docs:
-    for para in [p.strip() for p in d["text"].split("\n\n") if len(p.strip()) > 60]:
-        chunks.append({"source": d["source"], "text": para})
-print(f"{len(docs)} documents → {len(chunks)} chunks")
+chunks = load_policy_chunks()
 
 # %% [markdown]
 # ## Step 2 — Embed the chunks
 #
 # Each chunk becomes a vector. In production you would store these in a vector
-# database (Chroma, FAISS, pgvector, Azure AI Search). Here we keep the vectors in
-# memory and rank with cosine similarity — the same idea, no extra service.
+# database (Chroma, FAISS, pgvector, Azure AI Search). Here we keep the vectors
+# in memory and rank with cosine similarity — the same idea, no extra service.
+#
+# **Expected offline:** `embedded 26 chunks, dim=256` and the local hashing
+# fallback named as the embedder.
 
 # %%
-chunk_vecs = embed_texts([c["text"] for c in chunks])
-print(f"embedded {len(chunk_vecs)} chunks, dim={len(chunk_vecs[0])}")
+vecs = embed_policy_chunks(chunks)
 
 # %% [markdown]
 # ## Step 3 — Retrieve
+#
+# **Expected:** all three top chunks come from `records_retention_policy.md`
+# (scores ≈ 0.50 / 0.47 / 0.43 offline) — the retention answer is genuinely in
+# the corpus. If a student's top chunks are from the wrong file, the question
+# was edited into something the corpus does not cover — that is Stretch B's
+# lesson, not a bug.
 
 # %%
-def retrieve(question, k=3):
-    qv = embed_texts([question])[0]
-    hits = cosine_topk(qv, chunk_vecs, k=k)
-    return [(chunks[i], score) for i, score in hits]
-
 QUESTION = "How long are program case files kept before they are destroyed?"
-retrieved = retrieve(QUESTION, k=3)
-for c, score in retrieved:
-    print(f"[{score:.3f}] {c['source']}: {textwrap.shorten(c['text'], 90)}")
+
+retrieved = show_retrieved_passages(chunks, vecs, QUESTION)
 
 # %% [markdown]
 # ## Step 4 — Grounded answer (with citations)
+#
+# **Worked grounding instruction** below — the four load-bearing clauses:
+# context-only, `[filename]` after every fact, an exact quote per fact, and an
+# explicit "not in the context" escape hatch. The last is the one students
+# leave out.
 
 # %%
-def grounded_answer(question, retrieved):
-    client = get_client()
-    context = "\n\n".join(f"[{c['source']}] {c['text']}" for c, _ in retrieved)
-    offline = "(offline) Retrieved context that would be sent to the model:\n" + context
-    if client is None:
-        return offline
-    try:
-        resp = client.chat.completions.create(
-            model=CHAT_MODEL,
-            messages=[
-                {"role": "system",
-                 "content": "Answer ONLY from the provided context. Cite the source file in "
-                            "brackets after each fact. If the answer is not in the context, say so."},
-                {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"},
-            ],
-        )
-        return resp.choices[0].message.content
-    except Exception as e:
-        note_api_failure(e)
-        return offline
+GROUNDING_SYSTEM = (
+    "Answer ONLY from the provided context. After every fact, cite the source "
+    "file in [brackets] and quote the exact sentence you relied on. If the "
+    "context does not contain the answer, say so — do not use outside knowledge."
+)
 
-print(grounded_answer(QUESTION, retrieved))
+answer = ask_gov_docs(QUESTION, retrieved, GROUNDING_SYSTEM)
 
 # %% [markdown]
 # ## Step 5 — Ungrounded answer (no retrieval) — compare
 #
 # Ask the same question with no context. Without grounding, the model may give a
 # plausible but unsourced number — which for policy work is a liability.
+#
+# **Expected contrast:** grounded says **7 years** with a citation; ungrounded
+# says **3 years** with equal confidence. (The canned ungrounded answer is
+# deliberately wrong about the period — that is the teaching point.)
 
 # %%
-def ungrounded_answer(question):
-    client = get_client()
-    offline = "(offline) With no retrieval, the model would answer from memory, unsourced."
-    if client is None:
-        return offline
-    try:
-        resp = client.chat.completions.create(
-            model=CHAT_MODEL,
-            messages=[{"role": "user", "content": question}],
-        )
-        return resp.choices[0].message.content
-    except Exception as e:
-        note_api_failure(e)
-        return offline
+compare_with_ungrounded(QUESTION, answer)
 
-print("GROUNDED:\n", grounded_answer(QUESTION, retrieved))
-print("\nUNGROUNDED:\n", ungrounded_answer(QUESTION))
+# %% [markdown]
+# ## Stretch A — Check every citation against the source file
+#
+# **Expected:** the `[records_retention_policy.md]` tag exists, and the quoted
+# sentence verifies against the corpus.
+
+# %%
+check_answer_citations(answer)
+
+# %% [markdown]
+# ## Stretch B — The unanswerable question
+#
+# **Expected:** low retrieval scores, and the grounded answer abstains instead
+# of improvising. A pipeline that answers the budget question from this corpus
+# is hallucinating — tighten the grounding instruction.
+
+# %%
+HARD_QUESTION = "What is the agency's AI training budget for fiscal year 2027?"
+
+try_unanswerable_question(chunks, vecs, GROUNDING_SYSTEM, HARD_QUESTION)
+
+# %% [markdown]
+# ## Stretch C — Fixed-width chunks
+#
+# **Expected:** 17 fixed-width chunks instead of 26 paragraphs; the retention
+# passage still ranks first, but chunks now cut across paragraph boundaries —
+# the trade-off to narrate (no orphan sentences vs. split context).
+
+# %%
+CHUNK_WIDTH = 450
+
+try_fixed_width_chunks(QUESTION, width=CHUNK_WIDTH)
 
 # %% [markdown]
 # ## Debrief

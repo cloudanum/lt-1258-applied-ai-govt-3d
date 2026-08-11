@@ -26,7 +26,7 @@
 # one. (Off the class VM, a SKIP on check 3 is expected: there is no key, and
 # the AI cells fall back to canned replies.)
 #
-# You do **not** need to edit anything in this notebook.
+# You do **not** need to edit anything in this notebook — just run it.
 
 # %% [markdown]
 # ## Objectives
@@ -43,52 +43,17 @@
 #   plus the supporting files later labs use (`cached_datagov.json`,
 #   `citizen_records.json`, `gov_memo.txt`, `corpus/`).
 # - **API key:** read from the environment (classroom VM) or from the course
-#   `.env` file via `lab_common.load_dotenv()` — never paste a key into a
-#   notebook, and this notebook never prints one (only its last four
-#   characters). With no key the check reports **SKIP**, not an error.
+#   `.env` file — never paste a key into a notebook, and this notebook never
+#   prints one (only its last four characters). With no key the check reports
+#   **SKIP**, not an error.
 # - **The one rule that never changes:** public or synthetic data only. Never
 #   paste real agency, personal or sensitive data into any assistant during
 #   this class.
 
 # %%
-# Setup cell (run it and forget it): locate the labs/ folder — where
-# lab_common.py and data/ live — no matter where Jupyter was started from.
-# Importing lab_common runs its .env loader: it reads the course .env file (or
-# uses the key already in the environment) without ever printing the key.
-# importlib.util must be imported explicitly — `import importlib` alone does not
-# bind the submodule, and on 3.12 the healthcheck's find_spec call raises
-# AttributeError before any check prints.
-import os, sys, importlib, importlib.util, json
-from pathlib import Path
-
-for _cand in (Path.cwd(), *Path.cwd().parents):
-    if (_cand / "lab_common.py").is_file():
-        os.chdir(_cand)
-        if str(_cand) not in sys.path:
-            sys.path.insert(0, str(_cand))
-        break
-
-import lab_common as lc
-
-DATA = lc.DATA_DIR
-
-GREEN, YELLOW, BLUE, RED, RESET = (
-    "\033[92m", "\033[93m", "\033[94m", "\033[91m", "\033[0m")
-
-# The workbook page tells students to read these off by number ("Red on Check 3
-# (API key)"), so the number is part of the printed line, not just the heading
-# above it.
-def result(n, ok, label, detail=""):
-    tag = f"{GREEN}PASS{RESET}" if ok else f"{RED}FAIL{RESET}"
-    print(f"[{tag}] Check {n} — {label}" + (f" — {detail}" if detail else ""))
-    return ok
-
-def skip(n, label, detail=""):
-    print(f"[{YELLOW}SKIP{RESET}] Check {n} — {label}" + (f" — {detail}" if detail else ""))
-
-def info(n, label, detail=""):
-    """Check 4 is informational: it must never read as pass or fail."""
-    print(f"[{BLUE}INFO{RESET}] Check {n} — {label}" + (f" — {detail}" if detail else ""))
+# ▶ Setup — run this cell first (click it, then Shift+Enter).
+# It loads the course helper functions the checks below use.
+from lab_helpers import *
 
 # %% [markdown]
 # ## Steps
@@ -106,17 +71,11 @@ def info(n, label, detail=""):
 # %% [markdown]
 # ### Check 1 — Python packages
 #
-# The packages the week's notebooks import. If anything is missing, the VM
+# The packages the week's notebooks need. If anything is missing, the VM
 # image is wrong — tell your instructor now rather than mid-lab.
 
 # %%
-needed = ["openai", "pandas", "requests", "matplotlib", "sklearn"]
-missing = [m for m in needed if importlib.util.find_spec(m) is None]
-result(1, not missing,
-       "Python packages installed",
-       "all present" if not missing else f"missing: {', '.join(missing)}")
-import openai
-print("      openai SDK version:", openai.__version__, "(need >= 1.0)")
+check_python_packages()
 
 # %% [markdown]
 # ### Check 2 — Lab data files present
@@ -126,15 +85,7 @@ print("      openai SDK version:", openai.__version__, "(need >= 1.0)")
 # of class because classroom networks are unreliable.
 
 # %%
-manifest = json.loads((DATA / "MANIFEST.json").read_text())
-expected = [ds["file"] for ds in manifest["datasets"]] + [
-    "cached_datagov.json", "citizen_records.json", "gov_memo.txt", "corpus"]
-missing_files = [f for f in expected if not (DATA / f).exists()]
-result(2, not missing_files,
-       "Lab data files present",
-       f"all {len(expected)} found ({len(manifest['datasets'])} datasets "
-       f"+ {len(expected) - len(manifest['datasets'])} support files)"
-       if not missing_files else f"missing: {', '.join(missing_files)}")
+check_data_files()
 
 # %% [markdown]
 # ### Check 3 — OpenAI API key configured and reachable
@@ -146,29 +97,7 @@ result(2, not missing_files,
 # class VM a SKIP means something is wrong — tell your instructor.
 
 # %%
-key = os.getenv("OPENAI_API_KEY")
-model = lc.CHAT_MODEL
-# One label, whatever happens: the workbook's troubleshooting entry says
-# "Red on Check 3 (API key)", so the line must be recognisable as the API key
-# check on the SKIP and FAIL paths too.
-LABEL_3 = "OpenAI API key"
-if not key:
-    skip(3, LABEL_3,
-         "OPENAI_API_KEY is not set — on the class VM, tell your instructor; "
-         "otherwise the AI cells will use canned fallbacks")
-else:
-    print(f"      key ends in ...{key[-4:]}   model = {model}")
-    try:
-        from openai import OpenAI
-        client = OpenAI()
-        resp = client.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": "Reply with the single word: ready"}],
-        )
-        result(3, True, LABEL_3,
-               f"configured and reachable; model replied: {resp.choices[0].message.content.strip()!r}")
-    except Exception as e:
-        result(3, False, LABEL_3, f"key is set but the call failed — {type(e).__name__}: {e}")
+check_api_key()
 
 # %% [markdown]
 # ### Check 4 — data.gov reachable (used in Labs 2.1 / 7.2 / 7.3)
@@ -177,16 +106,7 @@ else:
 # fall back to a bundled cached copy of the data. It never blocks the class.
 
 # %%
-try:
-    import requests
-    r = requests.get("https://catalog.data.gov/", timeout=8,
-                     headers={"User-Agent": "lt-1258-lab"})
-    # Any HTTP response means the host is reachable; the labs use the live API
-    # when possible and the cached copy otherwise.
-    info(4, "data.gov reachable", f"host responded (HTTP {r.status_code})")
-except Exception as e:
-    info(4, "data.gov reachable",
-         f"offline ({type(e).__name__}) — labs will use the bundled cached copy")
+check_datagov_reachable()
 
 # %% [markdown]
 # ## Deliverable
@@ -208,8 +128,8 @@ except Exception as e:
 # - Poll the room: who is all-green? Anyone with a FAIL — which check? Fix the
 #   stragglers now; nothing later waits for this.
 # - Ask: where does the key live, and why not in the notebook? (Environment /
-#   `.env`, read by `lab_common` — so a notebook can be shared or screenshotted
-#   without leaking it.)
+#   `.env`, loaded by the course helpers — so a notebook can be shared or
+#   screenshotted without leaking it.)
 # - Ask: which check would fail first if the network were down? (Check 3 — the
 #   only one that needs to leave the VM. Check 4 only *reports* the outage.)
 
@@ -221,11 +141,15 @@ except Exception as e:
 #   the password is `pw` if asked.
 # - **Check 1 FAIL (missing packages).** The VM image is incomplete — tell your
 #   instructor; do not try to `pip install` mid-class.
-# - **Check 2 FAIL (missing data files).** Confirm the notebook is running from
-#   the `labs/` folder (the setup cell prints where it landed). If files are
-#   genuinely missing, tell your instructor — the data pack is re-copyable.
+# - **Check 2 FAIL (missing data files).** The data pack may not have copied —
+#   tell your instructor; it is re-copyable.
 # - **Check 3 SKIP / FAIL on the class VM.** The key injection failed — tell
 #   your instructor. The week's AI cells have canned fallbacks, so nothing is
 #   blocked while it is fixed.
 # - **A check stopped with a Python error instead of printing.** Kernel →
 #   Restart & Run All; if it repeats, call the instructor.
+
+# %% [markdown]
+# ---
+# *Curious about the Python behind these checks? The full code-forward version
+# of this lab lives in the `For_Python_Programmers/` folder.*
