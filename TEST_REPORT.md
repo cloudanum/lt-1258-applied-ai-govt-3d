@@ -118,7 +118,7 @@ archive is never rebuilt.
 
 ## Notes / follow-ups (not blocking)
 
-1. The workbook lab pages (`workbook/1258-WBa4-Lab-Manual.md`) reference labs
+1. The workbook lab pages (`legacy/workbook/1258-WBa4-Lab-Manual.md`) reference labs
    by filename and step, so they still line up, but a few step wordings assume
    visible code (e.g. Lab 7.3 Stage A "call each provided tool directly once",
    Lab 1.2 "Select the numeric day-count columns"). Consider a workbook wording
