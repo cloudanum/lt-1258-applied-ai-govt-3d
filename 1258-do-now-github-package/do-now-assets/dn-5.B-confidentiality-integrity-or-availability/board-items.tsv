@@ -1,0 +1,9 @@
+ID	Item	Expected / cue
+F1	A staff member emails a spreadsheet of citizen addresses to the wrong list.	Confidentiality.
+F2	A model silently changes a recommended benefit amount after a bad update.	Integrity.
+F3	A chatbot is unavailable during an emergency declaration.	Availability.
+F4	A contractor downloads training data to a personal laptop.	Confidentiality.
+F5	A prompt injection changes the assistant’s instructions.	Integrity.
+F6	A flood takes out the only region hosting the service.	Availability.
+F7	A user edits source data so future reports are wrong.	Integrity.
+F8	A public records response exposes another person’s medical detail.	Confidentiality.

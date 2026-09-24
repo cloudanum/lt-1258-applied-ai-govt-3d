@@ -1,0 +1,7 @@
+ID	Item	Expected / cue
+G1	Policy answer depends on a definition in a footnote on page 84.	Retrieval fail: chunking/footnotes. Fix: citation-aware chunking.
+G2	Two documents disagree; one is archived and one is current.	Governance fail: stale corpus. Fix: versioning and effective dates.
+G3	Question needs multi-step arithmetic over three tables.	Reasoning fail: retrieval alone insufficient. Fix: tools/calculation step.
+G4	User asks for “the latest directive” but corpus has no date metadata.	Retrieval/governance fail. Fix: metadata and recency ranking.
+G5	The right answer is not in the approved corpus.	Coverage fail. Fix: say not stated; escalate source gap.
+G6	Sensitive paragraph is retrieved into an answer for the wrong role.	Governance fail: authorization. Fix: role-aware retrieval filtering.

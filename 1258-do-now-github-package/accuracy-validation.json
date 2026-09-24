@@ -1,0 +1,107 @@
+{
+  "activity_count": 41,
+  "expected_count": 41,
+  "missing": [],
+  "extra": [],
+  "duplicate": [],
+  "table_id_checks": {
+    "1.C": {
+      "required": [
+        "T1",
+        "T6"
+      ],
+      "missing": []
+    },
+    "1.A": {
+      "required": [
+        "U1",
+        "U8"
+      ],
+      "missing": []
+    },
+    "0.3": {
+      "required": [
+        "S1",
+        "S6"
+      ],
+      "missing": []
+    },
+    "3.C": {
+      "required": [
+        "C1",
+        "C8"
+      ],
+      "missing": []
+    },
+    "5.A": {
+      "required": [
+        "R1",
+        "R8"
+      ],
+      "missing": []
+    },
+    "5.B": {
+      "required": [
+        "F1",
+        "F8"
+      ],
+      "missing": []
+    },
+    "5.C": {
+      "required": [
+        "H1",
+        "H6"
+      ],
+      "missing": []
+    },
+    "5.D": {
+      "required": [
+        "A1",
+        "A6"
+      ],
+      "missing": []
+    },
+    "6.A": {
+      "required": [
+        "ROW1",
+        "ROW10"
+      ],
+      "missing": []
+    },
+    "6.C": {
+      "required": [
+        "D1",
+        "D6"
+      ],
+      "missing": []
+    },
+    "7.D": {
+      "required": [
+        "G1",
+        "G6"
+      ],
+      "missing": []
+    },
+    "8.A": {
+      "required": [
+        "M1",
+        "M8"
+      ],
+      "missing": []
+    },
+    "B.X": {
+      "required": [
+        "P1",
+        "P4"
+      ],
+      "missing": []
+    }
+  },
+  "enhancements": {
+    "common_mistake": 41,
+    "finished_early": 41,
+    "solution_links": 41,
+    "possible_answers": 14,
+    "no_fixed_answer": 0
+  }
+}

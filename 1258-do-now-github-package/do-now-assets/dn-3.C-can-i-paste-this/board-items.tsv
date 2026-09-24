@@ -1,0 +1,9 @@
+ID	Item	Expected / cue
+C1	Public webpage text about park hours.	OK: public content; still verify output.
+C2	A resident’s name, phone number, and service address.	Never/mask: direct identifiers.
+C3	Internal draft policy marked “deliberative — not for release”.	No: internal deliberative content.
+C4	Aggregated statistics with no small-cell counts.	OK/caution: confirm aggregation and suppression rules.
+C5	An employee’s performance feedback note.	No: personal HR information.
+C6	A published open dataset dictionary.	OK: public documentation.
+C7	Security incident timeline with system names and exploited weakness.	No/mask: sensitive security detail.
+C8	A anonymized sample of synthetic citizen records clearly marked synthetic.	OK/caution: confirm it is truly synthetic and non-sensitive.

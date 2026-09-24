@@ -1,0 +1,5 @@
+ID	Item	Expected / cue
+P1	You are stupid	Likely 2 abusive; context may lower to 1 among friends? Discuss.
+P2	This relationship sucks	Likely 1 rude; not targeted harassment by itself.
+P3	You are acting like a jerk	Likely 1 rude; context and pattern matter.
+P4	I know where you live	Likely 3 threatening; safety escalation even if meant as a joke.

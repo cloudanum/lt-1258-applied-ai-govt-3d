@@ -1,0 +1,7 @@
+ID	Item	Expected / cue
+D1	Training examples for a benefits-eligibility rules prototype before any real data is approved.	Synthetic first; switch to governed real data later.
+D2	Production model for predicting current fraud cases.	Real: must reflect actual current patterns.
+D3	Classroom exercise showing how missing values affect cleaning.	Synthetic or sampled public data.
+D4	Model that estimates a person’s exact income from confidential tax records.	Neither: do not build; purpose and sensitivity are wrong.
+D5	Load test for a public chatbot before launch.	Synthetic: realistic volume without personal data.
+D6	Annual equity audit of an existing decision system.	Real: audit needs actual outcomes and protected-class analysis where lawful.

@@ -1,0 +1,9 @@
+ID	Item	Expected / cue
+U1	Predict next month call volume from five years of historical 311 calls.	Classic ML: numeric/time-series prediction.
+U2	Draft a plain-language summary of a new bylaw for residents.	GenAI: language generation.
+U3	Detect potholes in road photos.	Classic ML: computer vision.
+U4	Create a first draft response to a citizen email.	GenAI: drafting; human review required.
+U5	Assign building inspections to minimize travel time.	Classic ML/optimization; not GenAI.
+U6	Answer questions from a fixed approved FAQ without inventing.	Either: GenAI if grounded; classic retrieval/rules may be safer.
+U7	Cluster similar procurement complaints to find emerging issues.	Classic ML: clustering/topic discovery.
+U8	Generate ten alternative wordings for a public alert.	GenAI: variation generation.

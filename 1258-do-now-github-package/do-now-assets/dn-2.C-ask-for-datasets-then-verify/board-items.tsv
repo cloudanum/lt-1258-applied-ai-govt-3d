@@ -1,0 +1,4 @@
+Element	Use this in class
+Starter	Use AI to find datasets, then verify they exist
+Capture template	Chat: VERIFIED: <url>
+Done signal	one visible artifact in the named capture channel

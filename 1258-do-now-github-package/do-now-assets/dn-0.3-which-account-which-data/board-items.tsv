@@ -1,0 +1,7 @@
+ID	Item	Expected / cue
+S1	Citizen asks a general question about recycling rules; no personal details.	Approved/caution: public information only; still verify answer.
+S2	Staff pastes a spreadsheet with names, addresses, and case notes into a public AI chat.	No: contains personal information and case data.
+S3	Analyst asks AI to draft a press release from approved public program facts.	Approved: low risk if facts are public and reviewed.
+S4	Employee uploads an internal procurement strategy to a personal AI account.	No: internal procurement information plus unapproved account.
+S5	Team uses agency-licensed AI with no training on agency data for internal summaries.	Approved/caution: use licensed tool and confirm tenant settings.
+S6	Developer pastes production logs with IP addresses and user IDs to debug an error.	Mask first/no: remove identifiers or use approved logging environment.

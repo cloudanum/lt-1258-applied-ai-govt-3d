@@ -1,0 +1,9 @@
+ID	Item	Expected / cue
+M1	Model answers well for English but poorly for French service requests.	Fairness/language performance metric.
+M2	Accuracy looks stable, but p95 latency doubles after launch.	Latency/operational metric.
+M3	The same prompt gives different answers week to week after model update.	Drift/version stability metric.
+M4	The assistant refuses too many safe requests.	False refusal rate / safety over-block.
+M5	Monthly token cost is 3x estimate for the same user count.	Cost per request / token budget metric.
+M6	Answers are correct but often lack required citation.	Groundedness/citation coverage metric.
+M7	One neighborhood has far lower service-quality scores.	Fairness/geographic slice metric.
+M8	Retrieval returns the right document but the final answer paraphrases incorrectly.	Faithfulness/hallucination metric.

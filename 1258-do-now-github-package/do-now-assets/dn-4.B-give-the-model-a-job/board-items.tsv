@@ -1,0 +1,3 @@
+Task	Role to assign	Output contract
+Summarize a public-records request	You are a government records officer.	Return issues, exemptions to check, and a draft response in 5 bullets.
+Review a chatbot answer	You are a cautious communications director.	Return factual risk, tone risk, and a revised answer.

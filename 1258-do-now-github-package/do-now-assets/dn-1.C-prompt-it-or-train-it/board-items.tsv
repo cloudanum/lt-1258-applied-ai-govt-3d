@@ -1,0 +1,7 @@
+ID	Item	Expected / cue
+T1	Autocomplete an email in the staff desktop assistant.	Prompt: use existing context; no training.
+T2	Classify 2 million historical service requests into a stable taxonomy every night.	Train/ML pipeline: scale and repeatability.
+T3	Summarize one uploaded council report during a meeting.	Prompt: small context; ground in document.
+T4	Improve a fraud model weekly as new confirmed fraud labels arrive.	Train: sustained labeled learning.
+T5	Draft three formats of the same procurement notice.	Prompt: generation and formatting.
+T6	Decide whether a photo contains a damaged stop sign across the whole city fleet.	Train/ML vision: consistent high-volume classification.

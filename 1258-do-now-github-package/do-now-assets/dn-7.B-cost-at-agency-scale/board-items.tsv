@@ -1,0 +1,4 @@
+Driver	Example input	Compute
+Users	12,000 staff	requests/day = users × 2
+Tokens/request	1,200 in + 400 out	monthly tokens = requests/day × 1,600 × 22
+Cost lever	routing simple asks to smaller model	show which assumption changes cost most

@@ -1,0 +1,4 @@
+Element	Use this in class
+Starter	Reach JupyterLab and confirm the VM is ready
+Capture template	Chat: PASS or BLOCKER: <what failed>
+Done signal	one visible artifact in the named capture channel

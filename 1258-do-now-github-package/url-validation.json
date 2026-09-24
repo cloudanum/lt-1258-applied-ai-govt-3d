@@ -1,0 +1,355 @@
+{
+  "summary": {
+    "total_urls": 43,
+    "ok": 43,
+    "bad": [],
+    "non_canonical_mural": [],
+    "auth_notes": []
+  },
+  "results": [
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240780402/ea3b0b9154d58175acaa271842c2a9ec6e8081cc",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240780402/ea3b0b9154d58175acaa271842c2a9ec6e8081cc",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240781052/ff7828405c7e56531c023551b2955e9f1b9c2ed8",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240781052/ff7828405c7e56531c023551b2955e9f1b9c2ed8",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240782056/83a9dcaf7bb6dc5b0703bd3a89d7b839377598c0",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240782056/83a9dcaf7bb6dc5b0703bd3a89d7b839377598c0",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240783064/24453072664cc74ad063b2f25e6e9ce40f6c59f0",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240783064/24453072664cc74ad063b2f25e6e9ce40f6c59f0",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240784145/1d6c3055140c3f3d85f9ef06e435ebefc23eba24",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240784145/1d6c3055140c3f3d85f9ef06e435ebefc23eba24",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240785053/4d2306d3f1c8e18b1a64d00a9ab6ef15a7eaa29c",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240785053/4d2306d3f1c8e18b1a64d00a9ab6ef15a7eaa29c",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240786066/9b138b3dc8eb259be5ecf9efb2745bf9ae88df5c",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240786066/9b138b3dc8eb259be5ecf9efb2745bf9ae88df5c",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240787058/1e2eb3d7511a7d2c3f4db9c841ea405098d1c83c",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240787058/1e2eb3d7511a7d2c3f4db9c841ea405098d1c83c",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240788055/1f6f0adf26c5e93e2cc2498c4a523fdf13e070c5",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240788055/1f6f0adf26c5e93e2cc2498c4a523fdf13e070c5",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240789049/0ff478b72a7508905c90a132dde3e48c04d101d6",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240789049/0ff478b72a7508905c90a132dde3e48c04d101d6",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240790066/8a0e211f19fb63b66ee4147019fe1df7c1487486",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240790066/8a0e211f19fb63b66ee4147019fe1df7c1487486",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240791066/a202e3520b49f45cb3ce0dacb8edd98d6be5caba",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240791066/a202e3520b49f45cb3ce0dacb8edd98d6be5caba",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240792054/63f54322d2c0f75ce405203e025fe4fb52ed5c96",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240792054/63f54322d2c0f75ce405203e025fe4fb52ed5c96",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240793060/a572c16b9b7a457a03b9f58aa4b4f1549bc6aa27",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240793060/a572c16b9b7a457a03b9f58aa4b4f1549bc6aa27",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240794067/bbbcebcdc79046f7d0e730f21cc729837a32d54b",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240794067/bbbcebcdc79046f7d0e730f21cc729837a32d54b",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240795063/94dd3b87eefbad8c222457fe2965925f612f9d64",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240795063/94dd3b87eefbad8c222457fe2965925f612f9d64",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240796050/1508b14d84e6e205e4ceef79f89a0161439aacc5",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240796050/1508b14d84e6e205e4ceef79f89a0161439aacc5",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240797055/48454776887941b3f2ac135dd8b50ec87eb3e071",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240797055/48454776887941b3f2ac135dd8b50ec87eb3e071",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240798047/bb4f7fc797862f071a0bbf242278714c38d59ba8",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240798047/bb4f7fc797862f071a0bbf242278714c38d59ba8",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240799056/a4b3b37ad0e4cf67f7ff02483c02f633f8dfb96d",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240799056/a4b3b37ad0e4cf67f7ff02483c02f633f8dfb96d",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240800062/dc253c526eaf1d6e0ad7d4fd8b4e225cabcf9dfc",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240800062/dc253c526eaf1d6e0ad7d4fd8b4e225cabcf9dfc",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240801056/0284e52906674ba3f43b9d17d36c604dd632ce2f",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240801056/0284e52906674ba3f43b9d17d36c604dd632ce2f",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240802067/2c53eed9d5cc2bc1f1fb3241456b5a3f6422f003",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240802067/2c53eed9d5cc2bc1f1fb3241456b5a3f6422f003",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240803116/9ea41f85fe9f64168240c970f399fef2c1e4d426",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240803116/9ea41f85fe9f64168240c970f399fef2c1e4d426",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240804045/16b2e2ffdea384025b2dc3d886d6bc5250b61336",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240804045/16b2e2ffdea384025b2dc3d886d6bc5250b61336",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240805042/a46802631aa3862869e69d7648b8dd0dabb41194",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240805042/a46802631aa3862869e69d7648b8dd0dabb41194",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240806053/b0cd6453b4523ed6397dd0b0302c1708abbdaf3a",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240806053/b0cd6453b4523ed6397dd0b0302c1708abbdaf3a",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240807054/1d814f71975cf6050dbac5e3980a4b2baf02bd83",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240807054/1d814f71975cf6050dbac5e3980a4b2baf02bd83",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240808058/4bd52685aa90ea52142c9275d286edd9d9b4f383",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240808058/4bd52685aa90ea52142c9275d286edd9d9b4f383",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240809044/741969c4e1aa6b09012abf0820591d84b02deda0",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240809044/741969c4e1aa6b09012abf0820591d84b02deda0",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240810058/6a5e69ec6fdbe1dfb9aa1eaad4df99206351f9c0",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240810058/6a5e69ec6fdbe1dfb9aa1eaad4df99206351f9c0",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240811068/742737513120bf3105f3ff20334aed989eac0367",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240811068/742737513120bf3105f3ff20334aed989eac0367",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240812062/9a284776f839ae4d0b14178717d692959b0db7cc",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240812062/9a284776f839ae4d0b14178717d692959b0db7cc",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240813063/96493788b851180ec096c7fc5acca7b2be029bce",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240813063/96493788b851180ec096c7fc5acca7b2be029bce",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240814055/e94decc67aac698205c9bc605390a24096b76f78",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240814055/e94decc67aac698205c9bc605390a24096b76f78",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240815059/7cd9ba5bad037a5d50aa2ebcc1e724bb48b31d87",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240815059/7cd9ba5bad037a5d50aa2ebcc1e724bb48b31d87",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240816077/0e541c8cb472eb78fe238a99e07d747194282d74",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240816077/0e541c8cb472eb78fe238a99e07d747194282d74",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240817117/bb9b1cd4420250048e9cc4b1eec9ec1306e7a9e1",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240817117/bb9b1cd4420250048e9cc4b1eec9ec1306e7a9e1",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240818057/52c39f34ba334f47a1d6865d530e750a9f943bbb",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240818057/52c39f34ba334f47a1d6865d530e750a9f943bbb",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240819050/8ad233c17ae963c61809bfd015485d96afb17718",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240819050/8ad233c17ae963c61809bfd015485d96afb17718",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://app.mural.co/t/day10626/m/day10626/1790240820053/24834b9fd44bd04eddb7749c2a3f9453804164bf",
+      "canonical_mural_format": true,
+      "status": 200,
+      "final_url": "https://app.mural.co/t/day10626/m/day10626/1790240820053/24834b9fd44bd04eddb7749c2a3f9453804164bf",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://cloud.google.com/natural-language/",
+      "canonical_mural_format": false,
+      "status": 200,
+      "final_url": "https://cloud.google.com/natural-language",
+      "ok": true,
+      "auth_note": ""
+    },
+    {
+      "url": "https://open.canada.ca/en",
+      "canonical_mural_format": false,
+      "status": 200,
+      "final_url": "https://open.canada.ca/en",
+      "ok": true,
+      "auth_note": ""
+    }
+  ]
+}

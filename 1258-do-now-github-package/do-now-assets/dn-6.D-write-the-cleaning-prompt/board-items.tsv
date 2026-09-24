@@ -1,0 +1,4 @@
+Rule	Prompt line
+Normalize dates	Convert created_date to ISO YYYY-MM-DD; flag impossible dates.
+Deduplicate	If request_id repeats, keep the most complete row and list removed rows.
+Output shape	Return JSON with keys: rows, flags, removed_duplicate_ids.

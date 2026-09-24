@@ -1,0 +1,9 @@
+ID	Item	Expected / cue
+E1	“Find me datasets about heat islands.”	Pattern: dataset discovery / search.
+E2	A model labels documents as invoice, permit, or complaint.	Pattern: classification.
+E3	A system groups similar citizen comments without labels.	Pattern: clustering.
+E4	A model predicts next quarter water main breaks.	Pattern: regression/forecasting.
+E5	A chatbot answers only from the current policy PDF.	Pattern: grounded QA / RAG-like.
+E6	A tool flags transactions that look unusual compared with peers.	Pattern: anomaly detection.
+E7	A system extracts names, dates, and locations from press releases.	Pattern: information extraction / NER.
+E8	A model rewrites a notice at grade 6 reading level.	Pattern: GenAI transformation.

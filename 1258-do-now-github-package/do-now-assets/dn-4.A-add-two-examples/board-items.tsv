@@ -1,0 +1,2 @@
+Weak prompt W1	Example 1	Example 2
+“Write an email about the outage.”	Input: outage window + impacted service → Output: short resident email with status and next update time.	Input: same facts → Output: version for non-technical council member.

@@ -1,0 +1,7 @@
+ID	Item	Expected / cue
+H1	Eligibility recommendation for housing benefits.	Yes: affects rights/benefits; needs strong review.
+H2	Internal meeting-notes summarizer for staff.	Usually no: low impact if no decisions are automated.
+H3	Triage of child-welfare hotline notes.	Yes: safety and rights impact; human decision required.
+H4	Drafting public web FAQs from approved content.	No/maybe: content risk, not high-impact by itself.
+H5	Flagging buildings for fire-safety inspection priority.	Maybe/yes: resource allocation with safety effect.
+H6	Autocomplete for internal code comments.	No: low rights impact; still protect code.

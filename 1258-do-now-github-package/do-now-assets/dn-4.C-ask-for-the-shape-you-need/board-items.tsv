@@ -1,0 +1,2 @@
+Messy source M1	Ask for	Required shape
+“Three complaints: missed pickup, broken sign, water leak. Locations: Bank St, Elgin St, Bronson Ave. Dates: Jan 3, Jan 4, Jan 5.”	Normalize for operations review.	Table columns: issue, location, date, priority, next action.

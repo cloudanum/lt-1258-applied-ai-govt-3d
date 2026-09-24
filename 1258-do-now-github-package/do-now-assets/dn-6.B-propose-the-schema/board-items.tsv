@@ -1,0 +1,6 @@
+Field	Type	Why needed
+request_id	string	deduplication key
+created_date	ISO date	valid timeline
+issue_type	enum: graffiti/pothole/noise/water/lights/garbage/snow/tree	consistent categories
+ward	integer 1-10	valid geography
+status	enum: open/closed/pending	workflow state

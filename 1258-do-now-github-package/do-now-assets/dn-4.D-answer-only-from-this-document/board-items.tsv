@@ -1,0 +1,4 @@
+Policy excerpt	Ask answerable	Ask unanswerable
+“Records are retained for seven years unless a litigation hold is active. Drafts may be destroyed after approval if no hold applies.”	How long are records retained?	What is the retention rule for police body-worn video?
+Grounding rule	Required instruction	Expected failure handling
+Use only the excerpt.	Answer only from the text; if not stated, say “not stated” and quote the sentence used.	Without the rule, the model invents body-worn video detail.

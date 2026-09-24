@@ -1,0 +1,2 @@
+Artifact	Minimum header
+Prompt	name, version, owner, purpose, inputs, output schema, test cases, rollback note

@@ -1,0 +1,9 @@
+Code	Risk	Board example	Facilitator question
+R1	Data poisoning	Poisoned training data teaches a fraud model to wave bad transactions through.	Ask: who controls training data and labels?
+R2	Evasion / adversarial examples	Small input changes make a classifier confidently misread a document.	Ask: can inputs be manipulated at the edge?
+R3	Prompt injection	Hidden text in a submitted document hijacks the assistant instructions.	Ask: what content reaches the prompt?
+R4	Model extraction / theft	Queries reconstruct the model or expose training data.	Ask: are responses rate-limited and monitored?
+R5	Membership inference / private-data disclosure	Model reveals whether a person record was in training data.	Ask: was sensitive data used for training?
+R6	Denial of service	Crafted inputs overload the service until users cannot get answers.	Ask: what is the quota and fallback?
+R7	Insider misuse	Authorized user exports data or changes parameters off the books.	Ask: are changes logged and approved?
+R8	Bias and fairness failure	Skewed data produces worse outcomes for one group.	Ask: which group is underrepresented?

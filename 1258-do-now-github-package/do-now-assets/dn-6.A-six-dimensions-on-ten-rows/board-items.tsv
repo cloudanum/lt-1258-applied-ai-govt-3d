@@ -1,0 +1,11 @@
+Row	Request ID	Date	Issue	Ward	Lat	Lon	Status	Issue to spot
+ROW1	311-10482	2026-01-03	Graffiti	Ward 5	45.4215	-75.6972	OK	valid
+ROW2	311-10483	01/03/26	Pothole	Ward five	45.421	-75.69	blank	date format + ward naming
+ROW3	311-10484	2026-13-03	Noise	Ward 2	45.4	-75.7	OK	invalid month
+ROW4	311-10485	2026-01-05	pothole	Ward 2	45.44	-75.72	OK	case normalization
+ROW5	311-10485	2026-01-05	Pothole	Ward 2	45.44	-75.72	OK	duplicate ID
+ROW6	311-10486	2026-01-06	Water		45.39	-75.61	OK	missing ward
+ROW7	311-10487	2026-01-07	Lights	Ward 9	999	-75.5	OK	invalid latitude
+ROW8	311-10488	2026-01-08	Garbage	Ward 4	45.36	-75.8	Closed?	nonstandard status
+ROW9	311-10489	2026-01-09	Snow	Ward 1	45.33	-75.66	OK	valid
+ROW10	311-10490	2026-01-10	Tree	Ward 10	45.3	-75.9	ok	status case + ward range
