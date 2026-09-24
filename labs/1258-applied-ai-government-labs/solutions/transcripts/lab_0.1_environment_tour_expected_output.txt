@@ -1,0 +1,36 @@
+EXPECTED OUTPUT — lab_0.1_environment_tour (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+.env loaded from: (none — relying on environment variables)
+chat model alias  : gpt-5-mini
+embedding model   : text-embedding-3-small
+API key configured: False
+data directory    : /Users/iahmad/Creator/Courses_and_conferences/LT/courses/1258-applied-ai-for-government-it-professionals/1258a4-author-input/labs/data
+data pack retrieved: 2026-08-01
+federal_ai_use_cases.csv      1,200 rows — OMB 2025 Federal Agency AI Use Case Inventory — individually reported use cases (3,611 across 56 agencies; capped here). The course's own subject matter, as data.
+federal_ai_cots.csv             900 rows — OMB 2025 inventory — consolidated commercial off-the-shelf AI use cases.
+chicago_311.csv               4,000 rows — City of Chicago 311 service requests (Socrata). Deliberately messy real data: blank fields, inconsistent casing, duplicate rows — the data-quality lab.
+cdc_flu_wastewater.csv        3,000 rows — CDC wastewater surveillance for Influenza A — time series by site. The real version of the early-warning story told in Chapter 2.
+epa_aqi_by_county.csv           997 rows — EPA Annual Air Quality Index by county, 2024 — clean, small, national. Good for grouping, ranking and charting.
+nyc_air_quality.csv           3,000 rows — NYC air quality surveillance (PM2.5 and related indicators) by neighbourhood and time period — a tidy long-format table for pivots and trend questions.
+shape: (1200, 36)
+columns: ['agency', 'agency_name', 'id', 'use_case_name', 'agency_bureau', 'contact_email', 'is_withheld', 'development_stage', 'is_high_impact', 'HI_justification', 'topic_area', 'classification', 'problem_solved', 'benefits', 'system_outputs', 'operational_date', 'contracting_usage', 'vendor_name', 'have_ato', 'system_name_ato', 'data_description', 'link_to_data', 'has_pii', 'pia_url', 'demographic_features', 'has_custom_code', 'code_url', 'hi_testing_conducted', 'hi_assessment_completed', 'hi_potential_impacts', 'hi_independent_review', 'hi_ongoing_monitoring', 'hi_training_established', 'hi_failsafe_presence', 'hi_appeal_process', 'hi_public_consultation']
+is_high_impact
+Not High-impact                              752
+NaN                                          226
+High-impact                                  143
+Presumed High-Impact, but Not High-impact     79
+
+flagged High-impact: 143 of 1200
+sr_type
+Aircraft Noise Complaint     1547
+311 INFORMATION ONLY CALL     760
+Water On Street Complaint     257
+Tree Emergency                159
+Graffiti Removal Request      136
+The OMB AI use case inventory tracks how federal agencies are using artificial intelligence — each reported system's purpose, development stage, and whether it is high-impact.
+
+(offline canned reply — token counts need a live call; a call this size is typically ~40 tokens total)
+lc is still defined: True | uc rows: 1200

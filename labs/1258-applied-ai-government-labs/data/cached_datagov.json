@@ -1,0 +1,69 @@
+{
+  "_comment": "Curated snapshot of real, stable public data.gov dataset metadata for offline use in Labs 7.2/7.3. Mirrors the CKAN package_search result shape (result.results[]). The live tool (search_datasets) tries catalog.data.gov first and falls back to this file so labs run behind government proxies. Public data only — no PII, no proprietary content.",
+  "success": true,
+  "result": {
+    "count": 6,
+    "results": [
+      {
+        "id": "air-quality-annual-summary",
+        "name": "air-quality-annual-summary",
+        "title": "Air Quality Annual Summary",
+        "notes": "Annual summary statistics of ambient air pollutant concentrations (ozone, PM2.5, PM10, NO2, SO2, CO) measured at EPA monitoring sites nationwide. Includes site coordinates, pollutant standard, and completeness indicators.",
+        "organization": {"title": "U.S. Environmental Protection Agency"},
+        "tags": ["air quality", "ozone", "pm2.5", "pollution", "environment", "public health"],
+        "resources": [{"format": "CSV"}, {"format": "JSON"}, {"format": "API"}],
+        "metadata_modified": "2025-11-14"
+      },
+      {
+        "id": "cdc-fluview-ilinet",
+        "name": "cdc-fluview-ilinet",
+        "title": "CDC FluView: ILINet Influenza-Like Illness Surveillance",
+        "notes": "Weekly outpatient influenza-like illness (ILI) surveillance data reported through the U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet), by state and HHS region. Used for seasonal influenza situational awareness.",
+        "organization": {"title": "Centers for Disease Control and Prevention"},
+        "tags": ["influenza", "surveillance", "public health", "ILI", "epidemiology"],
+        "resources": [{"format": "CSV"}, {"format": "API"}],
+        "metadata_modified": "2026-02-06"
+      },
+      {
+        "id": "college-scorecard",
+        "name": "college-scorecard",
+        "title": "College Scorecard",
+        "notes": "Institution-level data on cost, graduation rates, median student debt, and post-enrollment earnings for U.S. postsecondary institutions. Supports transparency in higher-education outcomes.",
+        "organization": {"title": "U.S. Department of Education"},
+        "tags": ["education", "college", "earnings", "graduation", "student debt"],
+        "resources": [{"format": "CSV"}, {"format": "API"}],
+        "metadata_modified": "2025-10-01"
+      },
+      {
+        "id": "medicare-provider-utilization",
+        "name": "medicare-provider-utilization",
+        "title": "Medicare Provider Utilization and Payment Data",
+        "notes": "Services and procedures provided to Medicare beneficiaries by physicians and other healthcare professionals, including utilization, payment, and submitted charges organized by provider and service.",
+        "organization": {"title": "Centers for Medicare & Medicaid Services"},
+        "tags": ["medicare", "healthcare", "payments", "providers", "utilization"],
+        "resources": [{"format": "CSV"}, {"format": "API"}],
+        "metadata_modified": "2025-12-19"
+      },
+      {
+        "id": "fema-disaster-declarations",
+        "name": "fema-disaster-declarations",
+        "title": "FEMA Disaster Declarations Summary",
+        "notes": "Summary of all federally declared disasters since 1953, including declaration date, incident type (hurricane, flood, wildfire, severe storm), state, and designated counties. Supports emergency-management planning and resource allocation.",
+        "organization": {"title": "Federal Emergency Management Agency"},
+        "tags": ["disaster", "emergency management", "hazard", "declarations", "resilience"],
+        "resources": [{"format": "CSV"}, {"format": "JSON"}, {"format": "API"}],
+        "metadata_modified": "2026-03-02"
+      },
+      {
+        "id": "usaspending-federal-awards",
+        "name": "usaspending-federal-awards",
+        "title": "USAspending Federal Award Data",
+        "notes": "Government-wide record of federal contract, grant, loan, and direct-payment awards, including recipient, awarding agency, amount, and place of performance. Primary source for federal spending transparency.",
+        "organization": {"title": "U.S. Department of the Treasury"},
+        "tags": ["spending", "contracts", "grants", "transparency", "budget"],
+        "resources": [{"format": "CSV"}, {"format": "API"}],
+        "metadata_modified": "2026-01-22"
+      }
+    ]
+  }
+}

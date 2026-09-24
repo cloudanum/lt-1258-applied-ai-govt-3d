@@ -1,0 +1,34 @@
+EXPECTED OUTPUT — lab_1.3_decisiontree (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+997 counties | 151 with unhealthy days (15%)
+<Figure size 640x480 with 1 Axes>
+train accuracy: 0.886
+test  accuracy: 0.860 | depth 3, 7 leaves
+<Figure size 640x480 with 1 Axes>
+<Figure size 2400x1000 with 1 Axes>
+<Figure size 640x480 with 1 Axes>
+|--- Median AQI <= 53.50
+|   |--- Days with AQI <= 364.50
+|   |   |--- Moderate Days <= 108.50
+|   |   |   |--- class: 0
+|   |   |--- Moderate Days >  108.50
+|   |   |   |--- class: 0
+|   |--- Days with AQI >  364.50
+|   |   |--- Good Days <= 237.50
+|   |   |   |--- class: 0
+|   |   |--- Good Days >  237.50
+|   |   |   |--- class: 0
+|--- Median AQI >  53.50
+|   |--- Days PM2.5 <= 281.50
+|   |   |--- Days CO <= 1.00
+|   |   |   |--- class: 1
+|   |   |--- Days CO >  1.00
+|   |   |   |--- class: 0
+|   |--- Days PM2.5 >  281.50
+|   |   |--- class: 0
+full tree: train=1.000 test=0.848 leaves=106
+<Figure size 800x450 with 1 Axes>
+chosen depth: 3 — test accuracy at/near peak, tree still fits on one slide and reads as ~7 rules

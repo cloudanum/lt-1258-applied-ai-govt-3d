@@ -1,0 +1,30 @@
+EXPECTED OUTPUT — lab_1.4_nlp_ner (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+5 releases loaded
+
+PR-001 — Chicago Pilots AI Assistant for 311 Service Requests
+(City of Chicago Department of Transportation, April 6, 2026)
+
+CHICAGO — The City of Chicago Department of Transportation announced on April 6, 2026 a 90-day pilot of an AI assistant that will help route 311 service requests to the correct bureau. Commissioner Maria Delgado said the assistant, developed with the Office of the Chief Data Officer at a cost of $1.2 million, will suggest a routing category for each request while a human dispatcher makes the final decision. The pilot covers Ward 28 and Ward 41 beginning June 1, 2026. "Every request will still be reviewed by a person," Delgado said. "The tool drafts, the dispatcher decides." Media inquiries: press@cityofchicago.example.gov or 312-555-0148.
+extractor ready — path: rules + gazetteers (spaCy not installed)
+<IPython.core.display.HTML object>
+<IPython.core.display.HTML object>
+<IPython.core.display.HTML object>
+<Figure size 640x480 with 1 Axes>
+label
+ORG       12
+DATE       9
+PERSON     5
+MONEY      5
+EMAIL      5
+PHONE      4
+GPE        4
+LAW        4
+<Figure size 900x450 with 1 Axes>
+entities in PR-001: before=8, after=10
+<IPython.core.display.HTML object>
+2 entities found in gov_memo.txt
+<IPython.core.display.HTML object>

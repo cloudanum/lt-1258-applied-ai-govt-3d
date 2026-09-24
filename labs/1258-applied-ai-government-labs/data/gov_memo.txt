@@ -1,0 +1,40 @@
+MEMORANDUM
+
+TO:       Division Directors
+FROM:     Office of the Chief Data Officer
+DATE:     March 14, 2026
+SUBJECT:  Interim Guidance on Generative AI for Constituent Services
+
+1. PURPOSE. This memorandum provides interim guidance for the responsible use of
+generative artificial intelligence (AI) tools in support of constituent services,
+pending issuance of the Department's final policy.
+
+2. BACKGROUND. Divisions have begun piloting generative AI assistants to draft
+correspondence, summarize public records, and triage incoming requests. Early
+results show meaningful time savings in routine drafting tasks. At the same time,
+pilots have surfaced two recurring risks: the entry of nonpublic constituent
+information into tools not approved for that data, and the release of AI-drafted
+material that was not reviewed for accuracy.
+
+3. GUIDANCE.
+   a. Human review. Every AI-assisted work product intended for a constituent or
+      for the public record must be reviewed and approved by a responsible employee
+      before release. The employee, not the tool, is accountable for accuracy.
+   b. Data handling. Only public information may be entered into public AI tools.
+      Constituent records, Social Security numbers, and other personally
+      identifiable information must never be entered into a tool that has not been
+      approved for that data category. Suspected exposure must be reported within
+      one business day.
+   c. Approved tools. Divisions must use the enterprise assistant provisioned under
+      the Department's data-protection agreement for any task involving internal
+      information. A current list of approved tools is maintained by the Office of
+      the Chief Information Officer.
+   d. Recordkeeping. AI-assisted correspondence that documents agency business is a
+      federal record and must be retained according to the applicable records
+      schedule.
+
+4. EFFECTIVE DATE. This guidance is effective immediately and remains in effect
+until superseded by final Department policy.
+
+5. POINT OF CONTACT. Questions may be directed to the Office of the Chief Data
+Officer.

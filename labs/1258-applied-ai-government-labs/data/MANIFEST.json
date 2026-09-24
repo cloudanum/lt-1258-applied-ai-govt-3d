@@ -1,0 +1,42 @@
+{
+  "note": "Public US government data, downloaded for offline classroom use. catalog.data.gov has no JSON API as of 2026-08-01; these come from agency portals and the OMB GitHub mirror.",
+  "retrieved": "2026-08-01",
+  "datasets": [
+    {
+      "file": "federal_ai_use_cases.csv",
+      "url": "https://raw.githubusercontent.com/ombegov/2025-Federal-Agency-AI-Use-Case-Inventory/main/Data/2025_individually_reported_AI_use_cases.csv",
+      "description": "OMB 2025 Federal Agency AI Use Case Inventory \u2014 individually reported use cases (3,611 across 56 agencies; capped here). The course's own subject matter, as data.",
+      "bytes": 1026626
+    },
+    {
+      "file": "federal_ai_cots.csv",
+      "url": "https://raw.githubusercontent.com/ombegov/2025-Federal-Agency-AI-Use-Case-Inventory/main/Data/2025_consolidated_COTS_AI_use_cases.csv",
+      "description": "OMB 2025 inventory \u2014 consolidated commercial off-the-shelf AI use cases.",
+      "bytes": 118923
+    },
+    {
+      "file": "chicago_311.csv",
+      "url": "https://data.cityofchicago.org/resource/v6vf-nfxy.csv?$limit=4000&$order=created_date%20DESC",
+      "description": "City of Chicago 311 service requests (Socrata). Deliberately messy real data: blank fields, inconsistent casing, duplicate rows \u2014 the data-quality lab.",
+      "bytes": 1714409
+    },
+    {
+      "file": "cdc_flu_wastewater.csv",
+      "url": "https://data.cdc.gov/resource/ymmh-divb.csv?$limit=3000",
+      "description": "CDC wastewater surveillance for Influenza A \u2014 time series by site. The real version of the early-warning story told in Chapter 2.",
+      "bytes": 1662692
+    },
+    {
+      "file": "epa_aqi_by_county.csv",
+      "url": "https://aqs.epa.gov/aqsweb/airdata/annual_aqi_by_county_2024.zip",
+      "description": "EPA Annual Air Quality Index by county, 2024 \u2014 clean, small, national. Good for grouping, ranking and charting.",
+      "bytes": 68633
+    },
+    {
+      "file": "nyc_air_quality.csv",
+      "url": "https://data.cityofnewyork.us/resource/c3uy-2p5r.csv?$limit=3000",
+      "description": "NYC air quality surveillance (PM2.5 and related indicators) by neighbourhood and time period \u2014 a tidy long-format table for pivots and trend questions.",
+      "bytes": 442565
+    }
+  ]
+}

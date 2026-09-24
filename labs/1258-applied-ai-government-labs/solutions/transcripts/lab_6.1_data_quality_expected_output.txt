@@ -1,0 +1,58 @@
+EXPECTED OUTPUT — lab_6.1_data_quality (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+shape: (4000, 39)
+columns: ['sr_number', 'sr_type', 'sr_short_code', 'created_department', 'owner_department', 'status', 'origin', 'created_date', 'last_modified_date', 'closed_date', 'street_address', 'city', 'state', 'zip_code', 'street_number', 'street_direction', 'street_name', 'street_type', 'duplicate', 'legacy_record', 'legacy_sr_number', 'parent_sr_number', 'community_area', 'ward', 'electrical_district', 'electricity_grid', 'police_sector', 'police_district', 'police_beat', 'precinct', 'sanitation_division_days', 'created_hour', 'created_day_of_week', 'created_month', 'x_coordinate', 'y_coordinate', 'latitude', 'longitude', 'location']
+sanitation_division_days    100.0
+legacy_sr_number            100.0
+parent_sr_number             94.5
+created_department           69.2
+electricity_grid             39.5
+electrical_district          39.5
+closed_date                  34.8
+zip_code                     15.7
+city                         14.3
+state                        14.3
+police_beat                   3.3
+police_district               3.3
+police_sector                 3.3
+ward                          3.3
+community_area                3.3
+precinct                      3.3
+location                      3.1
+x_coordinate                  3.1
+y_coordinate                  3.1
+latitude                      3.1
+longitude                     3.1
+street_type                   1.0
+street_name                   0.1
+street_direction              0.1
+street_address                0.1
+street_number                 0.1
+
+columns above 20% null: 7
+closed_date null == open requests? 1390 == 1390
+duplicated sr_number values: 0
+rows flagged duplicate=True by the city: 220
+same type + address + timestamp (likely double submissions): 19
+    sr_number                  sr_type   street_address            created_date
+SR26-01528655 Aircraft Noise Complaint 10510 W ZEMKE RD 2026-07-31T19:21:37.000
+SR26-01528654 Aircraft Noise Complaint 10510 W ZEMKE RD 2026-07-31T19:21:37.000
+SR26-01529028 Aircraft Noise Complaint 10510 W ZEMKE RD 2026-07-31T20:28:05.000
+SR26-01529027 Aircraft Noise Complaint 10510 W ZEMKE RD 2026-07-31T20:28:05.000
+city: {'Chicago': 3428, nan: 571, 'CHICAGO': 1}
+state: {'Illinois': 3426, nan: 571, 'IL': 3}
+zip_dtype: float64
+zip_sample: [60666.0, 60614.0, 60618.0]
+{'created_unparseable': 0, 'closed_before_created': 0, 'range': '2026-07-31 19:03:57 -> 2026-08-01 14:14:53'}
+{'newest': '2026-08-01 14:14:53', 'oldest': '2026-07-31 19:03:57', 'calendar_days': 2, 'window_hours': 19.2}
+   dimension                            metric                                        value passes
+Completeness                 columns >20% null                   7 of 39 (2 entirely empty)  False
+  Uniqueness               duplicate sr_number                                            0   True
+  Uniqueness           city-flagged duplicates                                   220 (5.5%)  False
+ Consistency   city/state variants + zip dtype Chicago/CHICAGO, Illinois/IL, zip as float64  False
+    Validity closed-before-created / bad dates                                        0 / 0   True
+  Timeliness                    window covered                       19.2h, 2 calendar days  False
+    Accuracy         testable from data alone?              no — needs address-master audit   None

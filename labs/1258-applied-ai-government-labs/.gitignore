@@ -1,0 +1,10 @@
+# secrets (never commit; .env.example placeholders are fine)
+.env
+!.env.example
+# macOS
+.DS_Store
+# Office owner-lock files
+~$*
+# Python / Jupyter
+__pycache__/
+.ipynb_checkpoints/

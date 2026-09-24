@@ -1,0 +1,129 @@
+EXPECTED OUTPUT — lab_2.1_data_expedition (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+source: cached
+
+- Air Quality Annual Summary  (U.S. Environmental Protection Agency)
+  tags: air quality, ozone, pm2.5, pollution, environment, public health
+=== cdc_flu_wastewater: 3,000 rows x 38 columns ===
+columns: ['record_id', 'site', 'state_territory', 'source', 'county_fips', 'counties_served', 'population_served', 'sample_id', 'sample_collect_date', 'sample_type', 'sample_matrix', 'sample_location', 'flow_rate', 'concentration_method', 'pasteurized', 'pcr_type', 'extraction_method', 'major_lab_method', 'inhibition_detect', 'inhibition_adjust', 'ntc_amplify', 'pcr_target', 'pcr_gene_target_agg', 'pcr_target_avg_conc', 'pcr_target_units', 'lod_sewage', 'pcr_target_detect', 'pcr_target_avg_conc_lin', 'pcr_target_flowpop_lin', 'pcr_target_mic_lin', 'hum_frac_target_mic', 'hum_frac_mic_conc', 'hum_frac_mic_unit', 'rec_eff_percent', 'rec_eff_target_name', 'rec_eff_spike_matrix', 'rec_eff_spike_conc', 'date_updated']
+str        26
+float64     9
+int64       3 
+
+=== nyc_air_quality: 3,000 rows x 12 columns ===
+columns: ['unique_id', 'indicator_id', 'name', 'measure', 'measure_info', 'geo_type_name', 'geo_join_id', 'geo_place_name', 'time_period', 'start_date', 'data_value', 'message']
+str        6
+int64      4
+float64    2 
+
+=== chicago_311: 4,000 rows x 39 columns ===
+columns: ['sr_number', 'sr_type', 'sr_short_code', 'created_department', 'owner_department', 'status', 'origin', 'created_date', 'last_modified_date', 'closed_date', 'street_address', 'city', 'state', 'zip_code', 'street_number', 'street_direction', 'street_name', 'street_type', 'duplicate', 'legacy_record', 'legacy_sr_number', 'parent_sr_number', 'community_area', 'ward', 'electrical_district', 'electricity_grid', 'police_sector', 'police_district', 'police_beat', 'precinct', 'sanitation_division_days', 'created_hour', 'created_day_of_week', 'created_month', 'x_coordinate', 'y_coordinate', 'latitude', 'longitude', 'location']
+str        20
+float64    14
+int64       3
+bool        2
+=== cdc_flu_wastewater: 3,000 rows x 38 columns ===
+                 column   dtype  nulls  distinct                                  example
+              record_id     str      0      3000         57e0d6783f36a6555d19c5401bc9ba18
+                   site   int64      0       518                                     2360
+        state_territory     str      0        41                                       il
+                 source     str      0         3                          State_Territory
+            county_fips     str      0       351                                    17089
+        counties_served     str      0       307                                     Kane
+      population_served   int64      0       404                                    25766
+              sample_id     str      0      3000         241a92726b87d670ae5f735faf80734c
+    sample_collect_date     str      0       870                               2025-11-13
+            sample_type     str      0         8            24-hr flow-weighted composite
+          sample_matrix     str      0         3                           raw wastewater
+        sample_location     str      0         2                                     wwtp
+              flow_rate float64      0      1464                                     3.44
+   concentration_method     str      0         7                           ceres nanotrap
+            pasteurized     str      0         2                                       no
+               pcr_type     str      0         4                              qiagen dpcr
+      extraction_method     str      0        12 thermo magmax microbiome ultra nucleic a
+       major_lab_method   int64      0        10                                        1
+      inhibition_detect     str      0         3                               not tested
+      inhibition_adjust     str   1238         2                                       no
+            ntc_amplify     str      0         1                                       no
+             pcr_target     str      0         1                                    fluav
+    pcr_gene_target_agg     str      0         2                 infa1 and infa2 combined
+    pcr_target_avg_conc float64      0       973                                   3825.0
+       pcr_target_units     str      0         2                      copies/l wastewater
+             lod_sewage float64      0        46                                   4050.0
+      pcr_target_detect     str      0         2                                       no
+pcr_target_avg_conc_lin float64      0       868                                   2025.0
+ pcr_target_flowpop_lin float64      0      2340                            1023406.67546
+     pcr_target_mic_lin float64      0       172                                      0.0
+    hum_frac_target_mic     str      0         3                 pepper mild mottle virus
+      hum_frac_mic_conc float64      0      2987                              476940000.0
+      hum_frac_mic_unit     str      0         3                      copies/l wastewater
+        rec_eff_percent float64      0      2047                                109.57444
+    rec_eff_target_name     str      0         7                             bcov vaccine
+   rec_eff_spike_matrix     str      0         5                               raw sample
+     rec_eff_spike_conc float64      0       110                                    5.884
+           date_updated     str      0         1                  2026-07-31T11:01:00.000
+
+=== nyc_air_quality: 3,000 rows x 12 columns ===
+        column   dtype  nulls  distinct                                  example
+     unique_id   int64      0      3000                                   979541
+  indicator_id   int64      0         7                                     1427
+          name     str      0         3                  Fine particles (PM 2.5)
+       measure     str      0         3                              Winter mean
+  measure_info     str      0         2                                   mcg/m3
+ geo_type_name     str      0         5                                       CD
+   geo_join_id   int64      0        72                                      309
+geo_place_name     str      0       114 South Crown Heights and Lefferts Gardens
+   time_period   int64      0         4                                     2024
+    start_date     str      0         4                  2024-01-01T00:00:00.000
+    data_value float64      0      2622                              6.244001597
+       message float64   3000         0                                     None
+
+=== chicago_311: 4,000 rows x 39 columns ===
+                  column   dtype  nulls  distinct                                    example
+               sr_number     str      0      4000                              SR26-01532880
+                 sr_type     str      0        68                             Tree Emergency
+           sr_short_code     str      0        68                                        SEC
+      created_department     str   2770         6                          311 City Services
+        owner_department     str      0        13                     Streets and Sanitation
+                  status     str      0         3                                       Open
+                  origin     str      1         9                              Mobile Device
+            created_date     str      0      3806                    2026-08-01T14:14:53.000
+      last_modified_date     str      0      1658                    2026-08-01T14:14:55.000
+             closed_date     str   1390      2476                    2026-08-01T14:14:53.000
+          street_address     str      3      1502                           1065 W WINONA ST
+                    city     str    571         2                                    Chicago
+                   state     str    571         2                                   Illinois
+                zip_code float64    627        55                                    60666.0
+           street_number     str      3      1289                                       1065
+        street_direction     str      3         4                                          W
+             street_name     str      3       529                                     WINONA
+             street_type     str     41        13                                         ST
+               duplicate    bool      0         2                                      False
+           legacy_record    bool      0         1                                      False
+        legacy_sr_number float64   4000         0                                       None
+        parent_sr_number     str   3780       177                              SR26-01339483
+          community_area float64    133        76                                        3.0
+                    ward float64    133        50                                       48.0
+     electrical_district float64   1579        15                                        2.0
+        electricity_grid     str   1579       566                                       N010
+           police_sector float64    133         4                                        2.0
+         police_district float64    133        22                                       20.0
+             police_beat float64    133       254                                     2024.0
+                precinct float64    133        37                                       21.0
+sanitation_division_days float64   4000         0                                       None
+            created_hour   int64      0        20                                         14
+     created_day_of_week   int64      0         2                                          7
+           created_month   int64      0         2                                          8
+            x_coordinate float64    124      1534                          1168002.304871047
+            y_coordinate float64    124      1534                          1934234.938276621
+                latitude float64    124      1489                            41.975091000941
+               longitude float64    124      1517                           -87.657579000002
+                location     str    124      1534 \n,  \n(41.975091000941, -87.657579000002)
+cdc_flu_wastewater     2022-08-09 00:00:00  ->  2026-07-28 00:00:00
+nyc_air_quality        2021-01-01 00:00:00  ->  2024-01-01 00:00:00
+chicago_311            2026-07-31 19:03:57  ->  2026-08-01 14:14:53
+
+NYC time_period values: [2024 2023 2022 2021]

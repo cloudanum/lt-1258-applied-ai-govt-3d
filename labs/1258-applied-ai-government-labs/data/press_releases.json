@@ -1,0 +1,40 @@
+{
+  "note": "Synthetic agency press releases written for Course 1258 NER training. All people, offices, programs, dollar amounts, and contact details are fictitious; agencies and laws are real. Never use real personnel records in class.",
+  "releases": [
+    {
+      "id": "PR-001",
+      "agency": "City of Chicago Department of Transportation",
+      "date": "April 6, 2026",
+      "title": "Chicago Pilots AI Assistant for 311 Service Requests",
+      "body": "CHICAGO — The City of Chicago Department of Transportation announced on April 6, 2026 a 90-day pilot of an AI assistant that will help route 311 service requests to the correct bureau. Commissioner Maria Delgado said the assistant, developed with the Office of the Chief Data Officer at a cost of $1.2 million, will suggest a routing category for each request while a human dispatcher makes the final decision. The pilot covers Ward 28 and Ward 41 beginning June 1, 2026. \"Every request will still be reviewed by a person,\" Delgado said. \"The tool drafts, the dispatcher decides.\" Media inquiries: press@cityofchicago.example.gov or 312-555-0148."
+    },
+    {
+      "id": "PR-002",
+      "agency": "U.S. Environmental Protection Agency, Region 9",
+      "date": "May 12, 2026",
+      "title": "EPA Awards $3.5 Million for Air Quality Monitoring in San Bernardino County",
+      "body": "SAN FRANCISCO — The U.S. Environmental Protection Agency today awarded $3.5 million to San Bernardino County, California, to expand particulate matter monitoring in communities that recorded 61 unhealthy air days in 2024. Regional Administrator David Chen said the funding, provided under the Clean Air Act, will add 14 low-cost sensors by September 30, 2026. \"Residents deserve to know what is in the air they breathe,\" Chen said. The county will publish daily readings on a public dashboard maintained by EPA Region 9. Contact: region9press@epa.example.gov or 415-555-0132."
+    },
+    {
+      "id": "PR-003",
+      "agency": "U.S. General Services Administration",
+      "date": "June 2, 2026",
+      "title": "GSA Opens $50 Million Procurement Vehicle for Federal AI Services",
+      "body": "WASHINGTON — The U.S. General Services Administration announced on June 2, 2026 a new multiple-award contract vehicle with a ceiling of $50 million for artificial intelligence services across civilian agencies. Administrator Robin Patel said the Technology Transformation Service will manage the vehicle, with the first task orders expected by October 1, 2026. All awards will follow the Federal Acquisition Regulation and require Section 508 accessibility conformance. \"Agencies should be able to buy AI the way they buy cloud,\" Patel said. Vendors may register at gsa.example.gov/ai-vehicle; questions to ai-vehicle@gsa.example.gov."
+    },
+    {
+      "id": "PR-004",
+      "agency": "Centers for Disease Control and Prevention",
+      "date": "July 9, 2026",
+      "title": "CDC Expands Wastewater Surveillance to 40 States for the 2026-27 Flu Season",
+      "body": "ATLANTA — The Centers for Disease Control and Prevention announced on July 9, 2026 that its wastewater surveillance network will expand to 40 states for the 2026-27 influenza season, up from 32 states. Dr. Elena Brooks, director of the National Wastewater Surveillance System, said the $6.8 million expansion will add 120 sampling sites by November 15, 2026, with data refreshed weekly on the CDC public dashboard. \"Wastewater gives us a two-week head start on clinic data,\" Brooks said. The program is run with state and territorial health departments. Media line: 404-555-0176 or media@cdc.example.gov."
+    },
+    {
+      "id": "PR-005",
+      "agency": "U.S. Department of Veterans Affairs",
+      "date": "August 18, 2026",
+      "title": "VA Begins Digitizing 2 Million Paper Claims Records",
+      "body": "WASHINGTON — The U.S. Department of Veterans Affairs announced on August 18, 2026 an $8.7 million effort to digitize 2 million paper claims records held at the Records Management Center in St. Louis, Missouri. Under Secretary Thomas Reyes said the Office of Information and Technology will use optical character recognition with human verification, and all digitized records will be retained under the Federal Records Act. The project runs through March 31, 2027. \"Veterans should not wait weeks for a record that exists only on paper,\" Reyes said. Contact: vetaffairs.press@va.example.gov or 202-555-0119."
+    }
+  ]
+}

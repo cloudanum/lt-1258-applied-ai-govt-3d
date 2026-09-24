@@ -34,6 +34,10 @@ if ! "$PY" -m jupyter kernelspec list 2>/dev/null | grep -qw "$KERNEL"; then
 fi
 KERNEL_ARG=()
 [[ -n "$KERNEL" ]] && KERNEL_ARG=(--ExecutePreprocessor.kernel_name="$KERNEL")
+# Same choice for the notebooks' own kernelspec: pin them to the course kernel
+# when it is registered, so students don't land on a bare "python3" kernel.
+JUPYTEXT_KERNEL_ARG=()
+[[ -n "$KERNEL" ]] && JUPYTEXT_KERNEL_ARG=(--set-kernel "$KERNEL")
 echo "interpreter: $PY"
 
 echo "== Converting jupytext sources to .ipynb =="
@@ -45,7 +49,8 @@ for src in src/*.py; do
   else
     out="${base}.ipynb"
   fi
-  "$PY" -m jupytext --to notebook --output "$out" "$src" >/dev/null
+  "$PY" -m jupytext --to notebook --output "$out" "$src" \
+    "${JUPYTEXT_KERNEL_ARG[@]}" >/dev/null
   echo "  $src -> $out"
 done
 

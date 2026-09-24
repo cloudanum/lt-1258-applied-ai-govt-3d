@@ -1,0 +1,141 @@
+EXPECTED OUTPUT — lab_4.3_ptcf_bloom (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+substrate ready
+18 base prompts loaded
+BASE:
+ Key dates: the memo is from March 14, 2026 and takes effect immediately. Exposure must be reported within one business day. The guidance stays in effect until replaced. 
+============================================================
+
+PTCF:
+ section | requirement | timeframe | supporting quote
+3(a) | human review before release | not stated | not stated
+3(b) | report suspected exposure | within one business day | "Suspected exposure must be reported within one business day."
+4 | effective date | immediately (memo date: March 14, 2026) | "This guidance is effective immediately"
+4 | expiry | until superseded | "remains in effect until superseded by final Department policy."
+agency_name | use_case_name | stage_verbatim
+Commodity Futures Trading Commission | Stress Testing Scenarios with Deep Learning | Pre-deployment
+Department of Homeland Security | Smartphone Information Forensics Triage | Pre-deployment
+(2 rows matched the exact stage value; no stages were interpreted or grouped.)
+Pasting a constituent's record into a public chatbot is a reportable data spill.
+
+quote verified in policy: True
+BASE:
+ The memo gives divisions interim rules for using generative AI in constituent services. Staff should use approved tools, review AI output before release, and avoid putting private data into public tools. It is effective immediately. 
+============================================================
+
+PTCF:
+ The memo sets interim rules for using generative AI in constituent services until the final policy arrives. A responsible employee must review and approve every AI-assisted product before it reaches a constituent or the public record — the employee, not the tool, is accountable. Only public information may go into public AI tools; constituent records, Social Security numbers, and other PII must never enter an unapproved tool, and suspected exposure must be reported within one business day. Internal information may only be handled by the enterprise assistant under the Department's data-protection agreement. AI-assisted correspondence about agency business is a federal record and must be retained. The guidance is effective immediately. Caveat newcomers miss: even a rough AI-drafted letter about agency business is already a federal record.
+1. Public data — published reports, open data from data.gov — may be used with any approved tool.
+2. Internal data — everyday work material — may be used only with the agency-provisioned enterprise assistant under the agency's data-protection agreement. Never a public chatbot.
+3. Sensitive or regulated data — PII, health, financial, law enforcement — may be used only with tools specifically authorized for that category.
+The bright line: you must not enter nonpublic information into any AI tool not approved for that data category; pasting a constituent's record into a public chatbot is a reportable data spill.
+When in doubt, treat the data as the more restricted category and ask the information security office.
+Aircraft noise complaints dominate this 311 extract with 1,547 requests, far ahead of general information calls at 760. Street flooding ("Water On Street") follows at 257, with tree emergencies (159), graffiti removal (136), and tree debris clean-up (83) rounding out the top six. Together these six categories account for 2,942 of the 4,000 requests in the file.
+BASE:
+ Tree Debris Clean-Up Request -> Parks & Trees
+Water On Street Complaint -> Streets & Sanitation
+Broken Street Light Complaint -> Electrical 
+============================================================
+
+PTCF:
+ Tree Debris Clean-Up Request -> Urban Forestry (rule 2)
+Water On Street Complaint -> Water & Drainage (rule 4)
+Broken Street Light Complaint -> Needs Human Review (rule 6 — no rule matches; escalated, not guessed)
+Scenario 1 -> permitted | Public data | rule: 'Public data ... may be used with any approved tool.'
+Scenario 2 -> prohibited | Sensitive/regulated (PII) in an unapproved tool — reportable data spill | rule: 'must not enter nonpublic information into any AI tool that has not been approved for that data category.'
+Scenario 3 -> permitted | Internal data via the enterprise assistant | rule: 'Internal data may be used only with the agency-provisioned enterprise assistant.'
+Undetermined scenarios: none — all three resolve on stated facts.
+{
+  "case_id": "C-1001",
+  "name": "[REDACTED]",
+  "ssn": "[REDACTED]",
+  "email": "[REDACTED]",
+  "phone": "[REDACTED]",
+  "address": "[REDACTED]",
+  "topic": "air quality",
+  "summary": "Resident reports persistent smog near a highway interchange and asks whether local air quality exceeds federal standards.",
+  "status": "open"
+}
+
+fields left unmasked: none — procedure executed cleanly
+BASE:
+ Ward 41's aircraft noise complaints are caused by the airport nearby. Ward 28 residents clearly need better online services, which is why they call for information so often. Water complaints cluster in wards 35, 37 and 29 because of aging drainage infrastructure there. 
+============================================================
+
+PTCF:
+ 1. Observable facts (given): Ward 41 holds nearly all aircraft-noise complaints (1,447); Ward 28 holds most information-only calls (698); water-on-street is spread thin across wards 35, 37, and 29.
+2. Symptom clusters: single-ward noise concentration; single-ward information-call concentration; diffuse flooding.
+3. Competing hypotheses:
+   H1 (inferred): Ward 41 contains or borders the airport. For: extreme single-ward concentration. Against: nothing in the data. Needed: a ward map.
+   H2 (inferred): Ward 28's call volume signals an online service gap. For: volume an order of magnitude above other wards. Against: call content not in the slice. Needed: call notes.
+   H3 (assumption): water complaints follow rainfall. Not testable here — need dates and weather data.
+4. Most likely: H1 — still a correlation until geography confirms it. Do not act on H2 or H3 without the missing data.
+Shared (given): both are CFTC systems applied to the agency's own market data; neither is described as public-facing.
+Different (given): the first is Pre-deployment and exploratory — deep-learning stress-test scenarios; the second is Deployed and operational — anomaly detection for data loads.
+Different (inferred): the verification burden differs — measurable precision/recall for the deployed gate vs expert plausibility review for the scenario generator.
+Missing (given): no performance metrics for either system, so any accuracy comparison would be an assumption.
+Not addressed (by design): which is better — that is an Evaluate question and needs a rubric.
+Dominant driver (given): ozone accounts for 218 of 366 measured days and PM2.5 for 123 in San Bernardino County; the 61 unhealthy days sit inside an ozone-dominated profile.
+H1 (inferred): a summer photochemical-smog regime downwind of the Los Angeles basin. For: ozone dominance. Against: nothing in the slice. Needed: daily AQI series and meteorology.
+H2 (inferred): episodic wildfire smoke drove the Max AQI of 593. For: extreme peak against a far lower median. Against: smoke days not flagged in the slice. Needed: fire-perimeter records and daily PM2.5.
+Bottom line: annual counts cannot separate a season from an episode — do not attribute the hazardous peak without the daily data.
+BASE:
+ I recommend Candidate 2, the 311 auto-triage. It has the largest volume and the biggest potential time savings, and routing is a well-understood problem. Candidates 1 and 3 are worthwhile but lower impact. 
+============================================================
+
+PTCF:
+ Rubric restated: constituent impact 35%, risk of harm 30%, operating cost 20%, speed to pilot 15% — higher is better on every criterion.
+Scores (1-5, evidence in brackets):
+- Correspondence drafting: impact 4 [memo section 2: time savings], risk 4 [human review per section 3(a)], cost 4 [existing assistant], speed 5 [pilots ran]. Weighted: 4.2.
+- 311 auto-triage: impact 4 [2,942 requests], risk 2 [misroutes delay service; no accuracy data — partially unsupported], cost 3, speed 3. Weighted: 3.1.
+- Transcript summaries: impact 2 [small audience], risk 5 [public input only], cost 4, speed 4. Weighted: 3.6.
+Ranked shortlist: 1) correspondence 4.2, 2) transcripts 3.6, 3) auto-triage 3.1.
+Top risks: triage misclassification; review as rubber stamp.
+Questions for the decision maker: acceptable triage accuracy? who audits reviewers?
+This is decision support — the decision belongs to the named official.
+Criteria restated: risk reduction 40%, operational burden 25% (higher = lower burden), auditability 20%, staff acceptance 15%.
+1. Option A — first: attacks the unreviewed-release risk directly; cheap; makes every other control auditable. Weighted: 4.6.
+2. Option B — second: more assurance, roughly double the review load. Weighted: 3.2.
+3. Option C — last: pushes staff to unmanaged personal accounts — shadow use the log would have caught. Weighted: 2.2.
+Unsupported: all acceptance scores — no survey evidence yet.
+Recommendation: adopt A, pilot B in one division, reject C. Decision support, not the decision.
+Claim under review: "deflects 60% of calls at 99% accuracy."
+Supported by the inventory slice: nothing — the inventory records purpose, stage, and data descriptions; no performance metrics. (given)
+Undefined terms (given): "deflected" — to where, measured how? "accuracy" — judged by whom, on what sample?
+Plausible but unverified (inferred): government triage pilots exist — the genre is real; the numbers are unaudited.
+Questions for the vendor: (1) evaluation dataset size and labeller; (2) definition of "deflected" and the downstream escalation rate; (3) a comparable government deployment we can call.
+Disposition: treat as marketing until the answers arrive.
+BASE:
+ 1. A chatbot that answers permit questions automatically.
+2. An AI that approves simple permits instantly to cut the backlog.
+3. An AI that inspects applications and decides which need review. 
+============================================================
+
+PTCF:
+ Concept 1 — Completeness pre-check. User: permit applicant. Problem: applications bounce for missing documents. Flow: assistant lists missing items against the published checklist; a human clerk decides. Assumptions: checklist is current. Risks: false confidence from an outdated checklist. MVP: shadow-run on 50 historical rejections, measure catch rate. Distinct: helps before submission.
+Concept 2 — Plain-language status explainer. User: resident. Problem: cryptic status codes generate calls. Flow: status page rendered in plain language; never advises beyond the code. Risks: over-explaining a legal hold. MVP: 20 common codes, readability test with 10 residents. Distinct: explains after submission, decides nothing.
+Concept 3 — Inspector report first-drafter. User: field inspector. Problem: an hour a day typing notes. Flow: voice notes to a structured draft; inspector edits and signs. Risks: invented observations — every sentence must trace to the audio. MVP: 5 inspectors, 2 weeks, edit-distance metric. Distinct: internal productivity, human authorship preserved.
+All three keep a human as the decision-maker, per the memo's review clause.
+Formal (website): "This division uses approved artificial-intelligence tools to help draft routine correspondence and summarize public documents. Every AI-assisted product is reviewed and approved by a responsible employee before release. AI tools receive public information only. AI-assisted correspondence that documents agency business is retained as a federal record. Questions: Office of the Chief Data Officer."
+Plain-language (service counter): "We sometimes use AI to help write letters and summarize public records. A person always checks the work before anything goes out. We never put your personal information into public AI tools. Ask us if you want to know more."
+Concept: a triage assistant for Streets & Sanitation 311 intake that suggests a routing category and draft priority for each new request. Data used: request type, description text, and ward — never requester name, address, or contact details. Human-in-the-loop: every low-confidence classification and any request open longer than 48 hours routes to a human dispatcher with one-click override. Biggest failure mode: a water-main break misclassified as routine flooding — mitigated by a keyword escalation list that bypasses the model. Metric: median minutes-to-correct-department vs baseline, reviewed weekly with dispatch leads. Level check: mixes Apply (classification) and Evaluate (priority scoring) — govern at Evaluate.
+The conflict: the Persona ("creative, experimental, unconventional interpretations, clever workarounds") pulls against the Task ("apply exemptions correctly") and the Context ("legal liability"). Exemption decisions are conservative, statute-bound judgments; a persona rewarded for novelty will stretch exemptions on the hard cases — exactly where liability lives. The Format pillar is the only one that fits.
+Repaired Persona: "You are a careful FOIA officer with deep knowledge of the nine exemptions. You apply them conservatively, cite the exemption for every redaction, and refer genuinely novel questions of interpretation to the chief FOIA officer rather than resolving them creatively."
+ example  accuracy  completeness  format  tone  total
+L1A_base         3             2       2     3     10
+L1A_ptcf         5             5       5     5     20
+L2A_base         3             2       3     4     12
+L2A_ptcf         5             5       5     5     20
+L3A_base         1             3       3     3     10
+L3A_ptcf         5             5       5     4     19
+L4A_base         2             3       2     3     10
+L4A_ptcf         5             5       5     4     19
+L5A_base         2             2       2     4     10
+L5A_ptcf         5             5       5     5     20
+L6A_base         2             2       2     3      9
+L6A_ptcf         5             5       5     4     19
+
+mean total — base: 10.2 vs PTCF: 19.5

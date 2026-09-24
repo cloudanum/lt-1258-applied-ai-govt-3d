@@ -1,0 +1,86 @@
+EXPECTED OUTPUT — lab_3.2_bloom_taxonomy (SOLUTION)
+Captured by an offline run (OPENAI_API_KEY=""), so model cells show
+the canned fallbacks; live runs will differ in wording, not in the
+verified numbers. Use as the read-along fallback if the API is down.
+
+substrate ready: 6 311 types, 4 use cases, 3 AQI counties
+section | requirement | timeframe | supporting quote
+3(a) | human review before release | no timeframe stated | not stated
+3(b) | report suspected exposure | within one business day | "Suspected exposure must be reported within one business day."
+4 | effective date | immediately | "This guidance is effective immediately"
+4 | expiry | until superseded | "remains in effect until superseded by final Department policy."
+agency_name | use_case_name
+Commodity Futures Trading Commission | Stress Testing Scenarios with Deep Learning
+Department of Homeland Security | Smartphone Information Forensics Triage
+Pasting a constituent's record into a public chatbot is a reportable data spill.
+
+quote verified in policy: True
+The memo sets interim rules for using generative AI in constituent services until the final policy arrives. A responsible employee must review and approve every AI-assisted product before it reaches a constituent or the public record — the employee, not the tool, is accountable. Only public information may go into public AI tools; constituent records, Social Security numbers, and other PII must never enter an unapproved tool, and suspected exposure must be reported within one business day. Internal information may only be handled by the enterprise assistant under the Department's data-protection agreement. AI-assisted correspondence about agency business is a federal record and must be retained. The guidance is effective immediately. Caveat newcomers miss: even a rough AI-drafted letter about agency business is already a federal record.
+Think of agency data in three buckets.
+1. Public data — published reports, open data from data.gov — may be used with any approved tool.
+2. Internal data — everyday work material — may be used only with the agency-provisioned enterprise assistant operating under the agency's data-protection agreement. Never a public chatbot.
+3. Sensitive or regulated data — PII, health, financial, law enforcement — may be used only with tools specifically authorized for that category.
+And the bright line: you must not enter nonpublic information into any AI tool not approved for that data category. Pasting a constituent's record into a public chatbot is a reportable data spill.
+Aircraft noise complaints dominate this 311 extract with 1,547 requests, far ahead of general information calls at 760. Street flooding ("Water On Street") follows at 257, with tree emergencies (159), graffiti removal (136), and tree debris clean-up (83) rounding out the top six. Together these six categories account for 2,942 of the 4,000 requests in the file.
+Tree Debris Clean-Up Request -> Urban Forestry (rule 2)
+Water On Street Complaint -> Water & Drainage (rule 4)
+Broken Street Light Complaint -> Needs Human Review (rule 6 — no rule matches; escalate, do not guess)
+Scenario 1 -> Public data; permitted in any approved tool. Rule: Data Categories, 'Public data ... may be used with any approved tool.'
+Scenario 2 -> Sensitive/regulated data (PII) in an unapproved tool; prohibited — a reportable data spill. Rule: Prohibited Uses, 'must not enter nonpublic information into any AI tool that has not been approved for that data category.'
+Scenario 3 -> Internal data; permitted — enterprise assistant only. Rule: Data Categories, 'Internal data may be used only with the agency-provisioned enterprise assistant.'
+{
+  "case_id": "C-1001",
+  "name": "[REDACTED]",
+  "ssn": "[REDACTED]",
+  "email": "[REDACTED]",
+  "phone": "[REDACTED]",
+  "address": "[REDACTED]",
+  "topic": "air quality",
+  "summary": "Resident reports persistent smog near a highway interchange and asks whether local air quality exceeds federal standards.",
+  "status": "open"
+}
+
+fields left unmasked: none — procedure executed cleanly
+1. Observable facts (given): Ward 41 holds nearly all aircraft-noise complaints (1,447); Ward 28 holds most information-only calls (698); water-on-street is spread thin across wards 35, 37, and 29.
+2. Symptom clusters: a single-ward noise concentration; a single-ward information-call concentration; a diffuse flooding pattern.
+3. Competing hypotheses:
+   H1 (inferred): Ward 41 contains or borders the airport — noise tracks flight paths, not population. For: extreme single-ward concentration. Against: nothing in the data. Needed: a ward map.
+   H2 (inferred): Ward 28's information-call volume signals a service gap — residents call because answers are hard to find online. For: volume is an order of magnitude above other wards. Against: call content is not in the slice. Needed: call notes or transcripts.
+   H3 (assumption): water complaints follow rainfall events. Not testable from this slice — need request dates and weather data.
+4. Most likely: H1 — but it remains a correlation until the geography is confirmed. Do not act on H2 or H3 without the missing data.
+Shared (given): both are Commodity Futures Trading Commission systems applied to the agency's own market data; neither is described as public-facing.
+Different (given): the first is Pre-deployment and exploratory — deep-learning stress-test scenarios for futures and options portfolios; the second is Deployed and operational — anomaly detection flagging potentially erroneous data loads.
+Different (inferred): the verification burden differs. A deployed data-quality gate needs measurable precision and recall; a pre-deployment scenario generator is judged by expert review of plausibility.
+Missing (given): the slice carries no performance metrics for either system, so any comparison of accuracy would be an assumption, not a finding.
+Dominant driver (given): ozone accounts for 218 of 366 measured days and PM2.5 for 123 in San Bernardino County; the 61 unhealthy days sit inside an ozone-dominated profile.
+H1 (inferred): a summer photochemical-smog regime — heat and sunlight convert vehicle and industrial emissions into ozone downwind of the Los Angeles basin. For: ozone dominance. Against: nothing in the slice. Needed: daily AQI series and meteorology.
+H2 (inferred): episodic wildfire smoke pushed PM2.5 and the Max AQI of 593 to hazardous levels on a few days. For: extreme peak vs a median far lower. Against: smoke days are not flagged in the slice. Needed: fire-perimeter records and daily PM2.5.
+Do not attribute the hazardous peak to either cause without the daily data — annual counts cannot separate a season from an episode.
+Rubric restated: constituent impact 35%, risk of harm 30%, operating cost 20%, speed to pilot 15% — higher is better on every criterion.
+Scores (1-5, evidence in brackets):
+- Correspondence drafting: impact 4 [memo section 2: measured time savings], risk 4 [human review per section 3(a) catches errors], cost 4 [existing enterprise assistant], speed 5 [pilots already ran]. Weighted: 4.2.
+- 311 auto-triage: impact 4 [2,942 requests in top categories], risk 2 [misrouted requests delay service; no accuracy data — partially unsupported], cost 3, speed 3. Weighted: 3.1.
+- Transcript summaries: impact 2 [small audience], risk 5 [public input only], cost 4, speed 4. Weighted: 3.6.
+Ranked shortlist: 1) correspondence drafting 4.2, 2) transcript summaries 3.6, 3) 311 auto-triage 3.1.
+Top risks: triage misclassification; review becoming a rubber stamp.
+Questions for the decision maker: what triage accuracy is acceptable? Who audits the reviewers?
+This is decision support — the decision belongs to the named official.
+Criteria restated: risk reduction 40%, operational burden 25% (higher score = lower burden), auditability 20%, staff acceptance 15%.
+1. Option A (AI-use log) — ranked first. Directly attacks the unreviewed-release risk in the memo's background; cheap to run; makes every other control auditable. Scores: risk 5, burden 4, audit 5, acceptance 4. Weighted: 4.6.
+2. Option B (review internal products too) — second. More assurance, but roughly doubles review load for material that never leaves the building. Scores: risk 4, burden 2, audit 3, acceptance 3. Weighted: 3.2.
+3. Option C (ban public tools) — last. Removes one exposure path but pushes staff to unmanaged personal accounts — shadow use the log would have caught. Scores: risk 3, burden 2, audit 1, acceptance 1. Weighted: 2.2.
+Flagged as unsupported: all acceptance scores rest on no survey evidence — collect staff feedback before finalizing.
+Recommendation: adopt A now, pilot B in one division, reject C as counterproductive. Decision support, not the decision.
+Claim under review: "deflects 60% of calls at 99% accuracy."
+Supported by the inventory slice: nothing. The inventory records purpose, development stage, and data descriptions — it carries no deflection or accuracy metrics for any listed system. (given)
+Undefined terms (given): "deflected" — to where, and measured how? "accuracy" — judged by whom, on what labelled sample?
+Plausible but unverified (inferred): triage and summarization pilots do exist in government — the DHS and CFTC entries show the genre — so the claim is not impossible. It is unaudited.
+Questions for the vendor: (1) How large was the evaluation dataset and who labelled it? (2) What exactly counts as "deflected", and what is the downstream escalation rate? (3) Which comparable government deployment can we call?
+Until those arrive, treat the claim as marketing, not evidence.
+Concept 1 — Completeness pre-check. User: permit applicant. Problem: a large share of applications bounce for missing documents. Flow: applicant uploads a draft package; the assistant lists missing items against the published checklist; a human clerk makes the final call. Assumptions: the checklist is current. Risks: an outdated checklist gives false confidence. MVP experiment: shadow-run on 50 historical rejected applications and measure the catch rate. Why distinct: helps *before* submission.
+Concept 2 — Plain-language status explainer. User: resident checking a permit. Problem: cryptic status codes generate phone calls. Flow: the status page renders the code in plain language with the next step; the assistant never advises beyond the code. Assumptions: code definitions are documented. Risks: over-explaining a legal hold. MVP: the 20 most common codes, readability-tested with 10 residents. Distinct: explains *after* submission; generates no decisions.
+Concept 3 — Inspector report first-drafter. User: field inspector. Problem: an hour a day lost to typing notes. Flow: voice notes become a structured draft in the report template; the inspector edits and signs. Assumptions: template fields are stable. Risks: invented observations — every sentence must trace to the audio. MVP: 5 inspectors, 2 weeks, measure edit distance between draft and final. Distinct: internal productivity with human authorship preserved.
+All three keep a human as the decision-maker, per the memo's review clause.
+Formal (website): "This division uses approved artificial-intelligence tools to help draft routine correspondence and summarize public documents. Every AI-assisted product is reviewed and approved by a responsible employee before release. AI tools receive public information only. AI-assisted correspondence that documents agency business is retained as a federal record. Questions: Office of the Chief Data Officer."
+Plain-language (service counter): "We sometimes use AI to help write letters and summarize public records. A person always checks the work before anything goes out. We never put your personal information into public AI tools. Ask us if you want to know more."
+Concept: a triage assistant for Streets & Sanitation 311 intake that suggests the routing category and a draft priority for each new request. Data used: request type, description text, and ward — never requester name, address, or contact details. Human-in-the-loop: every low-confidence classification and any request open longer than 48 hours routes to a human dispatcher, who can override with one click. Biggest failure mode: a water-main break misclassified as routine flooding — mitigated by a keyword escalation list that bypasses the model entirely. Metric: median minutes-to-correct-department against the current baseline, reviewed weekly with the dispatch leads. Level check: the concept mixes Apply (classification) and Evaluate (priority scoring), so it is governed at the higher level — Evaluate.
