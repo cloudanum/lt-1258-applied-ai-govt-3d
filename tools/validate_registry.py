@@ -24,8 +24,8 @@ from pptx import Presentation
 ROOT = Path(__file__).resolve().parent.parent
 REG = ROOT / "registry" / "activities.yaml"
 DECKS = ROOT / "decks"
-MANUAL = ROOT / "labs" / "workbook" / "1258-WBa4-Lab-Manual.md"
-WORKBOOK = ROOT / "labs" / "workbook" / "1258-WBa4-New-Lab-Pages.md"
+MANUAL = ROOT / "legacy" / "labs" / "workbook" / "1258-WBa4-Lab-Manual.md"
+WORKBOOK = ROOT / "legacy" / "labs" / "workbook" / "1258-WBa4-New-Lab-Pages.md"
 HANDOUT = ROOT / "handouts" / "1258-HO-a4-New-Quiz-Items.md"
 IG = ROOT / "ig" / "1258-IGa4-Instructor-Guide.md"
 
@@ -174,7 +174,7 @@ def main(fix=False):
     # notebooks named by the registry that do not exist yet
     missing_nb = sorted({l["artifact"] for l in labs
                          if str(l.get("artifact", "")).endswith(".ipynb")
-                         and not (ROOT / "labs" / l["artifact"]).exists()})
+                         and not (ROOT / "legacy" / "labs" / l["artifact"]).exists()})
     if missing_nb:
         notes.append(f"notebooks to author ({len(missing_nb)}): {', '.join(missing_nb)}")
 

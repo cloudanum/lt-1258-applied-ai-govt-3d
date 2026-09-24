@@ -12,7 +12,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-LABS = ROOT / "labs"
+LABS = ROOT / "legacy" / "labs"
 DECKS = ROOT / "decks"
 REG = ROOT / "registry" / "labs.yaml"
 fails = []

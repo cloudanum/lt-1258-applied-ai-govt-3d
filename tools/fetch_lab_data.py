@@ -22,7 +22,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-DATA = Path(__file__).resolve().parent.parent / "labs" / "data"
+DATA = Path(__file__).resolve().parent.parent / "legacy" / "labs" / "data"
 UA = {"User-Agent": "LearningTree-1258-courseware/1.0"}
 
 # name -> (url, kind, row cap, description used in the manifest)

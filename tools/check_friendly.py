@@ -24,7 +24,7 @@ from pathlib import Path
 import nbformat
 
 ROOT = Path(__file__).resolve().parent.parent
-LABS = ROOT / "labs"
+LABS = ROOT / "legacy" / "labs"
 ARCHIVE = LABS / "For_Python_Programmers"
 
 STUDENT_LABS = [

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROJECT_DIR="/home/student/1258-new"
-LABS_DIR="$PROJECT_DIR/labs"
+LABS_DIR="$PROJECT_DIR/labs/1258-applied-ai-government-labs"
 LOG_FILE="${JUPYTER_1258_LOG:-/tmp/1258-jupyter-lab.log}"
 PORT="${JUPYTER_1258_PORT:-8888}"
 OPEN_BROWSER="${JUPYTER_1258_OPEN_BROWSER:-True}"
