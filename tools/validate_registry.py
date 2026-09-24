@@ -24,8 +24,8 @@ from pptx import Presentation
 ROOT = Path(__file__).resolve().parent.parent
 REG = ROOT / "registry" / "activities.yaml"
 DECKS = ROOT / "decks"
-MANUAL = ROOT / "workbook" / "1258-WBa4-Lab-Manual.md"
-WORKBOOK = ROOT / "workbook" / "1258-WBa4-New-Lab-Pages.md"
+MANUAL = ROOT / "labs" / "workbook" / "1258-WBa4-Lab-Manual.md"
+WORKBOOK = ROOT / "labs" / "workbook" / "1258-WBa4-New-Lab-Pages.md"
 HANDOUT = ROOT / "handouts" / "1258-HO-a4-New-Quiz-Items.md"
 IG = ROOT / "ig" / "1258-IGa4-Instructor-Guide.md"
 

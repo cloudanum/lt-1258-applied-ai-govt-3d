@@ -4,7 +4,7 @@
 script emits:
 
   registry/activities.yaml          machine-readable registry (supersedes labs.yaml)
-  workbook/1258-WBa4-Lab-Manual.md  the participant lab manual, LT house format
+  labs/workbook/1258-WBa4-Lab-Manual.md  the participant lab manual, LT house format
 
 Because both come from the same dictionaries, the registry contract
 (`id == workbook heading == slide callout`) holds by construction.
@@ -31,7 +31,7 @@ import content_activities as C
 
 ROOT = Path(__file__).resolve().parent.parent
 REG = ROOT / "registry" / "activities.yaml"
-MANUAL = ROOT / "workbook" / "1258-WBa4-Lab-Manual.md"
+MANUAL = ROOT / "labs" / "workbook" / "1258-WBa4-Lab-Manual.md"
 
 KIND_WORD = {"demo": "Demo", "donow": "Activity", "lab": "Lab"}
 ENV_WORD = {"vm": "CloudShare VM (JupyterLab)", "browser": "Browser + AI assistant",
